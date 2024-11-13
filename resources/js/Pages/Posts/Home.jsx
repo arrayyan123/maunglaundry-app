@@ -5,12 +5,14 @@ import ContentSection from '@/Components/Home/ContentSection'
 import Hero from '@/Components/Home/Hero'
 import MarqueeWrapper from '@/Components/Home/MarqueeWrapper'
 import Navbar from '@/Components/Navbar/Navbar'
+import { Head } from '@inertiajs/react'
 import React from 'react'
 MarqueeWrapper
 
 function Home() {
   return (
     <div>
+        <Head title="Home" />
         <Navbar />
         <Hero />
         <MarqueeWrapper />
