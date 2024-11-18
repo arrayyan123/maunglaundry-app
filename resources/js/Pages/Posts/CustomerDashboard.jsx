@@ -118,13 +118,15 @@ export default function CustomerDashboard({ laundryRequests = [] }) {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Pickup Address</label>
-                                    <textarea
-                                        value={data.pickup_address}
-                                        onChange={e => setData('pickup_address', e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                        rows="2"
-                                        placeholder="Enter your pickup address"
-                                    ></textarea>
+                                    {customerData && (
+                                            <textarea
+                                            value={customerData.address}
+                                            onChange={e => setData('pickup_address', e.target.value)}
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                            rows="2"
+                                            placeholder="Enter your pickup address"
+                                        ></textarea> 
+                                    )}
                                     {errors.pickup_address && <div className="text-red-500 text-sm">{errors.pickup_address}</div>}
                                 </div>
 
