@@ -7,10 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
+
 
 class CustomerAuthController extends Controller
 {
-    public function register(Request $request)
+    //sisi customer jika ingin daftar online
+    public function register_customer(Request $request)
     {
         try {
             $validated = $request->validate([
@@ -20,7 +23,6 @@ class CustomerAuthController extends Controller
                 'phone' => 'nullable|string',
                 'address' => 'nullable|string'
             ]);
-
             $customer = CustomerUser::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
@@ -28,13 +30,11 @@ class CustomerAuthController extends Controller
                 'phone' => $validated['phone'] ?? null,
                 'address' => $validated['address'] ?? null
             ]);
-
             return response()->json([
                 'status' => 'success',
                 'message' => 'Registration successful',
                 'customer' => $customer
             ], 201);
-
         } catch (ValidationException $e) {
             return response()->json([
                 'status' => 'error',
@@ -49,21 +49,58 @@ class CustomerAuthController extends Controller
             ], 500);
         }
     }
+    //sisi admin
+    public function register_customer_admin(Request $request)
+    {
+        Log::debug('Register Customer Admin request:', $request->all());
+    
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'phone' => 'required|string',
+                'address' => 'required|string',
+                'password' => 'required|string|min:6', 
+            ]);
+            Log::debug('Validated data:', $validated);
+
+            $customer = CustomerUser::create([
+                'name' => $validated['name'],
+                'phone' => $validated['phone'],
+                'password' => Hash::make($validated['phone']),
+                'address' => $validated['address'],
+            ]);
+            Log::debug('Customer created successfully:', $customer->toArray());
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Registration successful',
+                'customer' => $customer
+            ], 201);
+        } catch (\Exception $e) {
+            Log::error('Error during registration: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Registration failed',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'phone' => 'required|string',
             'password' => 'required',
         ]);
-
-        $customer = CustomerUser::where('email', $request->email)->first();
+        $customer = CustomerUser::where('phone', $request->phone)->first();
         if (!$customer || !Hash::check($request->password, $customer->password)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'The provided credentials are incorrect.'
             ], 401);
         }
+        // Buat token untuk autentikasi
         $token = $customer->createToken('customer-token')->plainTextToken;
         return response()->json([
             'status' => 'success',
@@ -78,9 +115,17 @@ class CustomerAuthController extends Controller
             $request->user()->tokens()->delete();
         }
         Auth::guard('customer')->logout();
-        
         return redirect()->route('customer.login');
     }
+
+    public function show($id)
+    {
+        $customer = CustomerUser::find($id); // or findOrFail if you want to catch missing records
+        return response()->json($customer);
+    }
+
+}
+
     // public function login(Request $request)
     // {
     //     try {
@@ -125,4 +170,3 @@ class CustomerAuthController extends Controller
     //     $request->user()->tokens()->delete();
     //     return response()->json(['message' => 'Logged out successfully']);
     // }
-}

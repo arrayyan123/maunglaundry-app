@@ -25,6 +25,7 @@
         "@heroicons/react": "^2.1.5",
         "@material-tailwind/react": "^2.1.10",
         "flowbite": "^2.5.2",
-        "react-fast-marquee": "^1.6.5"
+        "react-fast-marquee": "^1.6.5",
+        "react-router-dom": "^6.28.0"
     }
 }

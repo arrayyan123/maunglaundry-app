@@ -29,4 +29,13 @@ class PagesController extends Controller
     {
         return Inertia::render('Posts/CustomerDashboard');
     }
+    public function laundryform(){
+        return Inertia::render('Posts/LaundryForm');
+    }
+    public function entryTransaction($customerId)
+    {
+        $customer = CustomerUser::findOrFail($customerId);
+        return view('admin.entry_transaction', compact('customer'));
+    }
+
 }

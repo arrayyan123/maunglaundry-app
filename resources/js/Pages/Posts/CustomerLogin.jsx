@@ -1,11 +1,10 @@
-// resources/js/Pages/Customer/Login.jsx
 import React, { useState } from 'react';
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
 
 export default function CustomerLogin() {
     const [formData, setFormData] = useState({
-        email: '',
+        phone: '',  // Ganti 'email' dengan 'phone'
         password: ''
     });
     const [errors, setErrors] = useState({});
@@ -17,7 +16,7 @@ export default function CustomerLogin() {
         setMessage('');
 
         try {
-            const response = await axios.post('/api/customer/login', formData);
+            const response = await axios.post('/api/customer/login', formData);  // Kirim 'phone' dan 'password'
             
             if (response.data.status === 'success') {
                 localStorage.setItem('customer-token', response.data.token);
@@ -51,17 +50,17 @@ export default function CustomerLogin() {
                   <h1 class="text-2xl font-semibold mb-4">Login</h1>
                   <form action="#" method="POST" onSubmit={handleSubmit}>
                     <div class="mb-4 bg-blue-100">
-                      <label for="username" class="block text-gray-600">Email</label>
+                      <label for="phone" class="block text-gray-600">Phone Number</label>  {/* Ganti email menjadi phone */}
                       <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
+                        type="text" 
+                        id="phone" 
+                        name="phone" 
                         class="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" 
                         required
                         autocomplete="on"
-                        placeholder="Email address"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        placeholder="Phone number"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       />
                     </div>
                     <div class="mb-4">

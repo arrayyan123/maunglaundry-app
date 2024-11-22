@@ -5,6 +5,15 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
+const images = import.meta.glob('/public/assets/Images/*.png', { eager: true });
+
+const getImageByName = (name) => {
+    const matchingImage = Object.keys(images).find((path) => path.includes(`${name}.png`));
+    return matchingImage ? images[matchingImage].default || images[matchingImage] : null;
+};
+
+const logo = getImageByName('Logo_maung');
+
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
 
@@ -19,7 +28,7 @@ export default function AuthenticatedLayout({ header, children }) {
                         <div className="flex">
                             <div className="flex shrink-0 items-center">
                                 <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
+                                    <img src={logo} className="block h-9 w-auto fill-current text-gray-800" alt="" />
                                 </Link>
                             </div>
 
