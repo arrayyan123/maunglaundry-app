@@ -40,14 +40,18 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
         const selectedService = servicePrices.find((service) => service.id === selectedServiceId);
 
         if (selectedService) {
-            setSelectedServices((prev) => {
-                if (!prev.some((service) => service.id === selectedServiceId)) {
-                    return [...prev, { ...selectedService, service_type_id: selectedServiceType }];
-                }
-                return prev;
+            setSelectedServices(() => {
+                return [{ ...selectedService, service_type_id: selectedServiceType }];
+            });
+
+            setQuantity((prev) => {
+                const prevQuantity = Object.values(prev)[0] || 0;
+                return { [selectedServiceId]: prevQuantity };
             });
         }
     };
+
+
 
     const handleQuantityChange = (serviceId, qty) => {
         const parsedQty = parseInt(qty, 10);
@@ -77,7 +81,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
 
         const dataToSend = {
             customer_id: customerId,
-            nama_produk: selectedServices.map(service => service.nama_produk).join(", "), 
+            nama_produk: selectedServices.map(service => service.nama_produk).join(", "),
             laundry_type: selectedLaundryType,
             payment_method_id: formData.payment_method_id,
             status_payment: statusPayment,
@@ -90,7 +94,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                 nama_produk: service.nama_produk,
             })),
         };
-        
+
         console.log("Data to send:", dataToSend);
         try {
             const response = await axios.post("/api/admin/transactions", dataToSend);
@@ -202,24 +206,10 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                             onChange={(e) => handleQuantityChange(service.id, e.target.value)}
                         />
                         <p>Rp {service.harga * (quantity[service.id] || 0)}</p>
-                        <button
-                            onClick={() => {
-                                setSelectedServices((prev) =>
-                                    prev.filter((s) => s.id !== service.id)
-                                );
-                                setQuantity((prev) => {
-                                    const updatedQuantity = { ...prev };
-                                    delete updatedQuantity[service.id];
-                                    return updatedQuantity;
-                                });
-                            }}
-                            className="bg-red-500 text-white px-2 py-1 rounded"
-                        >
-                            Remove
-                        </button>
                     </div>
                 ))}
             </div>
+
 
             <h4 className="text-lg font-semibold mb-2">Total Price: Rp {totalPrice}</h4>
 
