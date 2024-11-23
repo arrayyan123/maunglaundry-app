@@ -29,25 +29,6 @@ return new class extends Migration
             $table->integer('harga');
             $table->timestamps();
         });        
-        Schema::create('transactions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('customer_id')->constrained('customer_users')->onDelete('cascade');
-            $table->dateTime('start_date');
-            $table->dateTime('end_date')->nullable()->comment('Tanggal estimasi selesai');
-            $table->string('status', 30)->default('ongoing');
-            $table->string('job', 30);
-            $table->string('description', 255)->nullable();
-            $table->timestamps();
-        });        
-        Schema::create('detail_transactions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('transaction_id')->constrained('transactions')->onDelete('cascade');
-            $table->foreignId('service_prices_id')->constrained('service_prices')->onDelete('cascade');
-            $table->foreignId('service_types_id')->constrained('service_types')->onDelete('cascade');
-            $table->integer('quantity');
-            $table->integer('price');
-            $table->timestamps();
-        });
     }
     /**
      * Reverse the migrations.
@@ -56,7 +37,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('service_types');
         Schema::dropIfExists('service_prices');
-        Schema::dropIfExists('transactions');
-        Schema::dropIfExists('detail_transactions');
     }
 };

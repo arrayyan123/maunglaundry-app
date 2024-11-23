@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Log;
 
 class CustomerAuthController extends Controller
 {
-    //sisi customer jika ingin daftar online
     public function register_customer(Request $request)
     {
         try {
@@ -115,58 +114,13 @@ class CustomerAuthController extends Controller
             $request->user()->tokens()->delete();
         }
         Auth::guard('customer')->logout();
-        return redirect()->route('customer.login');
+        return redirect()->route('customer-login-page');
     }
 
     public function show($id)
     {
-        $customer = CustomerUser::find($id); // or findOrFail if you want to catch missing records
+        $customer = CustomerUser::find($id); 
         return response()->json($customer);
     }
 
 }
-
-    // public function login(Request $request)
-    // {
-    //     try {
-    //         $validated = $request->validate([
-    //             'email' => 'required|email',
-    //             'password' => 'required'
-    //         ]);
-
-    //         $customer = CustomerUser::where('email', $validated['email'])->first();
-
-    //         if (!$customer || !Hash::check($validated['password'], $customer->password)) {
-    //             throw ValidationException::withMessages([
-    //                 'email' => ['The provided credentials are incorrect.'],
-    //             ]);
-    //         }
-
-    //         $token = $customer->createToken('customer-token')->plainTextToken;
-
-    //         return response()->json([
-    //             'status' => 'success',
-    //             'token' => $token,
-    //             'customer' => $customer
-    //         ]);
-
-    //     } catch (ValidationException $e) {
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Validation failed',
-    //             'errors' => $e->errors()
-    //         ], 422);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Login failed',
-    //             'error' => $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
-
-    // public function logout(Request $request)
-    // {
-    //     $request->user()->tokens()->delete();
-    //     return response()->json(['message' => 'Logged out successfully']);
-    // }

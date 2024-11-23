@@ -22,4 +22,8 @@ class Transaction extends Model
         return $this->hasMany(DetailTransaction::class);
     }
     
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
+    }
 }

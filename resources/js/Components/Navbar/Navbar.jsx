@@ -9,7 +9,7 @@ const getImageByName = (name) => {
 
 const logo = getImageByName('Logo_maung');
 
-const Navbar = () => {
+const Navbar = ({}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [navbarBackground, setNavbarBackground] = useState('bg-transparent');
   const [navbarText, setNavbarText] = useState('text-white')

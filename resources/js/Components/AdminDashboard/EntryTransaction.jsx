@@ -4,6 +4,7 @@ import axios from "axios";
 function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     const [formData, setFormData] = useState({
         payment_method_id: "",
+        name: ""
     });
     const [customerDetails, setCustomerDetails] = useState({});
     const [serviceTypes, setServiceTypes] = useState([]);
@@ -50,9 +51,6 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             });
         }
     };
-
-
-
     const handleQuantityChange = (serviceId, qty) => {
         const parsedQty = parseInt(qty, 10);
         setQuantity((prev) => ({
@@ -83,6 +81,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             customer_id: customerId,
             nama_produk: selectedServices.map(service => service.nama_produk).join(", "),
             laundry_type: selectedLaundryType,
+            //ingin menambahkan nama payment method nya disini
             payment_method_id: formData.payment_method_id,
             status_payment: statusPayment,
             status_job: statusJob,
@@ -90,7 +89,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                 service_type_id: service.service_type_id,
                 service_price_id: service.id,
                 quantity: quantity[service.id] || 0,
-                price: (service.harga * (quantity[service.id] || 0)), //saya mau anda cek ini
+                price: (service.harga * (quantity[service.id] || 0)), 
                 nama_produk: service.nama_produk,
             })),
         };

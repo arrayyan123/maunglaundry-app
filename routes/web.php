@@ -27,7 +27,7 @@ Route::get('/dashboard', [PagesController::class, 'dashboard'])
 
 Route::prefix('api')->group(function () {
     // Customer-related routes
-    Route::post('/customer/register', [CustomerAuthController::class, 'register']);
+    Route::post('/customer/register', [CustomerAuthController::class, 'register_customer']);
     Route::post('/customer/login', [CustomerAuthController::class, 'login']);
     Route::post('/customer/logout', [CustomerAuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::get('/customer/{id}', [CustomerAuthController::class, 'show']);

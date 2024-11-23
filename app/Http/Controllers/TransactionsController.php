@@ -42,7 +42,6 @@ class TransactionsController extends Controller
                 'status_job' => $validated['status_job'],
             ]);
 
-            // Tambahkan detail transaksi
             foreach ($validated['services'] as $service) {
                 $transaction->details()->create([
                     'service_types_id' => $service['service_type_id'],
@@ -67,8 +66,8 @@ class TransactionsController extends Controller
     public function show($id)
     {
         try {
-            $transaction = Transaction::with('details.serviceType', 'details.servicePrice')
-                ->where('customer_id', $id) // Filter berdasarkan customer_id
+            $transaction = Transaction::with('paymentMethod', 'details.serviceType', 'details.servicePrice')
+                ->where('customer_id', $id)
                 ->get();
     
             return response()->json([
@@ -85,33 +84,31 @@ class TransactionsController extends Controller
     public function updateJobStatus(Request $request, $transactionId)
     {
         $request->validate([
-            'status_job' => 'required|string',
+            'status_job' => 'required|string|in:ongoing,pending,done,cancel',
         ]);
     
         $transaction = Transaction::findOrFail($transactionId);
         $transaction->status_job = $request->status_job;
         $transaction->save();
     
-        return response()->json(['message' => 'Job status updated successfully']);
+        return response()->json(['message' => 'Job status updated successfully', 'transaction' => $transaction]);
     }
     
-    
-
     public function updatePayment($transactionId, Request $request)
     {
-        $request->validate([
-            'payment_method_id' => 'required|exists:payment_methods,id',
-            'status_payment' => 'required|string',
+        $validated = $request->validate([
+            'payment_method_id' => 'nullable|exists:payment_methods,id',
+            'status_payment' => 'required|string|in:paid,unpaid',
         ]);
-
+    
         $transaction = Transaction::findOrFail($transactionId);
         $transaction->update([
-            'payment_method_id' => $request->payment_method_id,
-            'status_payment' => $request->status_payment,
+            'payment_method_id' => $validated['payment_method_id'] ?? $transaction->payment_method_id,
+            'status_payment' => $validated['status_payment'],
         ]);
-
-        return response()->json($transaction);
-    }
+    
+        return response()->json(['message' => 'Payment status updated successfully', 'transaction' => $transaction]);
+    }    
 
     public function destroy($id)
     {

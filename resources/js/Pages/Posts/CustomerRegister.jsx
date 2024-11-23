@@ -19,7 +19,6 @@ const CustomerRegister = () => {
         setMessage('');
 
         try {
-            // Add CSRF token to request headers
             const response = await axios.post('/api/customer/register', formData, {
                 headers: {
                     'Content-Type': 'application/json',
