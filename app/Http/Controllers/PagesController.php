@@ -25,6 +25,12 @@ class PagesController extends Controller
             'customers' => $customers
         ]);
     }
+    public function report(){
+        $customers = CustomerUser::all();
+        return Inertia::render('ReportPage', [
+            'customers' => $customers
+        ]);
+    }
     public function customerDashboard()
     {
         return Inertia::render('Posts/CustomerDashboard');

@@ -4,10 +4,32 @@ import { Fade, Zoom } from 'react-reveal';
 
 function TransactionDetail({ customerId, transactionId, onClose }) {
   const [transactions, setTransactions] = useState([]);
+  const [transaction, setTransaction] = useState([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [countdown, setCountdown] = useState(5);
+  const [customerName, setCustomerName] = useState('');
+  const [customerNames, setCustomerNames] = useState([]);
+
+  useEffect(() => {
+    if (showConfirmModal) {
+      setCountdown(5);
+      const timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [showConfirmModal]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -15,10 +37,32 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
       try {
         const endpoint = transactionId
           ? `/api/admin/transactions/${transactionId}`
-          : `/api/admin/transactions/${customerId}`;
+          : `/api/customer/${customerId}`;
 
         const response = await axios.get(endpoint);
-        setTransactions(response.data.transaction || response.data.transactions);
+        const transactionsData = response.data.transaction || response.data.transactions;
+        setTransactions(transactionsData);
+        setFilteredTransactions(transactionsData);
+
+        if (transactionsData.length > 0) {
+          const uniqueCustomerIds = [...new Set(transactionsData.map((t) => t.customer_id))];
+          console.log("Unique Customer IDs:", uniqueCustomerIds);
+
+          // Fetch customer data and store customer names in state
+          const customerData = await Promise.all(
+            uniqueCustomerIds.map(async (idCustomer) => {
+              const customerResponse = await axios.get(`/api/customer/${idCustomer}`);
+              return { id: idCustomer, name: customerResponse.data.name };
+            })
+          );
+          console.log("Fetched customer data:", customerData);
+
+          const customerNamesObject = customerData.reduce((acc, { id, name }) => {
+            acc[id] = name; // You can store the name directly here
+            return acc;
+          }, {});
+          setCustomerNames(customerNamesObject);  // Store as an object mapping id to name
+        }
       } catch (error) {
         console.error("Failed to load transaction details:", error);
       } finally {
@@ -28,6 +72,10 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
 
     if (customerId || transactionId) fetchData();
   }, [customerId, transactionId]);
+
+
+  const customer = customerNames[transaction?.customer_id];
+
 
   const openConfirmModal = (transaction) => {
     setSelectedTransaction(transaction);
@@ -75,6 +123,20 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
       });
   };
 
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    const lowerCaseQuery = query.toLowerCase();
+    const filtered = transactions.filter((transaction) => {
+      const matchesProductName = transaction.nama_produk?.toLowerCase().includes(lowerCaseQuery);
+      const matchesLaundryType = transaction.laundry_type?.toLowerCase().includes(lowerCaseQuery);
+      const matchesServiceType = transaction.details?.some((detail) =>
+        detail.service_type?.jenis_pelayanan?.toLowerCase().includes(lowerCaseQuery)
+      );
+      return matchesProductName || matchesLaundryType || matchesServiceType;
+    });
+    setFilteredTransactions(filtered);
+  }
+
   const handleDeleteTransaction = (transactionId) => {
     axios.delete(`/api/admin/transactions/${transactionId}`)
       .then(() => {
@@ -95,11 +157,26 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg">
-      {transactions.map(transaction => (
+    <div className="max-w-3xl mx-auto p-6 mb-10 bg-white shadow-md rounded-lg">
+      <div className="mb-6">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => handleSearch(e.target.value)}
+          placeholder="Search by product name, laundry type, or service type..."
+          className="w-full p-2 border border-gray-300 rounded"
+        />
+      </div>
+      {filteredTransactions.map(transaction => (
         <div key={transaction.id} className='mb-10'>
           <h3 className="text-xl font-semibold mb-4">Transaction Details</h3>
-          <p><strong>Customer ID:</strong> {transaction?.customer_id}</p>
+          {/* <p><strong>Customer ID:</strong> {transaction?.customer_id}</p> */}
+          {transaction?.customer_id && customerNames[transaction?.customer_id] ? (
+            <p><strong>Customer Name:</strong> {customerNames[transaction?.customer_id]}</p>
+          ) : (
+            <p><strong>Customer Name:</strong> Loading...</p>
+          )}
+
           <p><strong>Nama Produk:</strong> {transaction?.nama_produk}</p>
           <p><strong>Laundry Type:</strong> {transaction?.laundry_type}</p>
 
@@ -161,7 +238,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
           </div>
           {showDeleteModal && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-              <Zoom>
+              <Fade>
                 <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
                   <p className="text-lg">Are you sure you want to delete this transaction?</p>
                   <div className="mt-4 flex justify-end space-x-4">
@@ -173,7 +250,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                     </button>
                   </div>
                 </div>
-              </Zoom>
+              </Fade>
             </div>
           )}
           {showConfirmModal && (
@@ -183,9 +260,20 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                   <h2 className="text-lg font-semibold mb-4">Confirm Payment</h2>
                   <p>Apakah anda yakin bahwa customer telah membayar?</p>
                   <p className="text-sm text-gray-500 mt-2">
-                    <strong>Customer:</strong> {selectedTransaction?.customer_id}<br />
-                    <strong>Total:</strong> {selectedTransaction?.price}
+                    {/* <strong>Customer:</strong> {selectedTransaction?.customer_id}<br /> */}
+                    <strong>Nama Customer</strong> {customerName} <br />
+                    <strong>Details:</strong>
+                    <ul className="mt-2">
+                      {selectedTransaction?.details?.map((detail, index) => (
+                        <li key={index}>
+                          <p>Service: {detail?.service_type?.jenis_pelayanan || "N/A"}</p>
+                          <p>Price: Rp {detail?.price || "N/A"}</p>
+                          <p>Quantity: {detail?.quantity || 1}</p>
+                        </li>
+                      ))}
+                    </ul>
                   </p>
+
                   <div className="mt-4 flex justify-end space-x-4">
                     <button
                       onClick={() => setShowConfirmModal(false)}
@@ -195,10 +283,12 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                     </button>
                     <button
                       onClick={confirmMarkAsPaid}
-                      className="bg-green-500 text-white px-4 py-2 rounded"
+                      className={`px-4 py-2 rounded ${countdown === 0 ? "bg-green-500" : "bg-gray-400"} text-white`}
+                      disabled={countdown > 0}
                     >
-                      Yes, Mark as Paid
+                      {countdown > 0 ? `Wait ${countdown}s` : "Yes, Mark as Paid"}
                     </button>
+
                   </div>
                 </div>
               </Fade>

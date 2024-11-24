@@ -11,35 +11,55 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
+            $table->string('name')->unique();
+            $table->timestamps();
+        });
+
+        Schema::create('transactions', function (Blueprint $table) {
+            $table->uuid('id')->primary();
             $table->unsignedBigInteger('customer_id');
+            $table->string('nama_produk')->nullable();
             $table->string('laundry_type');
-            $table->string('payment_method');
+            $table->unsignedBigInteger('payment_method_id');
             $table->string('status_payment');
             $table->string('status_job');
             $table->timestamps();
-            $table->foreign('customer_id')->references('id')->on('customer_users')->onDelete('cascade');
+        
+            $table->foreign('customer_id')
+                ->references('id')
+                ->on('customer_users')
+                ->onDelete('cascade');
+        
+            $table->foreign('payment_method_id')
+                ->references('id')
+                ->on('payment_methods')
+                ->onDelete('cascade');
         });
-        
-        
         Schema::create('detail_transactions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('transaction_id');
+            $table->uuid('transaction_id');
             $table->unsignedBigInteger('service_types_id');
             $table->unsignedBigInteger('service_prices_id');
             $table->integer('quantity');
             $table->decimal('price', 10, 2);
             $table->timestamps();
         
-            // Menambahkan foreign key
-            $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('cascade');
-            $table->foreign('service_types_id')->references('id')->on('service_types');
-            $table->foreign('service_prices_id')->references('id')->on('service_prices');
-        });
-               
+            $table->foreign('transaction_id')
+                ->references('id')
+                ->on('transactions')
+                ->onDelete('cascade');
+        
+            $table->foreign('service_types_id')
+                ->references('id')
+                ->on('service_types');
+        
+            $table->foreign('service_prices_id')
+                ->references('id')
+                ->on('service_prices');
+        });   
     }
-
     /**
      * Reverse the migrations.
      */
@@ -47,5 +67,6 @@ return new class extends Migration
     {
         Schema::dropIfExists('detail_transactions');
         Schema::dropIfExists('transactions');
+        Schema::dropIfExists('payment_methods');
     }
 };

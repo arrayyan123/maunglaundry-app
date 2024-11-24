@@ -24,20 +24,22 @@ Route::get('/', function () {
 Route::get('/dashboard', [PagesController::class, 'dashboard'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+Route::get('/reportdata', [PagesController::class, 'report'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.report');
 
 Route::prefix('api')->group(function () {
-    // Customer-related routes
     Route::post('/customer/register', [CustomerAuthController::class, 'register_customer']);
     Route::post('/customer/login', [CustomerAuthController::class, 'login']);
     Route::post('/customer/logout', [CustomerAuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::get('/customer/{id}', [CustomerAuthController::class, 'show']);
-    // Admin-related routes
+
     Route::post('/admin/register_customer', [CustomerAuthController::class, 'register_customer_admin']);
     Route::get('/admin/customers', [PagesController::class, 'adminCustomerList'])->middleware('auth:sanctum');
+    Route::get('/admin/transaction-details/{transactionId}', [TransactionsController::class, 'getTransactionByUuid']);
 
     Route::post('/admin/transactions', [TransactionsController::class, 'store']);
-    Route::get('/admin/transactions/{customerId}', [TransactionsController::class, 'show'])
-    ->name('transactions.show');
+    Route::get('/admin/transactions/{customerId}', [TransactionsController::class, 'show']) ->name('transactions.show');
     Route::put('/admin/transactions/{id}/update', [TransactionsController::class, 'updatePaymentStatus']); 
     Route::get('/admin/service-types', [ServiceTypesController::class, 'index']); 
     Route::get('/admin/service-prices/{serviceTypeId}', [ServicePricesController::class, 'getPricesByServiceType']);

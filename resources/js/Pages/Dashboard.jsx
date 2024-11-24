@@ -7,18 +7,23 @@ import { useState, useEffect } from 'react';
 import TransactionDetail from '@/Components/AdminDashboard/TransactionDetail';
 import axios from 'axios';
 import AddCustButton from '@/Components/AdminDashboard/AddCustButton';
+import { Fade } from 'react-reveal';
 
 export default function Dashboard({ auth, customers }) {
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [selectedTransactionId, setSelectedTransactionId] = useState(null);
     const [transactions, setTransactions] = useState([]);
     const [isAddingCustomer, setIsAddingCustomer] = useState(false);
+    const [transactionDetails, setTransactionDetails] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const handleSelectCustomer = (customer) => {
         setSelectedCustomer(customer);
-        setSelectedTransactionId(null);
+        setSelectedTransactionId(null); // Reset transaction ID
+        setTransactionDetails(null); // Reset transaction details
         fetchTransactions(customer.id);
     };
+    
 
     const fetchTransactions = async (customerId) => {
         try {
@@ -28,14 +33,40 @@ export default function Dashboard({ auth, customers }) {
             console.error("Error fetching transactions:", error);
         }
     };
-
     const handleViewDetails = (transactionId) => {
         console.log("Setting transaction ID:", transactionId);
         setSelectedTransactionId(transactionId);
     };
+    const fetchTransactionDetails = async (id) => {
+        try {
+            setLoading(true);
+            const response = await axios.get(`/api/admin/transaction-details/${id}`);
+            console.log("Transaction details fetched:", response.data);
+            setLoading(false);
+            return response.data;
+        } catch (error) {
+            setLoading(false);
+            console.error("Error fetching transaction details:", error);
+            return null;
+        }
+    };
+    const handleViewDetailsOn = async (transactionId) => {
+        try {
+            setLoading(true);
+            const details = await fetchTransactionDetails(transactionId);
+            if (details) {
+                setTransactionDetails(details); 
+                setSelectedTransactionId(transactionId);
+            }
+        } catch (error) {
+            console.error("Error fetching transaction details:", error);
+            setLoading(false);
+        }
+    };
 
     const handleCloseTransactionDetail = () => {
         setSelectedTransactionId(null);
+        setTransactionDetails(null);
     };
 
     return (
@@ -53,12 +84,33 @@ export default function Dashboard({ auth, customers }) {
                 onSelectCustomer={handleSelectCustomer}
                 onViewDetails={handleViewDetails}
             />
+            {selectedCustomer && !selectedTransactionId && transactions.length > 0 && (
+                <Fade>
+                    <div className='mx-auto max-w-3xl p-6 mb-10 bg-white rounded-lg'>
+                        <h3 className="text-lg font-semibold">Transactions</h3>
+                        <ul>
+                            {transactions.map(transaction => (
+                                <li key={transaction.id}>
+                                    <button
+                                        className="text-blue-600"
+                                        onClick={() => handleViewDetailsOn(transaction.id)}
+                                    >
+                                        View Transaction {transaction.nama_produk} status ({transaction.status_payment})
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </Fade>
+            )}
             {selectedCustomer && !selectedTransactionId && (
+                <Fade>
                 <EntryTransaction
                     customerId={selectedCustomer.id}
                     onSave={() => alert('Transaction saved!')}
                     onNavigateToPayment={() => navigate('/admin/payment-detail')}
                 />
+                </Fade>
             )}
 
             {selectedTransactionId && selectedCustomer && (
@@ -67,24 +119,6 @@ export default function Dashboard({ auth, customers }) {
                     transactionId={selectedTransactionId}
                     onClose={handleCloseTransactionDetail}
                 />
-            )}
-
-            {selectedCustomer && !selectedTransactionId && transactions.length > 0 && (
-                <div className='mx-auto max-w-7xl p-6 my-10 bg-white rounded-lg'>
-                    <h3 className="text-lg font-semibold">Transactions</h3>
-                    <ul>
-                        {transactions.map(transaction => (
-                            <li key={transaction.id}>
-                                <button
-                                    className="text-blue-600"
-                                    onClick={() => handleViewDetails(transaction.id)}
-                                >
-                                    View Transaction {transaction.id}
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
             )}
             <AddCustButton onClick={() => setIsAddingCustomer(true)} />
             {isAddingCustomer && (

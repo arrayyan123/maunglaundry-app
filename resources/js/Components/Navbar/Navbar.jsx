@@ -83,8 +83,8 @@ const Navbar = ({}) => {
           </li>
           <li><a className={`text-sm ${navbarText} hover:text-gray-500`} href="#">Pricing</a></li>
           <button className="bg-gray-200 text-black hover:bg-gray-white py-2 px-6 rounded-full text-lg font-semibold transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg lg:mt-0 mt-6">
-            <a href="#">
-              Contact Us
+            <a href="/customer/login">
+              Register Now
             </a>
           </button>
         </ul>

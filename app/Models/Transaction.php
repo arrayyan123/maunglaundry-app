@@ -3,10 +3,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Transaction extends Model
 {
     use HasFactory;
+
+    public $incrementing = false; // Disable auto-incrementing
+    protected $keyType = 'string';
 
     protected $fillable = [
         'customer_id',
@@ -16,6 +20,17 @@ class Transaction extends Model
         'status_payment',
         'status_job',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (!$model->id) {
+                $model->id = (string) Str::uuid(); // Generate a UUID
+            }
+        });
+    }
 
     public function details()
     {

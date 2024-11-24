@@ -69,7 +69,7 @@ class TransactionsController extends Controller
             $transaction = Transaction::with('paymentMethod', 'details.serviceType', 'details.servicePrice')
                 ->where('customer_id', $id)
                 ->get();
-    
+
             return response()->json([
                 'transaction' => $transaction
             ]);
@@ -79,43 +79,55 @@ class TransactionsController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
-    }    
+    }
 
     public function updateJobStatus(Request $request, $transactionId)
     {
         $request->validate([
             'status_job' => 'required|string|in:ongoing,pending,done,cancel',
         ]);
-    
+
         $transaction = Transaction::findOrFail($transactionId);
         $transaction->status_job = $request->status_job;
         $transaction->save();
-    
+
         return response()->json(['message' => 'Job status updated successfully', 'transaction' => $transaction]);
     }
-    
+
     public function updatePayment($transactionId, Request $request)
     {
         $validated = $request->validate([
             'payment_method_id' => 'nullable|exists:payment_methods,id',
             'status_payment' => 'required|string|in:paid,unpaid',
         ]);
-    
+
         $transaction = Transaction::findOrFail($transactionId);
         $transaction->update([
             'payment_method_id' => $validated['payment_method_id'] ?? $transaction->payment_method_id,
             'status_payment' => $validated['status_payment'],
         ]);
-    
+
         return response()->json(['message' => 'Payment status updated successfully', 'transaction' => $transaction]);
-    }    
+    }
+
+    public function getTransactionByUuid($id)
+    {
+        $transaction = Transaction::with('paymentMethod', 'details.serviceType', 'details.servicePrice')
+            ->where('id', $id)->first();
+
+        if (!$transaction) {
+            return response()->json(['error' => 'Transaction not found'], 404);
+        }
+
+        return response()->json($transaction);
+    }
 
     public function destroy($id)
     {
         $transaction = Transaction::find($id);
         if ($transaction) {
-            $transaction->details()->delete();  
-            $transaction->delete(); 
+            $transaction->details()->delete();
+            $transaction->delete();
             return response()->json(['message' => 'Transaction deleted successfully']);
         }
 

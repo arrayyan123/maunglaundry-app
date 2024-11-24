@@ -57,6 +57,7 @@ class CustomerAuthController extends Controller
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'phone' => 'required|string',
+                'email' => 'nullable|string',
                 'address' => 'required|string',
                 'password' => 'required|string|min:6', 
             ]);
