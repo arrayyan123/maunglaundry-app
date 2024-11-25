@@ -4,8 +4,7 @@ const DistanceCalculator = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [distance, setDistance] = useState(null);
   const [error, setError] = useState(null);
-
-  const GOOGLE_API_KEY = "AIzaSyCqOjhoEY_Fl59gvAlNHXCRxL8g22pZ0VY"; 
+  const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
   const destination = { lat: -6.2022524, lng: 106.6954483 };
 
   useEffect(() => {
