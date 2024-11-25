@@ -4,63 +4,78 @@ const DistanceCalculator = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [distance, setDistance] = useState(null);
 
-  const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const earthRadius = 6371; 
-    const dLat = ((lat2 - lat1) * Math.PI) / 180;
-    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const fetchCurrentLocation = async () => {
+    const apiKey = import.meta.env.VITE_GEOLOCATION_API_KEY; // Use your ipgeolocation.io API key
+    try {
+      const response = await fetch(
+        `https://api.ipgeolocation.io/ipgeo?apiKey=${apiKey}`
+      );
+      const data = await response.json();
+      return {
+        lat: parseFloat(data.latitude),
+        lon: parseFloat(data.longitude),
+      };
+    } catch (error) {
+      console.error("Error fetching current location:", error);
+      return null;
+    }
+  };
 
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos((lat1 * Math.PI) / 180) *
-        Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+  const fetchDistanceFromAPI = async (originLat, originLon, destLat, destLon) => {
+    const apiKey = import.meta.env.VITE_DISTANCE_MATRIX_API_KEY; // Use your DistanceMatrix.ai API key
+    try {
+      const response = await fetch(
+        `https://api.distancematrix.ai/maps/api/distancematrix/json?origins=${originLat},${originLon}&destinations=${destLat},${destLon}&key=${apiKey}`
+      );
+      const data = await response.json();
 
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return earthRadius * c; 
+      if (
+        data.status === "OK" &&
+        data.rows[0]?.elements[0]?.status === "OK"
+      ) {
+        return data.rows[0].elements[0].distance.text; // Extract formatted distance
+      } else {
+        throw new Error("Error calculating distance.");
+      }
+    } catch (error) {
+      console.error("Error fetching distance:", error);
+      return null;
+    }
   };
 
   useEffect(() => {
-    const fetchLocation = async () => {
-    const apiKey = import.meta.env.VITE_GEOLOCATION_API_KEY;
-    console.log(apiKey);
-      try {
-        const response = await fetch(
-          `https://api.ipgeolocation.io/ipgeo?apiKey=${apiKey}`
+    const calculateDistance = async () => {
+      const destination = { lat: -6.2022524, lon: 106.6980232 };
+
+      const location = await fetchCurrentLocation();
+      if (location) {
+        setCurrentLocation(location);
+
+        const dist = await fetchDistanceFromAPI(
+          location.lat,
+          location.lon,
+          destination.lat,
+          destination.lon
         );
-        const data = await response.json();
-        setCurrentLocation({ lat: parseFloat(data.latitude), lon: parseFloat(data.longitude) });
-      } catch (error) {
-        console.error("Error fetching location:", error);
+        if (dist) setDistance(dist);
       }
     };
 
-    fetchLocation();
+    calculateDistance();
   }, []);
-
-  const destination = { lat: -6.2022524, lon: 106.6980232 };
-
-  useEffect(() => {
-    if (currentLocation) {
-    
-      const dist = calculateDistance(
-        currentLocation.lat,
-        currentLocation.lon,
-        destination.lat,
-        destination.lon
-      );
-      setDistance(dist.toFixed(7));
-    }
-  }, [currentLocation]);
 
   return (
     <div>
       <h1>Distance Calculator</h1>
       {currentLocation ? (
         <>
-          <p>Your current location: Latitude {currentLocation.lat}, Longitude {currentLocation.lon}</p>
           <p>
-            Distance to Maung Laundry: {distance ? `${distance} km` : "Calculating..."}
+            Your current location: Latitude {currentLocation.lat}, Longitude{" "}
+            {currentLocation.lon}
+          </p>
+          <p>
+            Distance to Maung Laundry:{" "}
+            {distance ? `${distance}` : "Calculating..."}
           </p>
         </>
       ) : (
