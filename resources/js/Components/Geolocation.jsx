@@ -1,71 +1,76 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
-const DistanceCalculator = () => {
-  const [currentLocation, setCurrentLocation] = useState(null);
+const DistanceCalculator = ({ param }) => {
   const [distance, setDistance] = useState(null);
-  const [error, setError] = useState(null);
 
-  const GOOGLE_API_KEY = "AIzaSyCqOjhoEY_Fl59gvAlNHXCRxL8g22pZ0VY"; 
-  const destination = { lat: -6.2022524, lng: 106.6954483 };
-
-  useEffect(() => {
-    const getLocation = async () => {
-        const response = await fetch(
-          `https://www.googleapis.com/geolocation/v1/geolocate?key=${GOOGLE_API_KEY}`,
-          { method: "POST", body: JSON.stringify({ considerIp: true }) }
-        );
-        const data = await response.json();
-        console.log(data);
-      };
-      getLocation();      
-  }, []);
+  const extractLocation = (address) => {
+    // Extract the last part of the address and replace spaces with "+"
+    const location = address.split(", ").pop();
+    return location.replace(/\s+/g, "+");
+  };
 
   useEffect(() => {
-    if (currentLocation) {
-      const fetchDistance = async () => {
-        try {
-          const origin = `${currentLocation.lat},${currentLocation.lng}`;
-          const destinationCoords = `${destination.lat},${destination.lng}`;
-          const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin}&destinations=${destinationCoords}&key=${GOOGLE_API_KEY}`;
+    const calculateDistance = async () => {
+      try {
+        // Origin coordinates are hardcoded
+        const originCoords = { lat: -6.2022524, lon: 106.6954483 };
 
-          const response = await fetch(url);
-          if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
-          }
+        // Check if the address parameter is valid
+        if (!param?.address) {
+          throw new Error("Destination address is missing.");
+        }
+
+        // Extract and format destination address
+        const formattedAddress = extractLocation(param.address);
+
+        // Function to fetch coordinates from Nominatim
+        const getCoordinates = async (formattedAddress) => {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${formattedAddress}&format=geojson`
+          );
 
           const data = await response.json();
-          const distanceText =
-            data.rows[0].elements[0].distance.text; // e.g., "25.4 km"
-          setDistance(distanceText);
-        } catch (err) {
-          setError("Error fetching distance: " + err.message);
-        }
-      };
 
-      fetchDistance();
-    }
-  }, [currentLocation]);
+          if (!data.features || data.features.length === 0) {
+            throw new Error(`Location "${formattedAddress}" not found.`);
+          }
+
+          const coordinates = data.features[0].geometry.coordinates; // GeoJSON format: [lon, lat]
+          return { lat: coordinates[1], lon: coordinates[0] };
+        };
+
+        // Fetch destination coordinates
+        const destinationCoords = await getCoordinates(formattedAddress);
+
+        // Call the Google Distance Matrix API
+        const distanceMatrixResponse = await fetch(
+          `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${originCoords.lat},${originCoords.lon}&destinations=${destinationCoords.lat},${destinationCoords.lon}&key=YOUR_GOOGLE_API_KEY`
+        );
+
+        const distanceMatrixData = await distanceMatrixResponse.json();
+
+        // Validate Distance Matrix API response
+        if (distanceMatrixData.status !== "OK") {
+          throw new Error("Failed to calculate distance.");
+        }
+
+        const roadDistance =
+          distanceMatrixData.rows[0].elements[0].distance.text;
+
+        setDistance(roadDistance);
+      } catch (error) {
+        console.error("Error:", error.message);
+        setDistance("Error calculating distance.");
+      }
+    };
+
+    calculateDistance();
+  }, [param]);
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial" }}>
-      <h2>Road Distance Calculator</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {!currentLocation && !error && <p>Fetching your location...</p>}
-      {currentLocation && (
-        <div>
-          <p>
-            <strong>Your Location:</strong>{" "}
-            {`Lat: ${currentLocation.lat}, Lng: ${currentLocation.lng}`}
-          </p>
-          {distance ? (
-            <p>
-              <strong>Distance to Destination:</strong> {distance}
-            </p>
-          ) : (
-            <p>Calculating distance...</p>
-          )}
-        </div>
-      )}
+    <div>
+      <h1>Distance Calculator</h1>
+      {distance ? <p>Distance: {distance}</p> : <p>Calculating distance...</p>}
     </div>
   );
 };
