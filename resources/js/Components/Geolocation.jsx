@@ -33,7 +33,7 @@ const DistanceCalculator = () => {
         data.status === "OK" &&
         data.rows[0]?.elements[0]?.status === "OK"
       ) {
-        return data.rows[0].elements[0].distance.text; // Extract formatted distance
+        return data.rows[0].elements[0].distance.text;
       } else {
         throw new Error("Error calculating distance.");
       }
@@ -45,7 +45,7 @@ const DistanceCalculator = () => {
 
   useEffect(() => {
     const calculateDistance = async () => {
-      const destination = { lat: -6.2022524, lon: 106.6980232 };
+      const destination = { lat: -6.2022579, lon: 106.6980221 };
 
       const location = await fetchCurrentLocation();
       if (location) {
