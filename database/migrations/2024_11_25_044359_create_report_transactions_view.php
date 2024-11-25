@@ -27,7 +27,7 @@ class CreateReportTransactionsView extends Migration
                 dt.price,
                 MONTH(t.start_date) AS month,
                 YEAR(t.start_date) AS year,
-                (dt.quantity * dt.price) AS total_price
+                dt.price AS total_price
             FROM
                 transactions t
             JOIN

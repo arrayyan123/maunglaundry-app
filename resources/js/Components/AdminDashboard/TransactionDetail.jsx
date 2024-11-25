@@ -78,6 +78,12 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
 
   const customer = customerNames[transaction?.customer_id];
 
+  const formatNumber = (value) => {
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
+  };
 
   const openConfirmModal = (transaction) => {
     setSelectedTransaction(transaction);
@@ -250,9 +256,9 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
               transaction.details.map((detail) => (
                 <li key={detail.id} className="mb-2">
                   <p><strong>Service Type:</strong> {detail?.service_type?.jenis_pelayanan || "N/A"}</p>
-                  <p><strong>Service Price:</strong> {detail?.service_price?.harga || "N/A"}</p>
+                  <p><strong>Service Price:</strong> Rp.{formatNumber(detail?.service_price?.harga || "N/A")}</p>
                   <p><strong>Quantity:</strong> {detail?.quantity || "N/A"}</p>
-                  <p><strong>Total Price:</strong> {detail?.price || "N/A"}</p>
+                  <p><strong>Total Price:</strong> Rp.{formatNumber(detail?.price || "N/A")}</p>
                 </li>
               ))
             ) : (

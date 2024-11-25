@@ -27,6 +27,13 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
         axios.get("/api/admin/service-types").then((res) => setServiceTypes(res.data));
     }, [customerId]);
 
+    const formatNumber = (value) => {
+        return new Intl.NumberFormat('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(value);
+      };
+
     const handleServiceTypeChange = (e) => {
         const serviceTypeId = e.target.value;
         setSelectedServiceType(serviceTypeId);
@@ -205,13 +212,11 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                         )
                         .map((service) => (
                             <option key={service.id} value={service.id}>
-                                {service.nama_produk} - Rp {service.harga}
+                                {service.nama_produk} - Rp.{formatNumber(service.harga)}
                             </option>
                         ))}
                 </select>
             </div>
-
-
             <div className="mb-6">
                 {selectedServices.map((service) => (
                     <div key={service.id} className="flex items-center justify-between mb-2">
@@ -222,13 +227,11 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                             value={quantity[service.id] || 0}
                             onChange={(e) => handleQuantityChange(service.id, e.target.value)}
                         />
-                        <p>Rp {service.harga * (quantity[service.id] || 0)}</p>
+                        <p>Rp.{formatNumber(service.harga * (quantity[service.id] || 0))}</p>
                     </div>
                 ))}
             </div>
-
-
-            <h4 className="text-lg font-semibold mb-2">Total Price: Rp {totalPrice}</h4>
+            <h4 className="text-lg font-semibold mb-2">Total Price: Rp.{formatNumber(totalPrice)}</h4>
 
             <div className="mb-6">
                 <h4 className="text-lg font-semibold">Payment Method</h4>

@@ -49,7 +49,6 @@ class ReportController extends Controller
     }
     public function getTotalPrice(Request $request)
     {
-        // Ambil parameter filter (bulan dan tahun)
         $month = $request->input('month');
         $year = $request->input('year');
         $startDate = $request->input('start_date');
@@ -58,7 +57,7 @@ class ReportController extends Controller
         // Query total_price dengan filter bulan dan tahun
         $query = DB::table('transactions')
             ->join('detail_transactions', 'transactions.id', '=', 'detail_transactions.transaction_id')
-            ->select(DB::raw('SUM(detail_transactions.quantity * detail_transactions.price) as total_price'));
+            ->select(DB::raw('SUM(detail_transactions.price) as total_price'));
 
         // Tambahkan filter bulan jika ada
         if ($month) {
