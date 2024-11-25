@@ -2,7 +2,11 @@ import React from 'react'
 
 function CashCard() {
   return (
-    <div>CashCard</div>
+    <div>
+        <h1 className='text-[30px ]'>Cash</h1>
+        <p>Harap Mengunjungi Toko kami untuk pembayarannya</p>
+
+    </div>
   )
 }
 
