@@ -11,6 +11,8 @@ use App\Mail\MyTestMail;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\ServiceTypesController;
 use App\Http\Controllers\ServicePricesController;
+use App\Http\Controllers\ReportController;
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -51,6 +53,8 @@ Route::prefix('api')->group(function () {
 
     Route::get('/admin/transactions/{id}', [TransactionsController::class, 'show'])->name('transactions.show');
 
+    Route::get('/admin/total-price', [ReportController::class, 'getTotalPrice']);
+    Route::get('/admin/reports', [ReportController::class, 'getReport']);
     Route::get('/admin/payment-methods', function () {
         return \App\Models\PaymentMethod::all();
     });

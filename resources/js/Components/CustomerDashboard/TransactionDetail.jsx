@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Fade } from "react-reveal";
+import TransferCard from "./Payment/TransferCard";
+import CashCard from "./Payment/CashCard";
+import EwalletCard from "./Payment/EwalletCard";
 
 function TransactionDetail({ customerId, transactionId, onClose }) {
     const [transaction, setTransaction] = useState(null);
@@ -8,6 +11,8 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
     const [customerName, setCustomerName] = useState("");
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [selectedPaymentComponent, setSelectedPaymentComponent] = useState(null);
 
     useEffect(() => {
         const fetchCustomerName = async () => {
@@ -27,7 +32,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
             try {
                 const response = await axios.get(`/api/admin/transaction-details/${transactionId}`);
                 const transactionData = response.data;
-                setTransaction(transactionData); 
+                setTransaction(transactionData);
             } catch (error) {
                 console.error("Failed to fetch transaction details:", error);
             } finally {
@@ -53,6 +58,21 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
             });
     };
 
+    const paymentComponentMapping = {
+        'Transfer': TransferCard,
+        'E-Wallet': EwalletCard,
+        'Cash': CashCard,
+    };
+    const handleShowPaymentModal = () => {
+        if (transaction?.payment_method?.name) {
+            const SelectedComponent = paymentComponentMapping[transaction.payment_method.name];
+            if (SelectedComponent) {
+                setSelectedPaymentComponent(() => SelectedComponent);
+                setShowPaymentModal(true);
+            }
+        }
+    };
+
     if (loading) {
         return <p>Loading...</p>;
     }
@@ -68,7 +88,17 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                 <p><strong>Nama Customer:</strong> {customerName} </p>
                 <p><strong>Nama Produk:</strong> {transaction?.nama_produk}</p>
                 <p><strong>Laundry Type:</strong> {transaction?.laundry_type}</p>
-                <p><strong>Payment Method:</strong> {transaction?.payment_method?.name || "N/A"}</p>
+                <p>
+                    <strong>Payment Method:</strong> {transaction.payment_method?.name || "N/A"}{" "}
+                    {transaction.payment_method?.name && (
+                        <button
+                            className="text-blue-500 underline"
+                            onClick={handleShowPaymentModal}
+                        >
+                            View Details
+                        </button>
+                    )}
+                </p>
                 <p><strong>Status Payment:</strong> {transaction.status_payment}</p>
                 <p><strong>Status Job:</strong> {transaction.status_job}</p>
 
@@ -88,20 +118,28 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                     )}
                 </ul>
 
-                <div className="mt-6 flex space-x-4">
+                <div className="mt-6 flex md:flex-row flex-col md:space-x-4 space-x-0 md:space-y-0 space-y-3 items-center">
                     <button
                         onClick={() => {
                             setSelectedTransaction(transaction);
                             setShowCancelModal(true);
                         }}
-                        className="bg-red-500 text-white px-4 py-2 rounded"
+                        className="bg-red-500 text-white px-4 py-2 rounded w-full md:w-auto"
                     >
                         Cancel Request
                     </button>
-                    <button onClick={onClose} className="bg-gray-300 text-black px-4 py-2 rounded">
+                    <button onClick={onClose} className="bg-gray-300 text-black px-4 py-2 rounded w-full md:w-auto">
                         Close
                     </button>
+                    {transaction?.status_payment === 'unpaid' && (
+                        <a href="">
+                            <button className="px-4 py-2 text-white bg-blue-500 w-full md:w-auto">
+                                Belum Membayar? hubungi Admin
+                            </button>
+                        </a>
+                    )}
                 </div>
+
 
                 {showCancelModal && selectedTransaction && (
                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -126,6 +164,19 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                                 </div>
                             </div>
                         </Fade>
+                    </div>
+                )}
+                {showPaymentModal && selectedPaymentComponent && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-md shadow-md mx-7">
+                            <button
+                                className="absolute top-12 right-12 text-[30px] hover:font-bold text-white"
+                                onClick={() => setShowPaymentModal(false)}
+                            >
+                                ✕
+                            </button>
+                            {React.createElement(selectedPaymentComponent)}
+                        </div>
                     </div>
                 )}
             </div>

@@ -8,6 +8,7 @@ import TransactionDetail from '@/Components/AdminDashboard/TransactionDetail';
 import axios from 'axios';
 import AddCustButton from '@/Components/AdminDashboard/AddCustButton';
 import { Fade } from 'react-reveal';
+import ReportTable from '@/Components/AdminDashboard/ReportTable';
 
 export default function ReportPage({ auth, customers }) {
     const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -54,7 +55,7 @@ export default function ReportPage({ auth, customers }) {
             }
         >
             <Head title="Report" />
-            
+            <ReportTable></ReportTable>
         </AuthenticatedLayout>
     );
 }

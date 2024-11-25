@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { addDays, addHours } from "date-fns";
 import axios from "axios";
+
 
 function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     const [formData, setFormData] = useState({
         payment_method_id: "",
         name: ""
     });
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(null);
     const [customerDetails, setCustomerDetails] = useState({});
     const [serviceTypes, setServiceTypes] = useState([]);
     const [servicePrices, setServicePrices] = useState([]);
@@ -26,9 +30,22 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     const handleServiceTypeChange = (e) => {
         const serviceTypeId = e.target.value;
         setSelectedServiceType(serviceTypeId);
-        axios
-            .get(`/api/admin/service-prices/${serviceTypeId}`)
-            .then((res) => setServicePrices(res.data));
+        axios.get(`/api/admin/service-prices/${serviceTypeId}`).then((res) => setServicePrices(res.data));
+        const selectedServiceType = serviceTypes.find((type) => type.id === parseInt(serviceTypeId));
+        if (selectedServiceType) {
+            const durasiHari = selectedServiceType.durasi_hari;
+
+            let estimatedEndDate = null;
+            if (durasiHari < 1) {
+                // If duration is less than 1 day, calculate in hours
+                estimatedEndDate = addHours(startDate, durasiHari * 24);
+            } else {
+                // Calculate in days
+                estimatedEndDate = addDays(startDate, durasiHari);
+            }
+
+            setEndDate(estimatedEndDate);
+        }
     };
 
     const handleLaundryTypeChange = (e) => {
@@ -81,10 +98,11 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             customer_id: customerId,
             nama_produk: selectedServices.map(service => service.nama_produk).join(", "),
             laundry_type: selectedLaundryType,
-            //ingin menambahkan nama payment method nya disini
             payment_method_id: formData.payment_method_id,
             status_payment: statusPayment,
             status_job: statusJob,
+            start_date: startDate, // Include start date
+            end_date: endDate,
             services: selectedServices.map((service) => ({
                 service_type_id: service.service_type_id,
                 service_price_id: service.id,

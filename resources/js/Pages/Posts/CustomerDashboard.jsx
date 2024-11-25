@@ -143,7 +143,7 @@ export default function CustomerDashboard() {
                                                         <li key={transaction.id}>
                                                             <button
                                                                 className="text-blue-600"
-                                                                // onClick={() => handleViewDetails(transaction.id)} // 
+                                                                onClick={() => handleViewDetails(transaction.id)} // 
                                                             >
                                                                 View Transaction {transaction.nama_produk} status ({transaction.status_payment})
                                                             </button>

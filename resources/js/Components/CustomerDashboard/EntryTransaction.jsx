@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import TransferCard from "./Payment/TransferCard";
+import EwalletCard from "./Payment/EwalletCard";
+import CashCard from "./Payment/CashCard";
 
 function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     const [formData, setFormData] = useState({
         payment_method_id: "",
-        name: ""
     });
     const [customerDetails, setCustomerDetails] = useState({});
     const [serviceTypes, setServiceTypes] = useState([]);
@@ -14,6 +16,8 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     const [selectedServices, setSelectedServices] = useState([]);
     const [quantity, setQuantity] = useState({});
     const [totalPrice, setTotalPrice] = useState(0);
+    const [showModal, setShowModal] = useState(false);
+    const [selectedPaymentComponent, setSelectedPaymentComponent] = useState(null);
     const [paymentMethod, setPaymentMethod] = useState([]);
     const [statusPayment, setStatusPayment] = useState("unpaid");
     const [statusJob, setStatusJob] = useState("ongoing");
@@ -72,16 +76,26 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     }, [selectedServices, quantity]);
 
     const handleSave = async () => {
+
         if (!customerId || !formData.payment_method_id || selectedServices.length === 0) {
             alert("Please fill all required fields.");
             return;
+        }
+        const paymentComponentMapping = {
+            2: TransferCard,
+            3: EwalletCard, 
+            1: CashCard,     
+        };
+        const SelectedComponent = paymentComponentMapping[formData.payment_method_id];
+        if (SelectedComponent) {
+            setSelectedPaymentComponent(() => SelectedComponent);
+            setShowModal(true);
         }
 
         const dataToSend = {
             customer_id: customerId,
             nama_produk: selectedServices.map(service => service.nama_produk).join(", "),
             laundry_type: selectedLaundryType,
-            //ingin menambahkan nama payment method nya disini
             payment_method_id: formData.payment_method_id,
             status_payment: statusPayment,
             status_job: statusJob,
@@ -89,7 +103,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                 service_type_id: service.service_type_id,
                 service_price_id: service.id,
                 quantity: quantity[service.id] || 0,
-                price: (service.harga * (quantity[service.id] || 0)), 
+                price: (service.harga * (quantity[service.id] || 0)),
                 nama_produk: service.nama_produk,
             })),
         };
@@ -117,6 +131,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                 <h3 className="text-lg font-semibold">Customer Details</h3>
                 <p className="text-gray-700">Name: {customerDetails.name}</p>
                 <p className="text-gray-700">Email: {customerDetails.email}</p>
+                <p className="text-gray-700">Nomor Telepon: {customerDetails.phone}</p>
             </div>
 
             <div className="mb-6">
@@ -237,6 +252,21 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             >
                 Save Transaction
             </button>
+
+            {showModal && selectedPaymentComponent && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-md shadow-md mx-7">
+                        <button
+                            className="absolute top-12 right-12 text-[30px] hover:font-bold text-white"
+                            onClick={() => setShowModal(false)}
+                        >
+                            ✕
+                        </button>
+                        {React.createElement(selectedPaymentComponent)}
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }

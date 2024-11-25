@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\ServiceType;
 use App\Models\ServicePrice;
 use App\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-
 use Illuminate\Support\Facades\Log;
 
 class TransactionsController extends Controller
@@ -32,7 +32,9 @@ class TransactionsController extends Controller
                 'services.*.nama_produk' => 'required|string',
             ]);
             $namaProduk = $validated['services'][0]['nama_produk'];
-            // Buat transaksi
+            $startDate = Carbon::now();
+            $serviceType = ServiceType::findOrFail($validated['services'][0]['service_type_id']);
+            $endDate = $startDate->copy()->addDays($serviceType->durasi_hari);
             $transaction = Transaction::create([
                 'customer_id' => $validated['customer_id'],
                 'nama_produk' => $namaProduk,
@@ -40,6 +42,8 @@ class TransactionsController extends Controller
                 'payment_method_id' => $validated['payment_method_id'],
                 'status_payment' => $validated['status_payment'],
                 'status_job' => $validated['status_job'],
+                'start_date' => $startDate,
+                'end_date' => $endDate,
             ]);
 
             foreach ($validated['services'] as $service) {

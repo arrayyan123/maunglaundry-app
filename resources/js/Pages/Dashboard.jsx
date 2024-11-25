@@ -93,7 +93,7 @@ export default function Dashboard({ auth, customers }) {
                                 <li key={transaction.id}>
                                     <button
                                         className="text-blue-600"
-                                        onClick={() => handleViewDetailsOn(transaction.id)}
+                                        // onClick={() => handleViewDetailsOn(transaction.id)}
                                     >
                                         View Transaction {transaction.nama_produk} status ({transaction.status_payment})
                                     </button>

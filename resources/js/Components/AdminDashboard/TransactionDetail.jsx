@@ -14,6 +14,8 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
   const [countdown, setCountdown] = useState(5);
   const [customerName, setCustomerName] = useState('');
   const [customerNames, setCustomerNames] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const transactionsPerPage = 3;
 
   useEffect(() => {
     if (showConfirmModal) {
@@ -123,19 +125,40 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
       });
   };
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    const lowerCaseQuery = query.toLowerCase();
+  useEffect(() => {
+    const lowerCaseQuery = searchQuery.toLowerCase();
     const filtered = transactions.filter((transaction) => {
-      const matchesProductName = transaction.nama_produk?.toLowerCase().includes(lowerCaseQuery);
-      const matchesLaundryType = transaction.laundry_type?.toLowerCase().includes(lowerCaseQuery);
+      const matchesProductName = transaction.nama_produk
+        ?.toLowerCase()
+        .includes(lowerCaseQuery);
+      const matchesLaundryType = transaction.laundry_type
+        ?.toLowerCase()
+        .includes(lowerCaseQuery);
       const matchesServiceType = transaction.details?.some((detail) =>
         detail.service_type?.jenis_pelayanan?.toLowerCase().includes(lowerCaseQuery)
       );
       return matchesProductName || matchesLaundryType || matchesServiceType;
     });
+
     setFilteredTransactions(filtered);
-  }
+    setCurrentPage(1);
+  }, [searchQuery, transactions]);
+
+  const totalPages = Math.ceil(filteredTransactions.length / transactionsPerPage);
+  const indexOfLastTransaction = currentPage * transactionsPerPage;
+  const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
+  const currentTransactions = filteredTransactions.slice(
+    indexOfFirstTransaction,
+    indexOfLastTransaction
+  );
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
 
   const handleDeleteTransaction = (transactionId) => {
     axios.delete(`/api/admin/transactions/${transactionId}`)
@@ -167,7 +190,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
           className="w-full p-2 border border-gray-300 rounded"
         />
       </div>
-      {filteredTransactions.map(transaction => (
+      {currentTransactions.map(transaction => (
         <div key={transaction.id} className='mb-10'>
           <h3 className="text-xl font-semibold mb-4">Transaction Details</h3>
           {/* <p><strong>Customer ID:</strong> {transaction?.customer_id}</p> */}
@@ -179,6 +202,18 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
 
           <p><strong>Nama Produk:</strong> {transaction?.nama_produk}</p>
           <p><strong>Laundry Type:</strong> {transaction?.laundry_type}</p>
+          <p>
+            <strong>Start Date:</strong>{" "}
+            {transaction?.start_date
+              ? new Date(transaction.start_date).toLocaleString()
+              : "N/A"}
+          </p>
+          <p>
+            <strong>End Date:</strong>{" "}
+            {transaction?.end_date
+              ? new Date(transaction.end_date).toLocaleString()
+              : "N/A"}
+          </p>
 
           {/* Payment Method Display */}
           <p><strong>Payment Method:</strong> {transaction?.payment_method?.name || "N/A"}</p>
@@ -261,7 +296,12 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                   <p>Apakah anda yakin bahwa customer telah membayar?</p>
                   <p className="text-sm text-gray-500 mt-2">
                     {/* <strong>Customer:</strong> {selectedTransaction?.customer_id}<br /> */}
-                    <strong>Nama Customer</strong> {customerName} <br />
+                    {transaction?.customer_id && customerNames[transaction?.customer_id] ? (
+                      <p><strong>Customer Name:</strong> {customerNames[transaction?.customer_id]}</p>
+                    ) : (
+                      <p><strong>Customer Name:</strong> Loading...</p>
+                    )}
+                    <p><strong>Nama Produk:</strong> {selectedTransaction?.nama_produk}</p>
                     <strong>Details:</strong>
                     <ul className="mt-2">
                       {selectedTransaction?.details?.map((detail, index) => (
@@ -297,7 +337,22 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
           <div className='border-b-2 border-b-gray-900 w-full h-0 my-10' />
         </div>
       ))}
+      <div className="flex justify-center space-x-2 mt-4">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => handlePageChange(index + 1)}
+            className={`px-3 py-1 rounded ${currentPage === index + 1
+              ? "bg-blue-500 text-white"
+              : "bg-gray-300"
+              }`}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
+
   );
 }
 

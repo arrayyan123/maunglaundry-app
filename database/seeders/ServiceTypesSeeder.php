@@ -16,7 +16,7 @@ class ServiceTypesSeeder extends Seeder
         DB::table('service_types')->insert([
             ['jenis_pelayanan' => 'reguler', 'durasi_hari' => 3, 'harga_servis' => 0],
             ['jenis_pelayanan' => 'oneday', 'durasi_hari' => 1, 'harga_servis' => 4000],
-            ['jenis_pelayanan' => 'express', 'durasi_hari' => 0, 'harga_servis' => 10000],
+            ['jenis_pelayanan' => 'express', 'durasi_hari' => 0.125, 'harga_servis' => 10000],
         ]);
     }
 }
