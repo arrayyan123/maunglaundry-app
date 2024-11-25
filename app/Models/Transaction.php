@@ -48,7 +48,7 @@ class Transaction extends Model
     {
         $totalPrice = DB::table('transactions')
             ->join('detail_transactions', 'transactions.id', '=', 'detail_transactions.transaction_id')
-            ->sum(DB::raw('detail_transactions.quantity * detail_transactions.price'));
+            ->sum(DB::raw('detail_transactions.price'));
 
         DB::table('transaction_totals')->updateOrInsert(
             ['id' => 1],

@@ -5,14 +5,20 @@ import EntryTransaction from "@/Components/CustomerDashboard/EntryTransaction";
 import TransactionDetail from "@/Components/CustomerDashboard/TransactionDetail";
 import { Fade } from "react-reveal";
 
-const images = import.meta.glob("/public/assets/Images/*.png", { eager: true });
+const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
+const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
+const images = { ...pngImages, ...webpImages };
 
 const getImageByName = (name) => {
-    const matchingImage = Object.keys(images).find((path) => path.includes(`${name}.png`));
+    const matchingImage = Object.keys(images).find((path) => path.includes(`${name}`));
     return matchingImage ? images[matchingImage].default || images[matchingImage] : null;
 };
 
+const dummypic = getImageByName("dummy-profpic");
 const logo = getImageByName("Logo_maung");
+
+console.log(dummypic, logo);
+
 
 export default function CustomerDashboard() {
     const [customerData, setCustomerData] = useState(null);
@@ -26,7 +32,7 @@ export default function CustomerDashboard() {
             setLoading(true);
             const details = await fetchTransactionDetails(transactionId);
             if (details) {
-                setTransactionDetails(details); 
+                setTransactionDetails(details);
                 setSelectedTransactionId(transactionId);
             }
         } catch (error) {

@@ -10,13 +10,15 @@ function ReportTable() {
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
   const [totalPrice, setTotalPrice] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1); // Current page
+  const itemsPerPage = 25;
 
   const formatNumber = (value) => {
     return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value);
-  };  
+  };
 
   const fetchReport = async () => {
     try {
@@ -81,6 +83,18 @@ function ReportTable() {
     saveAs(blob, `Report_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
+  const totalPages = Math.ceil(reports.length / itemsPerPage);
+  const currentData = reports.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
   const fetchTotalPrice = async () => {
     try {
       const response = await axios.get('/api/admin/total-price', {
@@ -100,9 +114,9 @@ function ReportTable() {
   return (
     <div className="p-4">
       {/* Filter Section */}
-      <div className="flex flex-col lg:flex-row lg:space-x-4 mb-4">
+      <div className="flex flex-col lg:flex-row lg:space-x-4 mb-4 items-center">
         <select
-          className="border p-2 mb-2 lg:mb-0"
+          className="border h-[20%] p-2 mb-2 lg:mb-0"
           value={month}
           onChange={(e) => setMonth(e.target.value)}
         >
@@ -114,7 +128,7 @@ function ReportTable() {
           ))}
         </select>
         <select
-          className="border p-2 mb-2 lg:mb-0"
+          className="border h-[20%] p-2 mb-2 lg:mb-0"
           value={year}
           onChange={(e) => setYear(e.target.value)}
         >
@@ -125,29 +139,35 @@ function ReportTable() {
             </option>
           ))}
         </select>
-        <p><strong>Start date:</strong></p>
-        <input
-          type="date"
-          className="border p-2 mb-2 lg:mb-0"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-        />
-        <p><strong>End date:</strong></p>
-        <input
-          type="date"
-          className="border p-2 mb-2 lg:mb-0"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-        />
-        <button
-          className="bg-blue-500 text-white p-2 rounded"
-          onClick={() => {
-            fetchReport();
-            fetchTotalPrice();
-          }}
-        >
-          Filter
-        </button>
+        <div className='lg:w-[20%] w-full'>
+          <p><strong>Start date:</strong></p>
+          <input
+            type="date"
+            className="border p-2 mb-2 lg:mb-0 w-full"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+        </div>
+        <div className='lg:w-[20%] w-full'>
+          <p><strong>End date:</strong></p>
+          <input
+            type="date"
+            className="border p-2 mb-2 lg:mb-0 w-full"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+        </div>
+        <div className='my-4 lg:w-[10%] w-full'>
+          <button
+            className="bg-blue-500  w-full text-white p-2 rounded "
+            onClick={() => {
+              fetchReport();
+              fetchTotalPrice();
+            }}
+          >
+            Filter
+          </button>
+        </div>
         <div className="my-4">
           <button
             className="bg-green-500 text-white p-2 rounded"
@@ -181,7 +201,7 @@ function ReportTable() {
             </tr>
           </thead>
           <tbody>
-            {reports.map((report) => (
+            {currentData.map((report) => (
               <tr key={report.transaction_id}>
                 <td className="border p-2">{report.transaction_id}</td>
                 <td className="border p-2">{report.customer_id}</td>
@@ -196,10 +216,29 @@ function ReportTable() {
                   {new Date(report.end_date).toLocaleDateString()}
                 </td>
                 <td className="border px-4 py-2">Rp.{formatNumber(report.total_price)}</td>
-                </tr>
+              </tr>
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="flex justify-center items-center mt-4 space-x-2">
+        <button
+          className="bg-gray-300 p-2 rounded"
+          disabled={currentPage === 1}
+          onClick={() => handlePageChange(currentPage - 1)}
+        >
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          className="bg-gray-300 p-2 rounded"
+          disabled={currentPage === totalPages}
+          onClick={() => handlePageChange(currentPage + 1)}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
