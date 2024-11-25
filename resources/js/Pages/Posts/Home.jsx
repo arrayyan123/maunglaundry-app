@@ -3,6 +3,7 @@ import AboutSection from '@/Components/Home/AboutSection'
 import Carousel from '@/Components/Home/Carousel'
 import ContentSection from '@/Components/Home/ContentSection'
 import Hero from '@/Components/Home/Hero'
+import Geolocation from '@/Components/Geolocation'
 import MarqueeWrapper from '@/Components/Home/MarqueeWrapper'
 import Navbar from '@/Components/Navbar/Navbar'
 import { Head } from '@inertiajs/react'
@@ -15,6 +16,7 @@ function Home() {
         <Head title="Home" />
         <Navbar />
         <Hero />
+        <Geolocation />
         <MarqueeWrapper />
         <AboutSection />
         <ContentSection />

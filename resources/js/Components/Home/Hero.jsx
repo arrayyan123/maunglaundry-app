@@ -10,7 +10,7 @@ function Hero() {
             </div>
             
             <div class="relative z-10 md:p-20 flex flex-col justify-center items-center h-full text-center">
-                <h1 class="text-5xl font-bold leading-tight mb-4">Maung Laundy</h1>
+                <h1 class="text-5xl font-bold leading-tight mb-4">Maung Laundry</h1>
                 <p className='text-lg text-gray-300 mb-3'>Pilih Maung Laundry dan rasakan perbedaan dalam kualitas dan kecepatan layanan laundry yang bisa Anda andalkan setiap waktu.</p>
                 <p class="text-lg text-gray-300 mb-8">Maung Laundry hadir sebagai layanan laundry unggulan yang berbeda dari yang lain. Kami mengutamakan kebersihan, ketepatan waktu, dan kenyamanan pelanggan. Dengan peralatan modern dan teknologi terkini, setiap pakaian Anda akan diproses dengan cermat dan aman. Tim profesional kami siap melayani kebutuhan Anda dengan ramah dan cekatan, memastikan setiap detail tertangani dengan sempurna.</p>
                 <a href="#" class="bg-red-500 mt-4 text-white hover:bg-red-300 py-2 px-6 rounded-full text-lg font-semibold transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">Get Started</a>
