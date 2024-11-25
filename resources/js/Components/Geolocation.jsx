@@ -3,83 +3,68 @@ import React, { useState, useEffect } from "react";
 const DistanceCalculator = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [distance, setDistance] = useState(null);
+  const [error, setError] = useState(null);
 
-  const fetchCurrentLocation = async () => {
-    const apiKey = import.meta.env.VITE_GEOLOCATION_API_KEY; // Use your ipgeolocation.io API key
-    try {
-      const response = await fetch(
-        `https://api.ipgeolocation.io/ipgeo?apiKey=${apiKey}`
-      );
-      const data = await response.json();
-      return {
-        lat: parseFloat(data.latitude),
-        lon: parseFloat(data.longitude),
-      };
-    } catch (error) {
-      console.error("Error fetching current location:", error);
-      return null;
-    }
-  };
-
-  const fetchDistanceFromAPI = async (originLat, originLon, destLat, destLon) => {
-    const apiKey = import.meta.env.VITE_DISTANCE_MATRIX_API_KEY; // Use your DistanceMatrix.ai API key
-    try {
-      const response = await fetch(
-        `https://api.distancematrix.ai/maps/api/distancematrix/json?origins=${originLat},${originLon}&destinations=${destLat},${destLon}&key=${apiKey}`
-      );
-      const data = await response.json();
-
-      if (
-        data.status === "OK" &&
-        data.rows[0]?.elements[0]?.status === "OK"
-      ) {
-        return data.rows[0].elements[0].distance.text; // Extract formatted distance
-      } else {
-        throw new Error("Error calculating distance.");
-      }
-    } catch (error) {
-      console.error("Error fetching distance:", error);
-      return null;
-    }
-  };
+  const GOOGLE_API_KEY = "AIzaSyCqOjhoEY_Fl59gvAlNHXCRxL8g22pZ0VY"; 
+  const destination = { lat: -6.2022524, lng: 106.6954483 };
 
   useEffect(() => {
-    const calculateDistance = async () => {
-      const destination = { lat: -6.2022524, lon: 106.6980232 };
-
-      const location = await fetchCurrentLocation();
-      if (location) {
-        setCurrentLocation(location);
-
-        const dist = await fetchDistanceFromAPI(
-          location.lat,
-          location.lon,
-          destination.lat,
-          destination.lon
+    const getLocation = async () => {
+        const response = await fetch(
+          `https://www.googleapis.com/geolocation/v1/geolocate?key=${GOOGLE_API_KEY}`,
+          { method: "POST", body: JSON.stringify({ considerIp: true }) }
         );
-        if (dist) setDistance(dist);
-      }
-    };
-
-    calculateDistance();
+        const data = await response.json();
+        console.log(data);
+      };
+      getLocation();      
   }, []);
 
+  useEffect(() => {
+    if (currentLocation) {
+      const fetchDistance = async () => {
+        try {
+          const origin = `${currentLocation.lat},${currentLocation.lng}`;
+          const destinationCoords = `${destination.lat},${destination.lng}`;
+          const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin}&destinations=${destinationCoords}&key=${GOOGLE_API_KEY}`;
+
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error(`Error: ${response.status} ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          const distanceText =
+            data.rows[0].elements[0].distance.text; // e.g., "25.4 km"
+          setDistance(distanceText);
+        } catch (err) {
+          setError("Error fetching distance: " + err.message);
+        }
+      };
+
+      fetchDistance();
+    }
+  }, [currentLocation]);
+
   return (
-    <div>
-      <h1>Distance Calculator</h1>
-      {currentLocation ? (
-        <>
+    <div style={{ padding: "20px", fontFamily: "Arial" }}>
+      <h2>Road Distance Calculator</h2>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {!currentLocation && !error && <p>Fetching your location...</p>}
+      {currentLocation && (
+        <div>
           <p>
-            Your current location: Latitude {currentLocation.lat}, Longitude{" "}
-            {currentLocation.lon}
+            <strong>Your Location:</strong>{" "}
+            {`Lat: ${currentLocation.lat}, Lng: ${currentLocation.lng}`}
           </p>
-          <p>
-            Distance to Maung Laundry:{" "}
-            {distance ? `${distance}` : "Calculating..."}
-          </p>
-        </>
-      ) : (
-        <p>Loading your location...</p>
+          {distance ? (
+            <p>
+              <strong>Distance to Destination:</strong> {distance}
+            </p>
+          ) : (
+            <p>Calculating distance...</p>
+          )}
+        </div>
       )}
     </div>
   );
