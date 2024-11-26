@@ -29,6 +29,9 @@ Route::get('/dashboard', [PagesController::class, 'dashboard'])
 Route::get('/reportdata', [PagesController::class, 'report'])
     ->middleware(['auth', 'verified'])
     ->name('admin.report');
+Route::get('/diagramcalc', [PagesController::class, 'diagramCalc'])
+    ->middleware(['auth', 'verified'])
+    ->name('diagram.page');
 
 Route::prefix('api')->group(function () {
     Route::post('/customer/register', [CustomerAuthController::class, 'register_customer']);

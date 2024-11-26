@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react'
 import React, { useState } from 'react'
+import DistanceCalculator from '../DistanceCalculator';
 
 function Request_Table({ customers, onSelectCustomer, onViewDetails }) {
     const [searchQuery, setSearchQuery] = useState(''); 
@@ -41,6 +42,9 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails }) {
                                             Address
                                         </th>
                                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Jarak
+                                        </th>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Registration Date
                                         </th>
                                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -70,6 +74,11 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails }) {
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm text-gray-900">
                                                         {customer.address}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm text-gray-900">
+                                                        <DistanceCalculator customerAddress={customer.address} />
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">

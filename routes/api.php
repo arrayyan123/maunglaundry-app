@@ -4,6 +4,7 @@ use App\Http\Controllers\TransactionsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerAuthController;
+use App\Http\Controllers\DistanceController;
 use App\Http\Controllers\ServicePricesController;
 use App\Http\Controllers\ServiceTypesController;
 
@@ -20,3 +21,4 @@ Route::put('/admin/transactions/{id}/update', [TransactionsController::class, 'u
 Route::get('/admin/service-types', [ServiceTypesController::class, 'index']); // Fetch service types
 Route::get('/admin/service-prices/{serviceTypeId}', [ServicePricesController::class, 'getPricesByServiceType']);
 Route::put('/admin/transactions/{transactionId}/payment', [TransactionsController::class, 'updatePayment']);
+Route::post('/calculate-distance', [DistanceController::class, 'calculateDistance']);

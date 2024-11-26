@@ -10,7 +10,7 @@ import AddCustButton from '@/Components/AdminDashboard/AddCustButton';
 import { Fade } from 'react-reveal';
 import ReportTable from '@/Components/AdminDashboard/ReportTable';
 
-export default function ReportPage({ auth, customers }) {
+export default function DiagramCalc({ auth, customers }) {
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [selectedTransactionId, setSelectedTransactionId] = useState(null);
     const [transactions, setTransactions] = useState([]);
@@ -46,13 +46,12 @@ export default function ReportPage({ auth, customers }) {
             header={
               <div>
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Laporan Data Transaksi
+                    Diagram Penjualan
                 </h2>
               </div>
             }
         >
-            <Head title="Report" />
-            <ReportTable></ReportTable>
+            <Head title="Diagram Penjualan" />
         </AuthenticatedLayout>
     );
 }

@@ -11,7 +11,7 @@ function ReportTable() {
   const [year, setYear] = useState('');
   const [totalPrice, setTotalPrice] = useState(0);
   const [currentPage, setCurrentPage] = useState(1); // Current page
-  const itemsPerPage = 25;
+  const itemsPerPage = 15;
 
   const formatNumber = (value) => {
     return new Intl.NumberFormat('en-US', {
@@ -75,7 +75,6 @@ function ReportTable() {
       });
     });
 
-    // Generate Excel file and save
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -115,32 +114,38 @@ function ReportTable() {
     <div className="p-4">
       {/* Filter Section */}
       <div className="flex flex-col lg:flex-row lg:space-x-4 mb-4 items-center">
-        <select
-          className="border h-[20%] p-2 mb-2 lg:mb-0"
-          value={month}
-          onChange={(e) => setMonth(e.target.value)}
-        >
-          <option value="">Select Month</option>
-          {Array.from({ length: 12 }, (_, i) => (
-            <option key={i + 1} value={i + 1}>
-              {new Date(0, i).toLocaleString('default', { month: 'long' })}
-            </option>
-          ))}
-        </select>
-        <select
-          className="border h-[20%] p-2 mb-2 lg:mb-0"
-          value={year}
-          onChange={(e) => setYear(e.target.value)}
-        >
-          <option value="">Select Year</option>
-          {Array.from({ length: new Date().getFullYear() - 2000 + 1 }, (_, i) => (
-            <option key={i} value={2000 + i}>
-              {2000 + i}
-            </option>
-          ))}
-        </select>
+        <div className='flex flex-col'>
+          <label>Select Mount</label>
+          <select
+            className="border h-[20%] p-2 mb-2 lg:mb-0"
+            value={month}
+            onChange={(e) => setMonth(e.target.value)}
+          >
+            <option value="">Select Month</option>
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i + 1} value={i + 1}>
+                {new Date(0, i).toLocaleString('default', { month: 'long' })}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className='flex flex-col'>
+          <label>Select Year</label>
+          <select
+            className="border h-[20%] p-2 mb-2 lg:mb-0"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+          >
+            <option value="">Select Year</option>
+            {Array.from({ length: new Date().getFullYear() - 2000 + 1 }, (_, i) => (
+              <option key={i} value={2000 + i}>
+                {2000 + i}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className='lg:w-[20%] w-full'>
-          <p><strong>Start date:</strong></p>
+          <label>Start date:</label>
           <input
             type="date"
             className="border p-2 mb-2 lg:mb-0 w-full"
@@ -149,7 +154,7 @@ function ReportTable() {
           />
         </div>
         <div className='lg:w-[20%] w-full'>
-          <p><strong>End date:</strong></p>
+          <label>End date:</label>
           <input
             type="date"
             className="border p-2 mb-2 lg:mb-0 w-full"
@@ -157,7 +162,7 @@ function ReportTable() {
             onChange={(e) => setEndDate(e.target.value)}
           />
         </div>
-        <div className='my-4 lg:w-[10%] w-full'>
+        <div className='mt-5 lg:w-[10%] w-full'>
           <button
             className="bg-blue-500  w-full text-white p-2 rounded "
             onClick={() => {
@@ -168,7 +173,7 @@ function ReportTable() {
             Filter
           </button>
         </div>
-        <div className="my-4">
+        <div className="mt-5">
           <button
             className="bg-green-500 text-white p-2 rounded"
             onClick={downloadExcel}

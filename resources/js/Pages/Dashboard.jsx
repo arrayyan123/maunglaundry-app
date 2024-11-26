@@ -23,7 +23,7 @@ export default function Dashboard({ auth, customers }) {
         setTransactionDetails(null); // Reset transaction details
         fetchTransactions(customer.id);
     };
-    
+
 
     const fetchTransactions = async (customerId) => {
         try {
@@ -55,7 +55,7 @@ export default function Dashboard({ auth, customers }) {
             setLoading(true);
             const details = await fetchTransactionDetails(transactionId);
             if (details) {
-                setTransactionDetails(details); 
+                setTransactionDetails(details);
                 setSelectedTransactionId(transactionId);
             }
         } catch (error) {
@@ -68,17 +68,60 @@ export default function Dashboard({ auth, customers }) {
         setSelectedTransactionId(null);
         setTransactionDetails(null);
     };
-
+    const handleCancelEntryTransaction = () => {
+        setSelectedCustomer(null);
+        setTransactions([]);
+    };
     return (
         <AuthenticatedLayout
             user={auth.user}
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Customer List
-                </h2>
+                <div>
+                    <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                        Dashboard
+                    </h2>
+                </div>
             }
         >
             <Head title="Dashboard" />
+            <AddCustButton onClick={() => setIsAddingCustomer(true)} />
+            {isAddingCustomer && (
+                <div className="mx-auto max-w-7xl p-6 my-10 bg-white rounded-lg">
+                    <h3 className="text-lg font-semibold text-center">Add Customer</h3>
+                    <AddCustomer />
+                    <button
+                        className="mt-2 bg-red-500 text-white p-2 rounded"
+                        onClick={() => setIsAddingCustomer(false)}
+                    >
+                        Cancel
+                    </button>
+                </div>
+            )}
+            {selectedCustomer && !selectedTransactionId && (
+                <div className='mx-auto max-w-7xl p-6 my-10 bg-white rounded-lg'>
+                    <Fade>
+                        <EntryTransaction
+                            customerId={selectedCustomer.id}
+                            onSave={() => alert('Transaction saved!')}
+                            onNavigateToPayment={() => navigate('/admin/payment-detail')}
+                        />
+                        <button
+                            className="mt-2 bg-red-500 text-white p-2 rounded"
+                            onClick={handleCancelEntryTransaction}
+                        >
+                            Cancel
+                        </button>
+                    </Fade>
+                </div>
+            )}
+
+            {selectedTransactionId && selectedCustomer && (
+                <TransactionDetail
+                    customerId={selectedCustomer.id}
+                    transactionId={selectedTransactionId}
+                    onClose={handleCloseTransactionDetail}
+                />
+            )}
             <Request_Table
                 customers={customers}
                 onSelectCustomer={handleSelectCustomer}
@@ -93,7 +136,7 @@ export default function Dashboard({ auth, customers }) {
                                 <li key={transaction.id}>
                                     <button
                                         className="text-blue-600"
-                                        // onClick={() => handleViewDetailsOn(transaction.id)}
+                                    // onClick={() => handleViewDetailsOn(transaction.id)}
                                     >
                                         View Transaction {transaction.nama_produk} status ({transaction.status_payment})
                                     </button>
@@ -103,36 +146,7 @@ export default function Dashboard({ auth, customers }) {
                     </div>
                 </Fade>
             )}
-            {selectedCustomer && !selectedTransactionId && (
-                <Fade>
-                <EntryTransaction
-                    customerId={selectedCustomer.id}
-                    onSave={() => alert('Transaction saved!')}
-                    onNavigateToPayment={() => navigate('/admin/payment-detail')}
-                />
-                </Fade>
-            )}
 
-            {selectedTransactionId && selectedCustomer && (
-                <TransactionDetail
-                    customerId={selectedCustomer.id}
-                    transactionId={selectedTransactionId}
-                    onClose={handleCloseTransactionDetail}
-                />
-            )}
-            <AddCustButton onClick={() => setIsAddingCustomer(true)} />
-            {isAddingCustomer && (
-                <div className="mx-auto max-w-7xl p-6 my-10 bg-white rounded-lg">
-                    <h3 className="text-lg font-semibold">Add Customer</h3>
-                    <AddCustomer />
-                    <button
-                        className="mt-2 bg-red-500 text-white p-2 rounded"
-                        onClick={() => setIsAddingCustomer(false)}
-                    >
-                        Cancel
-                    </button>
-                </div>
-            )}
         </AuthenticatedLayout>
     );
 }

@@ -3,8 +3,8 @@ import { Head } from "@inertiajs/react";
 import axios from "axios";
 import EntryTransaction from "@/Components/CustomerDashboard/EntryTransaction";
 import TransactionDetail from "@/Components/CustomerDashboard/TransactionDetail";
-import Geolocation from "@/Components/Geolocation";
 import { Fade } from "react-reveal";
+import DistanceCalculator from "@/Components/DistanceCalculator";
 
 const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
 const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
@@ -124,7 +124,7 @@ export default function CustomerDashboard() {
                                             <h2 className="text-lg font-medium mb-4">Welcome, {customerData.name}!</h2>
                                             <p>Email: {customerData.email}</p>
                                             <p>Address: {customerData.address}</p>
-                                            <Geolocation param={{address: customerData.address}} />
+                                            <DistanceCalculator customerAddress={customerData?.address} />
                                         </div>
                                     )}
 
