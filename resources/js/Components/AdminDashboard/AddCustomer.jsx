@@ -94,9 +94,9 @@ const AddCustomer = () => {
 
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1" htmlFor="address">
-            Address (Gunakan Format jalan, kelurahan, kecamatan, kota)
+            Address (Gunakan Format jalan, kelurahan, kecamatan, kota)<br />
+            contoh: jalan cemara i, pondok bahar, karang tengah, tangerang
           </label>
-          <p>contoh: jalan cemara i, pondok bahar, karang tengah, tangerang</p>
           <textarea
             id="address"
             name="address"

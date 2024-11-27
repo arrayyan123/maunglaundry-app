@@ -1,4 +1,3 @@
-import DistanceCalculator from '@/Components/DistanceCalculator'
 import Footer from '@/Components/Footer/Footer'
 import AboutSection from '@/Components/Home/AboutSection'
 import Carousel from '@/Components/Home/Carousel'
@@ -17,7 +16,6 @@ function Home() {
         <Navbar />
         <Hero />
         <MarqueeWrapper />
-        <DistanceCalculator param={{ address: "Perumahan Taman Mutiara, Peninggilan" }} />
         <AboutSection />
         <ContentSection />
         <Carousel />

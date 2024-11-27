@@ -2,16 +2,34 @@ import { Link } from '@inertiajs/react'
 import React, { useState } from 'react'
 import DistanceCalculator from '../DistanceCalculator';
 
-function Request_Table({ customers, onSelectCustomer, onViewDetails }) {
+function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEntry }) {
     const [searchQuery, setSearchQuery] = useState(''); 
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
 
     const filteredCustomers = customers.filter((customer) =>
         customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         customer.phone.includes(searchQuery)
     );
+    const indexOfLastCustomer = currentPage * itemsPerPage;
+    const indexOfFirstCustomer = indexOfLastCustomer - itemsPerPage;
+    const currentCustomers = filteredCustomers.slice(indexOfFirstCustomer, indexOfLastCustomer);
+
+    const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
+
+    const handlePageChange = (pageNumber) => {
+        if (pageNumber >= 1 && pageNumber <= totalPages) {
+            setCurrentPage(pageNumber);
+        }
+    };
+
+    scrollToEntry
+    const handleClick = () => {
+
+    }
 
     return (
-        <div className="py-12">
+        <div className="customer-section py-12">
             <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div className="p-6 text-gray-900">
@@ -53,8 +71,8 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails }) {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {filteredCustomers.length > 0 ? (
-                                        filteredCustomers.map((customer) => (
+                                    {currentCustomers.length > 0 ? (
+                                        currentCustomers.map((customer) => (
                                             <tr key={customer.id}>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm font-medium text-gray-900">
@@ -114,6 +132,68 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails }) {
                                     )}
                                 </tbody>
                             </table>
+                        </div>
+                        <div className="flex justify-between items-center mt-4">
+                            <button
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                className="px-4 py-2 text-sm bg-blue-500 text-white rounded disabled:opacity-50"
+                                disabled={currentPage === 1}
+                            >
+                                Prev
+                            </button>
+                            <div className="flex space-x-2">
+                                {/* Display page numbers */}
+                                {currentPage > 2 && (
+                                    <>
+                                        <button
+                                            onClick={() => handlePageChange(1)}
+                                            className="px-4 py-2 text-sm bg-gray-200 rounded"
+                                        >
+                                            1
+                                        </button>
+                                        <span className="px-2 py-2 text-sm text-gray-500">...</span>
+                                    </>
+                                )}
+                                {currentPage > 1 && (
+                                    <button
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                        className="px-4 py-2 text-sm bg-gray-200 rounded"
+                                    >
+                                        {currentPage - 1}
+                                    </button>
+                                )}
+                                <button
+                                    className="px-4 py-2 text-sm bg-blue-500 text-white rounded"
+                                >
+                                    {currentPage}
+                                </button>
+                                {currentPage < totalPages && (
+                                    <button
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                        className="px-4 py-2 text-sm bg-gray-200 rounded"
+                                    >
+                                        {currentPage + 1}
+                                    </button>
+                                )}
+                                {currentPage < totalPages - 1 && (
+                                    <span className="px-2 py-2 text-sm text-gray-500">...</span>
+                                )}
+                                {currentPage < totalPages && (
+                                    <button
+                                        onClick={() => handlePageChange(totalPages)}
+                                        className="px-4 py-2 text-sm bg-gray-200 rounded"
+                                    >
+                                        {totalPages}
+                                    </button>
+                                )}
+                            </div>
+                            <button
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                className="px-4 py-2 text-sm bg-blue-500 text-white rounded disabled:opacity-50"
+                                disabled={currentPage === totalPages}
+                            >
+                                Next
+                            </button>
                         </div>
                     </div>
                 </div>

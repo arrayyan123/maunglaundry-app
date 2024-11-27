@@ -8,24 +8,28 @@ use App\Models\CustomerUser;
 
 class PagesController extends Controller
 {
-    public function home(){
+    public function home()
+    {
         return Inertia::render('Posts/Home');
     }
-    public function customerRegister(){
+    public function customerRegister()
+    {
         return Inertia::render('Posts/CustomerRegister');
     }
-    public function customerLogin(){
+    public function customerLogin()
+    {
         return Inertia::render('Posts/CustomerLogin');
     }
     public function dashboard()
     {
         $customers = CustomerUser::all();
-        
+
         return Inertia::render('Dashboard', [
             'customers' => $customers
         ]);
     }
-    public function report(){
+    public function report()
+    {
         $customers = CustomerUser::all();
         return Inertia::render('ReportPage', [
             'customers' => $customers
@@ -35,7 +39,8 @@ class PagesController extends Controller
     {
         return Inertia::render('Posts/CustomerDashboard');
     }
-    public function laundryform(){
+    public function laundryform()
+    {
         return Inertia::render('Posts/LaundryForm');
     }
     public function entryTransaction($customerId)
@@ -43,11 +48,19 @@ class PagesController extends Controller
         $customer = CustomerUser::findOrFail($customerId);
         return view('admin.entry_transaction', compact('customer'));
     }
-    public function diagramCalc(){
+    public function diagramCalc()
+    {
         $customers = CustomerUser::all();
         return Inertia::render('DiagramCalc', [
             'customers' => $customers
         ]);
     }
+    public function editProfile($customerId)
+    {
+        $customer = CustomerUser::findOrFail($customerId);
 
+        return Inertia::render('Posts/EditCustomer', [
+            'customer' => $customer
+        ]);
+    }
 }

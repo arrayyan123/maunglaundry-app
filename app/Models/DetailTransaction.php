@@ -15,7 +15,6 @@ class DetailTransaction extends Model
         'quantity',
         'price',
     ];
-
     public function serviceType()
     {
         return $this->belongsTo(ServiceType::class, 'service_types_id');

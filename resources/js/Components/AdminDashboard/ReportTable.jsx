@@ -10,7 +10,9 @@ function ReportTable() {
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
   const [totalPrice, setTotalPrice] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1); // Current page
+  const [currentPage, setCurrentPage] = useState(1);
+  const [status, setStatus] = useState('');
+  const [statuspayment, setStatusPayment] = useState('');
   const itemsPerPage = 15;
 
   const formatNumber = (value) => {
@@ -23,14 +25,14 @@ function ReportTable() {
   const fetchReport = async () => {
     try {
       const response = await axios.get('/api/admin/reports', {
-        params: { month, year, start_date: startDate, end_date: endDate },
+        params: { month, year, start_date: startDate, end_date: endDate, status_job: status, status_payment: statuspayment },
       });
+      console.log('API Response:', response.data);
       setReports(response.data.data);
     } catch (error) {
       console.error('Error fetching reports:', error);
     }
   };
-
   const downloadExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Reports');
@@ -43,6 +45,7 @@ function ReportTable() {
       { header: 'Product', key: 'nama_produk', width: 15 },
       { header: 'Laundry Type', key: 'laundry_type', width: 15 },
       { header: 'Status', key: 'status_job', width: 10 },
+      { header: 'Status Payment', key: 'status_payment', width: 10 },
       { header: 'Start Date', key: 'start_date', width: 15 },
       { header: 'End Date', key: 'end_date', width: 15 },
       { header: 'Total Price', key: 'total_price', width: 15 },
@@ -56,6 +59,7 @@ function ReportTable() {
         nama_produk: report.nama_produk,
         laundry_type: report.laundry_type,
         status_job: report.status_job,
+        status_payment: report.status_payment,
         start_date: new Date(report.start_date).toLocaleDateString(),
         end_date: new Date(report.end_date).toLocaleDateString(),
         total_price: formatNumber(report.total_price),
@@ -97,7 +101,7 @@ function ReportTable() {
   const fetchTotalPrice = async () => {
     try {
       const response = await axios.get('/api/admin/total-price', {
-        params: { month, year, start_date: startDate, end_date: endDate },
+        params: { month, year, start_date: startDate, end_date: endDate, status_job: status, status_payment: statuspayment },
       });
       setTotalPrice(response.data.total_price);
     } catch (error) {
@@ -108,16 +112,17 @@ function ReportTable() {
   useEffect(() => {
     fetchReport();
     fetchTotalPrice();
-  }, [month, year, startDate, endDate]);
+  }, [month, year, startDate, endDate, status, statuspayment]);
 
   return (
     <div className="p-4">
       {/* Filter Section */}
-      <div className="flex flex-col lg:flex-row lg:space-x-4 mb-4 items-center">
-        <div className='flex flex-col'>
-          <label>Select Mount</label>
+      <div className="flex flex-col lg:flex-row lg:space-x-6 mb-6 items-start lg:items-center">
+        {/* Select Month */}
+        <div className="flex flex-col w-full lg:w-auto">
+          <label className="text-sm font-medium mb-1">Select Month</label>
           <select
-            className="border h-[20%] p-2 mb-2 lg:mb-0"
+            className="border border-gray-300 rounded-md p-3 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={month}
             onChange={(e) => setMonth(e.target.value)}
           >
@@ -129,10 +134,12 @@ function ReportTable() {
             ))}
           </select>
         </div>
-        <div className='flex flex-col'>
-          <label>Select Year</label>
+
+        {/* Select Year */}
+        <div className="flex flex-col w-full lg:w-auto">
+          <label className="text-sm font-medium mb-1">Select Year</label>
           <select
-            className="border h-[20%] p-2 mb-2 lg:mb-0"
+            className="border border-gray-300 rounded-md p-3 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={year}
             onChange={(e) => setYear(e.target.value)}
           >
@@ -144,27 +151,59 @@ function ReportTable() {
             ))}
           </select>
         </div>
-        <div className='lg:w-[20%] w-full'>
-          <label>Start date:</label>
+
+        {/* Start Date */}
+        <div className="flex flex-col w-full lg:w-auto">
+          <label className="text-sm font-medium mb-1">Start Date</label>
           <input
             type="date"
-            className="border p-2 mb-2 lg:mb-0 w-full"
+            className="border border-gray-300 rounded-md p-3 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
           />
         </div>
-        <div className='lg:w-[20%] w-full'>
-          <label>End date:</label>
+
+        {/* End Date */}
+        <div className="flex flex-col w-full lg:w-auto">
+          <label className="text-sm font-medium mb-1">End Date</label>
           <input
             type="date"
-            className="border p-2 mb-2 lg:mb-0 w-full"
+            className="border border-gray-300 rounded-md p-3 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
           />
         </div>
-        <div className='mt-5 lg:w-[10%] w-full'>
+
+        {/* Select Status */}
+        <div className="flex flex-col w-full lg:w-auto">
+          <label className="text-sm font-medium mb-1">Select Status</label>
+          <select
+            className="border border-gray-300 rounded-md p-3 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+          >
+            <option value="">All Status</option>
+            <option value="ongoing">Ongoing</option>
+            <option value="pending">Pending</option>
+            <option value="done">Done</option>
+            <option value="cancel">Cancel</option>
+          </select>
+        </div>
+        <div className="flex flex-col w-full lg:w-auto">
+          <label className="text-sm font-medium mb-1">Select Status Payment</label>
+          <select
+            className="border border-gray-300 rounded-md p-3 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={status}
+            onChange={(e) => setStatusPayment(e.target.value)}
+          >
+            <option value="">All Status</option>
+            <option value="paid">Paid</option>
+            <option value="unpaid">Unpaid</option>
+          </select>
+        </div>
+        <div className="mt-3 lg:mt-6 lg:w-auto w-full">
           <button
-            className="bg-blue-500  w-full text-white p-2 rounded "
+            className="bg-blue-500 text-white py-3 px-6 rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
             onClick={() => {
               fetchReport();
               fetchTotalPrice();
@@ -173,19 +212,17 @@ function ReportTable() {
             Filter
           </button>
         </div>
-        <div className="mt-5">
-          <button
-            className="bg-green-500 text-white p-2 rounded"
-            onClick={downloadExcel}
-          >
-            Download Excel
-          </button>
-        </div>
-
       </div>
-
+      <div className="mt-5">
+        <button
+          className="bg-green-500 text-white p-2 rounded"
+          onClick={downloadExcel}
+        >
+          Download Excel
+        </button>
+      </div>
       {/* Total Price Section */}
-      <div className="mb-4">
+      <div className="my-4">
         <h2 className="text-lg font-semibold">Total Pemasukan: Rp.{formatNumber(totalPrice)}</h2>
       </div>
 
@@ -194,12 +231,12 @@ function ReportTable() {
         <table className="table-auto w-full border-collapse border text-sm">
           <thead>
             <tr>
-              <th className="border p-2">Transaction ID</th>
               <th className="border p-2">Customer ID</th>
               <th className="border p-2">Customer Name</th>
               <th className="border p-2">Product</th>
               <th className="border p-2">Laundry Type</th>
               <th className="border p-2">Status</th>
+              <th className="border p-2">Status Payment</th>
               <th className="border p-2">Start Date</th>
               <th className="border p-2">End Date</th>
               <th className="border p-2">Total Price</th>
@@ -208,12 +245,28 @@ function ReportTable() {
           <tbody>
             {currentData.map((report) => (
               <tr key={report.transaction_id}>
-                <td className="border p-2">{report.transaction_id}</td>
                 <td className="border p-2">{report.customer_id}</td>
                 <td className="border p-2">{report.customer_name}</td>
                 <td className="border p-2">{report.nama_produk}</td>
                 <td className="border p-2">{report.laundry_type}</td>
-                <td className="border p-2">{report.status_job}</td>
+                <td
+                  className={`border p-2 text-white ${report.status_job === 'ongoing'
+                    ? 'bg-blue-500'
+                    : report.status_job === 'pending'
+                      ? 'bg-yellow-500'
+                      : report.status_job === 'done'
+                        ? 'bg-green-500'
+                        : report.status_job === 'cancel'
+                          ? 'bg-red-500'
+                          : 'bg-transparent'
+                    }`}>{report.status_job}</td>
+                <td
+                  className={`border p-2 text-white ${report.status_payment === 'paid'
+                    ? 'bg-green-500'
+                    : report.status_payment === 'unpaid'
+                      ? 'bg-red-500'
+                          : 'bg-transparent'
+                    }`}>{report.status_payment}</td>
                 <td className="border p-2">
                   {new Date(report.start_date).toLocaleDateString()}
                 </td>

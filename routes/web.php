@@ -12,8 +12,11 @@ use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\ServiceTypesController;
 use App\Http\Controllers\ServicePricesController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\WhatsAppController;
 
 
+
+Route::post('/send-whatsapp', [WhatsAppController::class, 'sendMessage']);
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -44,9 +47,9 @@ Route::prefix('api')->group(function () {
     Route::get('/admin/transaction-details/{transactionId}', [TransactionsController::class, 'getTransactionByUuid']);
 
     Route::post('/admin/transactions', [TransactionsController::class, 'store']);
-    Route::get('/admin/transactions/{customerId}', [TransactionsController::class, 'show']) ->name('transactions.show');
-    Route::put('/admin/transactions/{id}/update', [TransactionsController::class, 'updatePaymentStatus']); 
-    Route::get('/admin/service-types', [ServiceTypesController::class, 'index']); 
+    Route::get('/admin/transactions/{customerId}', [TransactionsController::class, 'show'])->name('transactions.show');
+    Route::put('/admin/transactions/{id}/update', [TransactionsController::class, 'updatePaymentStatus']);
+    Route::get('/admin/service-types', [ServiceTypesController::class, 'index']);
     Route::get('/admin/service-prices/{serviceTypeId}', [ServicePricesController::class, 'getPricesByServiceType']);
     Route::put('/admin/transactions/{transactionId}/payment', [TransactionsController::class, 'updatePayment']);
 
@@ -61,6 +64,7 @@ Route::prefix('api')->group(function () {
     Route::get('/admin/payment-methods', function () {
         return \App\Models\PaymentMethod::all();
     });
+    Route::put('/customer/{id}', [CustomerAuthController::class, 'update'])->middleware('guest:customer');
 });
 
 Route::get('/customer/login', [PagesController::class, 'customerLogin'])
@@ -72,6 +76,7 @@ Route::middleware(['guest:customer'])->group(function () {
         ->name('customer.dashboard');
     Route::post('/customer/logout', [CustomerAuthController::class, 'logout'])
         ->name('customer.logout');
+    Route::get('/customer/edit-profile/{id}', [PagesController::class, 'editProfile'])->name('customer.edit-profile');
 });
 
 Route::get('/', [PagesController::class, 'home'])->name('home-page');
@@ -86,7 +91,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 // Route::middleware(['auth:customer'])->group(function () {
 //     Route::post('/request-laundry', [LaundryController::class, 'request']);

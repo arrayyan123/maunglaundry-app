@@ -86,7 +86,34 @@ class CustomerAuthController extends Controller
             ], 500);
         }
     }
-
+    public function update(Request $request, $id)
+    {
+        try {
+            $customer = CustomerUser::findOrFail($id);
+    
+            $validated = $request->validate([
+                'name' => 'sometimes|string|max:255',
+                'email' => 'sometimes|email|unique:customer_users,email,' . $customer->id,
+                'phone' => 'sometimes|string',
+                'address' => 'sometimes|string',
+            ]);
+    
+            $customer->update($validated);
+    
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Profile updated successfully',
+                'customer' => $customer,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to update profile',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    
     public function login(Request $request)
     {
         $request->validate([

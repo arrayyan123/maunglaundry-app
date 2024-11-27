@@ -58,7 +58,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             Report
                         </NavLink>
                         <NavLink href={route('diagram.page')} active={route().current('diagram.page')}>
-                            Diagram
+                            Chart Penjualan
                         </NavLink>
                         <NavLink href="#">
                             Inbox

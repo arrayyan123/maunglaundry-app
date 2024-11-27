@@ -15,7 +15,10 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
   const [customerName, setCustomerName] = useState('');
   const [customerNames, setCustomerNames] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const transactionsPerPage = 3;
+  const transactionsPerPage = 2;
+  const [showAlertModal, setShowAlertModal] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
 
   useEffect(() => {
     if (showConfirmModal) {
@@ -109,6 +112,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
               : transaction
           )
         );
+
       })
       .catch(error => {
         console.error('Failed to update payment status:', error);
@@ -125,6 +129,8 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
               : transaction
           )
         );
+        setAlertMessage(`Status Pengerjaan menjadi "${status}" berhasil`);
+        setShowAlertModal(true);
       })
       .catch(error => {
         console.error('Failed to update job status:', error);
@@ -178,11 +184,11 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <div className="flex items-center justify-center h-screen text-gray-700">Loading...</div>;
   }
 
   if (transactions.length === 0) {
-    return <p>No transactions found for this customer.</p>;
+    return <div className="flex items-center justify-center h-screen text-gray-500">No transactions found.</div>;
   }
 
   return (
@@ -197,15 +203,13 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
         />
       </div>
       {currentTransactions.map(transaction => (
-        <div key={transaction.id} className='mb-10'>
-          <h3 className="text-xl font-semibold mb-4">Transaction Details</h3>
-          {/* <p><strong>Customer ID:</strong> {transaction?.customer_id}</p> */}
+        <div key={transaction.id} className='border border-gray-300 rounded-lg p-4 mb-6 bg-gray-50 hover:bg-gray-100'>
+          <h3 className="text-lg font-bold text-gray-800 mb-2">Transaction Details</h3>
           {transaction?.customer_id && customerNames[transaction?.customer_id] ? (
             <p><strong>Customer Name:</strong> {customerNames[transaction?.customer_id]}</p>
           ) : (
             <p><strong>Customer Name:</strong> Loading...</p>
           )}
-
           <p><strong>Nama Produk:</strong> {transaction?.nama_produk}</p>
           <p><strong>Laundry Type:</strong> {transaction?.laundry_type}</p>
           <p>
@@ -340,22 +344,61 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
               </Fade>
             </div>
           )}
+          {showAlertModal && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="bg-white p-6 rounded shadow-lg max-w-md w-full text-center">
+                <p className="text-lg font-medium">{alertMessage}</p>
+                <button
+                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+                  onClick={() => setShowAlertModal(false)}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className='border-b-2 border-b-gray-900 w-full h-0 my-10' />
         </div>
       ))}
-      <div className="flex justify-center space-x-2 mt-4">
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index}
-            onClick={() => handlePageChange(index + 1)}
-            className={`px-3 py-1 rounded ${currentPage === index + 1
-              ? "bg-blue-500 text-white"
-              : "bg-gray-300"
-              }`}
-          >
-            {index + 1}
-          </button>
-        ))}
+      <div className="flex justify-center items-center space-x-2 mt-4">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`px-3 py-1 rounded ${currentPage === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-500 text-white"}`}
+        >
+          Prev
+        </button>
+        {Array.from({ length: totalPages }, (_, index) => index + 1)
+          .filter(
+            (page) =>
+              page === 1 ||
+              page === totalPages ||
+              (page >= currentPage - 2 && page <= currentPage + 2)
+          )
+          .map((page, index, pages) => (
+            <>
+              {index > 0 && pages[index - 1] !== page - 1 && (
+                <span key={`ellipsis-${page}`} className="text-gray-500">
+                  ...
+                </span>
+              )}
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`px-3 py-1 rounded ${currentPage === page ? "bg-blue-500 text-white" : "bg-gray-300"}`}
+              >
+                {page}
+              </button>
+            </>
+          ))}
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`px-3 py-1 rounded ${currentPage === totalPages ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-500 text-white"}`}
+        >
+          Next
+        </button>
       </div>
     </div>
 
