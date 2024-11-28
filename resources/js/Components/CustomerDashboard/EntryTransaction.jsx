@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { addDays, addHours } from "date-fns";
 import axios from "axios";
 import TransferCard from "./Payment/TransferCard";
 import EwalletCard from "./Payment/EwalletCard";
@@ -8,7 +9,9 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     const [formData, setFormData] = useState({
         payment_method_id: "",
     });
-    const [customerDetails, setCustomerDetails] = useState({});
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(null);
+    const [ customerDetails, setCustomerDetails] = useState({});
     const [serviceTypes, setServiceTypes] = useState([]);
     const [servicePrices, setServicePrices] = useState([]);
     const [selectedServiceType, setSelectedServiceType] = useState("");
@@ -24,10 +27,10 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
 
     const formatNumber = (value) => {
         return new Intl.NumberFormat('en-US', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
         }).format(value);
-      };
+    };
 
     useEffect(() => {
         axios.get(`/api/customer/${customerId}`).then((res) => setCustomerDetails(res.data));
@@ -37,9 +40,20 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     const handleServiceTypeChange = (e) => {
         const serviceTypeId = e.target.value;
         setSelectedServiceType(serviceTypeId);
-        axios
-            .get(`/api/admin/service-prices/${serviceTypeId}`)
-            .then((res) => setServicePrices(res.data));
+        axios.get(`/api/admin/service-prices/${serviceTypeId}`).then((res) => setServicePrices(res.data));
+        const selectedServiceType = serviceTypes.find((type) => type.id === parseInt(serviceTypeId));
+        if (selectedServiceType) {
+            const durasiHari = selectedServiceType.durasi_hari;
+
+            let estimatedEndDate = null;
+            if (durasiHari < 1) {
+                estimatedEndDate = addHours(startDate, durasiHari * 24);
+            } else {
+                estimatedEndDate = addDays(startDate, durasiHari);
+            }
+
+            setEndDate(estimatedEndDate);
+        }
     };
 
     const handleLaundryTypeChange = (e) => {
@@ -74,6 +88,31 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
         axios.get("/api/admin/payment-methods").then((res) => setPaymentMethod(res.data));
     }, []);
 
+    const sendWhatsAppNotification = async (transactionData) => {
+        try {
+            let phone = customerDetails.phone;
+            if (phone && phone.startsWith('0')) {
+                phone = '+62' + phone.substring(1); 
+            }
+            const message = `
+            Halo ${customerDetails.name}, berikut adalah detail transaksi laundry Anda:
+            - Produk: ${transactionData.nama_produk}
+            - Total Harga: Rp.${formatNumber(transactionData.services.reduce((acc, service) => acc + service.price, 0))}
+            - Tanggal Mulai: ${startDate.toLocaleDateString()}
+            - Tanggal Selesai: ${endDate.toLocaleDateString()}
+
+            Terima kasih telah menggunakan layanan kami!`;
+            await axios.post("/send-whatsapp", {
+                phone: customerDetails.phone,
+                message,
+            });
+            alert("WhatsApp notification sent successfully");
+        } catch (error) {
+            console.error("Error sending WhatsApp notification:", error);
+            alert("Failed to send WhatsApp notification");
+        }
+    };
+
     useEffect(() => {
         const total = selectedServices.reduce((acc, service) => {
             const qty = quantity[service.id] || 0;
@@ -84,14 +123,14 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
 
     const handleSave = async () => {
 
-        if (!customerId || !formData.payment_method_id || selectedServices.length === 0) {
+        if (!customerId || !formData.payment_method_id || selectedServices.length === 0 || !endDate) {
             alert("Please fill all required fields.");
             return;
         }
         const paymentComponentMapping = {
             2: TransferCard,
-            3: EwalletCard, 
-            1: CashCard,     
+            3: EwalletCard,
+            1: CashCard,
         };
         const SelectedComponent = paymentComponentMapping[formData.payment_method_id];
         if (SelectedComponent) {
@@ -106,6 +145,8 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             payment_method_id: formData.payment_method_id,
             status_payment: statusPayment,
             status_job: statusJob,
+            start_date: startDate,
+            end_date: endDate,
             services: selectedServices.map((service) => ({
                 service_type_id: service.service_type_id,
                 service_price_id: service.id,
@@ -120,6 +161,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             const response = await axios.post("/api/admin/transactions", dataToSend);
             if (response.status === 201) {
                 alert("Transaction saved successfully");
+                sendWhatsAppNotification(dataToSend);
                 onSave && onSave();
             } else {
                 alert("Failed to save transaction");
@@ -133,7 +175,6 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     return (
         <div className="max-w-3xl mx-auto p-6 my-8 bg-white shadow-md rounded-md">
             <h2 className="text-xl font-bold mb-4">Entry Transaction</h2>
-
             <div className="mb-6">
                 <h3 className="text-lg font-semibold">Customer Details</h3>
                 <p className="text-gray-700">Name: {customerDetails.name}</p>

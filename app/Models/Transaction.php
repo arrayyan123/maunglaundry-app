@@ -28,7 +28,10 @@ class Transaction extends Model
         'start_date' => 'datetime:Y-m-d H:i:s',
         'end_date' => 'datetime:Y-m-d H:i:s',
     ];
-    
+    public function customer()
+    {
+        return $this->belongsTo(CustomerUser::class, 'customer_id', 'id');
+    }
     protected static function booted()
     {
         static::created(function ($transaction) {

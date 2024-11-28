@@ -20,7 +20,7 @@ class TwilioService
     public function sendMessage($to, $message)
     {
         $to = 'whatsapp:' . $to;
-    
+        
         try {
             $message = $this->client->messages->create(
                 $to,

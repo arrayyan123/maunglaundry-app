@@ -92,7 +92,7 @@ export default function DiagramCalc({ auth, customers }) {
             user={auth.user}
             header={
                 <div>
-                    <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                    <h2 className="text-xl font-semibold leading-tight text-white">
                         Chart Penjualan
                     </h2>
                 </div>
@@ -113,7 +113,7 @@ export default function DiagramCalc({ auth, customers }) {
                         <ul className="space-y-2">
                             {customers.slice(0, 5).map((customer) => (
                                 <li key={customer.id} className="text-lg font-medium">
-                                    {customer.name}
+                                    {customer.name} 
                                 </li>
                             ))}
                         </ul>
@@ -172,7 +172,7 @@ export default function DiagramCalc({ auth, customers }) {
                         <ul className="space-y-2">
                             <li>Total Transaksi: {reports.length}</li>
                             <li>Rata-rata Nilai Transaksi: Rp.{formatNumber(totalPrice / reports.length || 0)}</li>
-                            <li>Pelanggan Baru Bulan Ini: 0</li>
+                            <li>Pelanggan Baru Bulan Ini: {reports.slice(0, 5).length}</li>
                         </ul>
                     </div>
                 </div>

@@ -8,6 +8,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
         payment_method_id: "",
         name: ""
     });
+    const [showReceiptModal, setShowReceiptModal] = useState(false);
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(null);
     const [customerDetails, setCustomerDetails] = useState({});
@@ -18,6 +19,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     const [selectedServices, setSelectedServices] = useState([]);
     const [quantity, setQuantity] = useState({});
     const [totalPrice, setTotalPrice] = useState(0);
+    const [transactionId, setTransactionId] = useState(null);
     const [paymentMethod, setPaymentMethod] = useState([]);
     const [statusPayment, setStatusPayment] = useState("unpaid");
     const [statusJob, setStatusJob] = useState("ongoing");
@@ -29,10 +31,10 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
 
     const formatNumber = (value) => {
         return new Intl.NumberFormat('en-US', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
         }).format(value);
-      };
+    };
 
     const handleServiceTypeChange = (e) => {
         const serviceTypeId = e.target.value;
@@ -44,10 +46,8 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
 
             let estimatedEndDate = null;
             if (durasiHari < 1) {
-                // If duration is less than 1 day, calculate in hours
                 estimatedEndDate = addHours(startDate, durasiHari * 24);
             } else {
-                // Calculate in days
                 estimatedEndDate = addDays(startDate, durasiHari);
             }
 
@@ -82,6 +82,30 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             [serviceId]: isNaN(parsedQty) || parsedQty <= 0 ? 0 : parsedQty,
         }));
     };
+    const sendWhatsAppNotification = async (transactionData) => {
+        try {
+            let phone = customerDetails.phone;
+            if (phone && phone.startsWith('0')) {
+                phone = '+62' + phone.substring(1);
+            }
+            const message = `
+            Halo ${customerDetails.name}, berikut adalah detail transaksi laundry Anda:
+            - Produk: ${transactionData.nama_produk}
+            - Total Harga: Rp.${formatNumber(transactionData.services.reduce((acc, service) => acc + service.price, 0))}
+            - Tanggal Mulai: ${startDate.toLocaleDateString()}
+            - Tanggal Selesai: ${endDate.toLocaleDateString()}
+
+            Terima kasih telah menggunakan layanan kami!`;
+            await axios.post("/send-whatsapp", {
+                phone: customerDetails.phone,
+                message,
+            });
+            alert("WhatsApp notification sent successfully");
+        } catch (error) {
+            console.error("Error sending WhatsApp notification:", error);
+            alert("Failed to send WhatsApp notification");
+        }
+    };
 
     useEffect(() => {
         axios.get("/api/admin/payment-methods").then((res) => setPaymentMethod(res.data));
@@ -108,13 +132,13 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             payment_method_id: formData.payment_method_id,
             status_payment: statusPayment,
             status_job: statusJob,
-            start_date: startDate, // Include start date
+            start_date: startDate,
             end_date: endDate,
             services: selectedServices.map((service) => ({
                 service_type_id: service.service_type_id,
                 service_price_id: service.id,
                 quantity: quantity[service.id] || 0,
-                price: (service.harga * (quantity[service.id] || 0)), 
+                price: (service.harga * (quantity[service.id] || 0)),
                 nama_produk: service.nama_produk,
             })),
         };
@@ -124,6 +148,9 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             const response = await axios.post("/api/admin/transactions", dataToSend);
             if (response.status === 201) {
                 alert("Transaction saved successfully");
+                setTransactionId(response.data.transaction.id);
+                setShowReceiptModal(true);
+                sendWhatsAppNotification(dataToSend);
                 onSave && onSave();
             } else {
                 alert("Failed to save transaction");
@@ -131,6 +158,12 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
         } catch (error) {
             console.error("Error:", error);
             alert("There was an error while saving the transaction");
+        }
+    };
+    const handlePrintReceipt = () => {
+        if (transactionId) {
+            window.open(`api/admin/transactions/${transactionId}/receipt`, "_blank");
+            setShowReceiptModal(false);
         }
     };
 
@@ -142,8 +175,8 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                 <h3 className="text-lg font-semibold">Customer Details</h3>
                 <p className="text-gray-700">Name: {customerDetails.name}</p>
                 <p className="text-gray-700">Email: {customerDetails.email}</p>
+                <p className="text-gray-700">Phone: {customerDetails.phone}</p>
             </div>
-
             <div className="mb-6">
                 <h4 className="text-lg font-semibold">Select Service Type</h4>
                 <select
@@ -258,6 +291,30 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             >
                 Save Transaction
             </button>
+            {showReceiptModal && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+                    <div className="bg-white p-6 rounded-md shadow-md">
+                        <h3 className="text-lg font-semibold mb-4">Cetak Struk?</h3>
+                        <div className="flex justify-end gap-4">
+                            <button
+                                onClick={() => setShowReceiptModal(false)}
+                                className="bg-gray-500 text-white px-4 py-2 rounded"
+                            >
+                                Tidak
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowReceiptModal(false);
+                                    handlePrintReceipt();
+                                }}
+                                className="bg-blue-500 text-white px-4 py-2 rounded"
+                            >
+                                Ya, Cetak
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

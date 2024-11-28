@@ -9,6 +9,7 @@ export default withMT({
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
+        './resources/views/pdf/**/*.blade.php',  // Menambahkan folder pdf
         './resources/js/**/*.jsx',
         "./node_modules/flowbite/**/*.js",
         flowbite.content(),

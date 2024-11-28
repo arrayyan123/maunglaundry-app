@@ -110,12 +110,12 @@ export default function EditCustomer({ customer }) {
                 {/* Main Content */}
                 <div className="flex-1 flex flex-col">
                     {/* Navbar */}
-                    <nav className="bg-white shadow-sm sticky top-0 z-30">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <nav className="bg-blue-400 shadow-sm sticky top-0 z-30">
+                        <div className="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8 xl:px-4">
                             <div className="flex justify-between h-16 items-center">
                                 <button
                                     onClick={() => setSidebarOpen(!sidebarOpen)}
-                                    className="text-gray-700 focus:outline-none"
+                                    className="text-white focus:outline-none"
                                 >
                                     <svg
                                         className="w-6 h-6"
@@ -133,7 +133,7 @@ export default function EditCustomer({ customer }) {
                                     </svg>
                                 </button>
                                 <div className="flex flex-row items-center space-x-5">
-                                    <h1 className="text-xl font-semibold">Profile Edit</h1>
+                                    <h1 className="text-xl font-semibold text-white">Profile Edit</h1>
                                 </div>
                             </div>
                         </div>

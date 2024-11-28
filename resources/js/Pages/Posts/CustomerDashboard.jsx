@@ -25,6 +25,7 @@ export default function CustomerDashboard() {
     const [transactionDetails, setTransactionDetails] = useState(null);
     const [loading, setLoading] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [showEntryTransaction, setShowEntryTransaction] = useState(false);
     const [filterProductName, setFilterProductName] = useState('');
     const [filterPaymentStatus, setFilterPaymentStatus] = useState('');
 
@@ -111,6 +112,9 @@ export default function CustomerDashboard() {
         setSelectedTransactionId(null);
         setTransactionDetails(null);
     };
+    const handleToggleEntryTransaction = () => {
+        setShowEntryTransaction(!showEntryTransaction);
+    };
 
     return (
         <>
@@ -172,12 +176,12 @@ export default function CustomerDashboard() {
                 {/* Main Content */}
                 <div className="flex-1 flex flex-col">
                     {/* Navbar */}
-                    <nav className="bg-white shadow-sm sticky top-0 z-30">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-0">
+                    <nav className="bg-blue-400 shadow-sm sticky top-0 z-30">
+                        <div className="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8 xl:px-4">
                             <div className="flex justify-between h-16 items-center">
                                 <button
                                     onClick={() => setSidebarOpen(!sidebarOpen)}
-                                    className="text-gray-700 focus:outline-none"
+                                    className="text-white focus:outline-none"
                                 >
                                     <svg
                                         className="w-6 h-6"
@@ -195,14 +199,37 @@ export default function CustomerDashboard() {
                                     </svg>
                                 </button>
                                 <div className="flex flex-row items-center space-x-5">
-                                    <h1 className="text-xl font-semibold">Customer Dashboard</h1>
+                                    <h1 className="text-xl text-white font-semibold">Customer Dashboard</h1>
                                 </div>
                             </div>
                         </div>
                     </nav>
-
                     {/* Content */}
                     <div className="py-6 px-4 sm:px-6 lg:px-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+                            <Fade cascade>
+                                <div className="bg-green-500 text-white p-6 rounded-lg shadow">
+                                    <h3 className="text-xl font-bold">Total Transactions</h3>
+                                    <p className="text-3xl">{transactions.length}</p>
+                                </div>
+                                <div className="bg-yellow-500 text-white p-6 rounded-lg shadow">
+                                    <h3 className="text-xl font-bold">Pending Requests</h3>
+                                    <p className="text-3xl">{transactions.filter(transaction => transaction.status_job === 'pending').length}</p>
+                                </div>
+                                <div className="bg-green-500 text-white p-6 rounded-lg shadow">
+                                    <h3 className="text-xl font-bold">Done Requests</h3>
+                                    <p className="text-3xl">{transactions.filter(transaction => transaction.status_job === 'done').length}</p>
+                                </div>
+                                <div className="bg-red-500 text-white p-6 rounded-lg shadow">
+                                    <h3 className="text-xl font-bold">Cancel Requests</h3>
+                                    <p className="text-3xl">{transactions.filter(transaction => transaction.status_job === 'cancel').length}</p>
+                                </div>
+                                <div className="bg-blue-500 text-white p-6 rounded-lg shadow">
+                                    <h3 className="text-xl font-bold">Ongoing Requests</h3>
+                                    <p className="text-3xl">{transactions.filter(transaction => transaction.status_job === 'ongoing').length}</p>
+                                </div>
+                            </Fade>
+                        </div>
                         <main>
                             <div className="bg-white shadow sm:rounded-lg p-6">
                                 {customerData && (
@@ -213,12 +240,20 @@ export default function CustomerDashboard() {
                                         <p>Email: {customerData.email}</p>
                                         <p>Address: {customerData.address}</p>
                                         <DistanceCalculator customerAddress={customerData?.address} />
-                                        <button
-                                            onClick={() => (window.location.href = `/customer/edit-profile/${customerData.id}`)}
-                                            className="block px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-lg"
-                                        >
-                                            Edit Profile
-                                        </button>
+                                        <div className="flex space-x-4 mt-4">
+                                            <button
+                                                onClick={() => (window.location.href = `/customer/edit-profile/${customerData.id}`)}
+                                                className="px-4 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-lg"
+                                            >
+                                                Edit Profile
+                                            </button>
+                                            <button
+                                                onClick={handleToggleEntryTransaction}
+                                                className="px-4 py-2 text-white bg-green-500 hover:bg-green-600 rounded-lg"
+                                            >
+                                                Masukkan Transaksi
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
 
@@ -233,14 +268,25 @@ export default function CustomerDashboard() {
                                 ) : (
                                     <Fade>
                                         <div id="transactions" className="mx-auto max-w-7xl p-6 mb-10 bg-white rounded-lg">
-                                            <h3 className="text-xl font-semibold text-center">Masukkan info Transaksi anda</h3>
-                                            <EntryTransaction
-                                                customerId={customerData?.id}
-                                                transactions={transactions}
-                                            />
                                             <div className="mb-6">
+                                                {showEntryTransaction && (
+                                                    <div className="bg-gray-100 p-6 mb-5 rounded-lg shadow-lg">
+                                                        <div className="flex justify-between items-center mb-4">
+                                                            <h3 className="text-xl text-center font-semibold">Masukkan Info Transaksi Anda</h3>
+                                                            <button
+                                                                className="text-red-500 hover:text-red-600 font-bold"
+                                                                onClick={handleToggleEntryTransaction}
+                                                            >
+                                                                Close
+                                                            </button>
+                                                        </div>
+                                                        <EntryTransaction
+                                                            customerId={customerData?.id}
+                                                            transactions={transactions}
+                                                        />
+                                                    </div>
+                                                )}
                                                 <div className="flex flex-col md:flex-row md:space-x-4">
-                                                    {/* Search bar for Product Name */}
                                                     <input
                                                         type="text"
                                                         placeholder="Search by Product Name"
@@ -248,8 +294,6 @@ export default function CustomerDashboard() {
                                                         value={filterProductName}
                                                         onChange={(e) => setFilterProductName(e.target.value)}
                                                     />
-
-                                                    {/* Dropdown for Payment Status */}
                                                     <select
                                                         className="border px-4 py-2 rounded-md focus:outline-none focus:ring"
                                                         value={filterPaymentStatus}

@@ -17,6 +17,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
   const [currentPage, setCurrentPage] = useState(1);
   const transactionsPerPage = 2;
   const [showAlertModal, setShowAlertModal] = useState(false);
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
 
 
@@ -53,7 +54,6 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
           const uniqueCustomerIds = [...new Set(transactionsData.map((t) => t.customer_id))];
           console.log("Unique Customer IDs:", uniqueCustomerIds);
 
-          // Fetch customer data and store customer names in state
           const customerData = await Promise.all(
             uniqueCustomerIds.map(async (idCustomer) => {
               const customerResponse = await axios.get(`/api/customer/${idCustomer}`);
@@ -63,7 +63,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
           console.log("Fetched customer data:", customerData);
 
           const customerNamesObject = customerData.reduce((acc, { id, name }) => {
-            acc[id] = name; // You can store the name directly here
+            acc[id] = name;
             return acc;
           }, {});
           setCustomerNames(customerNamesObject);  // Store as an object mapping id to name
@@ -182,6 +182,17 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
         console.error('Failed to delete transaction:', error);
       });
   };
+  const handlePrintReceipt = () => {
+    if (selectedTransaction) {
+      window.open(`/api/admin/transactions/${selectedTransaction}/receipt`, "_blank");
+      setShowReceiptModal(false); 
+    }
+  };
+  
+  const handleClickPrint = (transactionId) => {
+    setSelectedTransaction(transactionId);
+    setShowReceiptModal(true); 
+  };  
 
   if (loading) {
     return <div className="flex items-center justify-center h-screen text-gray-700">Loading...</div>;
@@ -277,6 +288,9 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
             >
               Delete Transaction
             </button>
+            <button onClick={() => handleClickPrint(transaction.id)} className='bg-gray-300 text-black px-4 py-2 rounded'>
+              Print Receipt
+            </button>
             <button onClick={onClose} className="bg-gray-300 text-black px-4 py-2 rounded">
               Close
             </button>
@@ -357,7 +371,30 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
               </div>
             </div>
           )}
-
+          {showReceiptModal && (
+            <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+              <div className="bg-white p-6 rounded-md shadow-md">
+                <h3 className="text-lg font-semibold mb-4">Cetak Struk?</h3>
+                <div className="flex justify-end gap-4">
+                  <button
+                    onClick={() => setShowReceiptModal(false)}
+                    className="bg-gray-500 text-white px-4 py-2 rounded"
+                  >
+                    Tidak
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowReceiptModal(false);
+                      handlePrintReceipt();
+                    }}
+                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                  >
+                    Ya, Cetak
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           <div className='border-b-2 border-b-gray-900 w-full h-0 my-10' />
         </div>
       ))}

@@ -45,7 +45,7 @@ export default function ReportPage({ auth, customers }) {
             user={auth.user}
             header={
               <div>
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                <h2 className="text-xl font-semibold leading-tight text-white">
                     Laporan Data Transaksi
                 </h2>
               </div>

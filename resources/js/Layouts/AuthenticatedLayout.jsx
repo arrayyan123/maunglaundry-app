@@ -1,7 +1,9 @@
+import Notification from '@/Components/AdminDashboard/Notification';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import { Link, usePage } from '@inertiajs/react';
+import IonIcon from '@reacticons/ionicons';
 import { useState } from 'react';
 
 const images = import.meta.glob('/public/assets/Images/*.png', { eager: true });
@@ -75,34 +77,24 @@ export default function AuthenticatedLayout({ header, children }) {
 
             {/* Page Content */}
             <div className="flex-1 flex flex-col overflow-hidden">
-                <header className="flex items-center justify-between bg-white shadow px-4 py-10 sm:px-6">
+                <header className="flex items-center justify-between bg-blue-400 shadow px-4 py-10 sm:px-6">
                     <div className='flex sm:flex-row items-center sm:space-x-9 flex-col sm:space-y-0 space-y-4'>
                         <div className='flex flex-row item-center space-x-6'>
                             <button
                                 onClick={() => setIsSidebarOpen(true)}
-                                className=" text-gray-500 hover:text-gray-700 focus:outline-none"
+                                className=" text-white hover:text-gray-200 items-center focus:outline-none"
                             >
-                                <svg
-                                    className="w-6 h-6"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M3 5h14a1 1 0 010 2H3a1 1 0 110-2zm0 6h14a1 1 0 010 2H3a1 1 0 110-2zm0 6h14a1 1 0 010 2H3a1 1 0 110-2z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
+                                <IonIcon name="menu-outline" className='text-[25px]'></IonIcon>
                             </button>
 
                             {header && (
                                 <div className="text-lg font-semibold text-gray-900 truncate">{header}</div>
                             )}
+                            {/* <Notification /> */}
                         </div>
                         <Dropdown>
                             <Dropdown.Trigger>
-                                <button className="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none">
+                                <button className="flex items-center text-sm font-medium text-white hover:text-gray-200 focus:outline-none">
                                     {user.name}
                                     <svg
                                         className="ml-1 h-4 w-4"

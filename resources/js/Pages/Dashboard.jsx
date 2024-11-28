@@ -9,7 +9,6 @@ import axios from 'axios';
 import AddCustButton from '@/Components/AdminDashboard/AddCustButton';
 import { Bar } from 'react-chartjs-2';
 import { Fade } from 'react-awesome-reveal';
-import WhatsAppSender from '@/Components/AdminDashboard/WhatsAppSender';
 
 export default function Dashboard({ auth, customers }) {
     const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -128,7 +127,7 @@ export default function Dashboard({ auth, customers }) {
             user={auth.user}
             header={
                 <div>
-                    <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                    <h2 className="text-xl font-semibold leading-tight text-white">
                         Dashboard
                     </h2>
                 </div>
@@ -138,30 +137,29 @@ export default function Dashboard({ auth, customers }) {
             <div className='my-6'>
                 <h1 className='font-bold text-lg '>Selamat Datang {auth.user.name} !!</h1>
             </div>
-            <WhatsAppSender />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
                 <Fade cascade>
-                    <div className="bg-blue-500 text-white p-6 rounded-lg shadow">
+                    <div className="bg-blue-500 text-white p-6 rounded-lg shadow-xl">
                         <h3 className="text-xl font-bold">Total Customers</h3>
                         <p className="text-3xl">{customers.length}</p>
                     </div>
-                    <div className="bg-green-500 text-white p-6 rounded-lg shadow">
+                    <div className="bg-green-500 text-white p-6 rounded-lg shadow-xl">
                         <h3 className="text-xl font-bold">Total Transactions</h3>
                         <p className="text-3xl">{reports.length}</p>
                     </div>
-                    <div className="bg-yellow-500 text-white p-6 rounded-lg shadow">
+                    <div className="bg-yellow-500 text-white p-6 rounded-lg shadow-xl">
                         <h3 className="text-xl font-bold">Pending Requests</h3>
                         <p className="text-3xl">{reports.filter(report => report.status_job === 'pending').length}</p>
                     </div>
-                    <div className="bg-green-500 text-white p-6 rounded-lg shadow">
+                    <div className="bg-green-500 text-white p-6 rounded-lg shadow-xl">
                         <h3 className="text-xl font-bold">Done Requests</h3>
                         <p className="text-3xl">{reports.filter(report => report.status_job === 'done').length}</p>
                     </div>
-                    <div className="bg-red-500 text-white p-6 rounded-lg shadow">
+                    <div className="bg-red-500 text-white p-6 rounded-lg shadow-xl">
                         <h3 className="text-xl font-bold">Cancel Requests</h3>
                         <p className="text-3xl">{reports.filter(report => report.status_job === 'cancel').length}</p>
                     </div>
-                    <div className="bg-blue-500 text-white p-6 rounded-lg shadow">
+                    <div className="bg-blue-500 text-white p-6 rounded-lg shadow-xl">
                         <h3 className="text-xl font-bold">Ongoing Requests</h3>
                         <p className="text-3xl">{reports.filter(report => report.status_job === 'ongoing').length}</p>
                     </div>

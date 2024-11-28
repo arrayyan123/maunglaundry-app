@@ -193,7 +193,7 @@ function ReportTable() {
           <label className="text-sm font-medium mb-1">Select Status Payment</label>
           <select
             className="border border-gray-300 rounded-md p-3 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={status}
+            value={statuspayment}
             onChange={(e) => setStatusPayment(e.target.value)}
           >
             <option value="">All Status</option>

@@ -7,10 +7,12 @@ use Illuminate\Http\Request;
 use App\Models\ServiceType;
 use App\Models\ServicePrice;
 use App\Models\Transaction;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
+
 
 class TransactionsController extends Controller
 {
@@ -67,11 +69,18 @@ class TransactionsController extends Controller
         }
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         try {
+            $sortBy = $request->input('sort_by', 'start_date');
+            $sortOrder = $request->input('sort_order', 'desc');
+
+            if (!in_array(strtolower($sortOrder), ['asc', 'desc'])) {
+                $sortOrder = 'desc';
+            }
             $transaction = Transaction::with('paymentMethod', 'details.serviceType', 'details.servicePrice')
                 ->where('customer_id', $id)
+                ->orderBy($sortBy, $sortOrder)
                 ->get();
 
             return response()->json([
@@ -122,7 +131,6 @@ class TransactionsController extends Controller
         if (!$transaction) {
             return response()->json(['error' => 'Transaction not found'], 404);
         }
-
         return response()->json($transaction);
     }
 
@@ -137,7 +145,6 @@ class TransactionsController extends Controller
 
         return response()->json(['message' => 'Transaction not found'], 404);
     }
-
     public function markAsDone($transactionId)
     {
         $transaction = Transaction::findOrFail($transactionId);
@@ -147,5 +154,12 @@ class TransactionsController extends Controller
         ]);
 
         return response()->json(['message' => 'Transaction marked as done.']);
+    }
+
+    public function printReceipt($id)
+    {
+        $transaction = Transaction::with(['customer', 'details.serviceType', 'details.servicePrice'])->findOrFail($id);
+        $pdf = Pdf::loadView('pdf.receipt', compact('transaction'));
+        return $pdf->stream('transaction_receipt.pdf'); 
     }
 }

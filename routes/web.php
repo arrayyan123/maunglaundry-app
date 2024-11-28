@@ -58,7 +58,8 @@ Route::prefix('api')->group(function () {
     Route::delete('/admin/transactions/{id}', [TransactionsController::class, 'destroy']);
 
     Route::get('/admin/transactions/{id}', [TransactionsController::class, 'show'])->name('transactions.show');
-
+    Route::get('/admin/transactions/{id}/receipt', [TransactionsController::class, 'printReceipt']);
+    Route::get('/admin/transactions/new', [ReportController::class, 'getNewTransactions']);
     Route::get('/admin/total-price', [ReportController::class, 'getTotalPrice']);
     Route::get('/admin/reports', [ReportController::class, 'getReport']);
     Route::get('/admin/payment-methods', function () {
