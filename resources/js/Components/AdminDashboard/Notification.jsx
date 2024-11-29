@@ -4,11 +4,12 @@ import { Dropdown } from "flowbite-react";
 import IonIcon from '@reacticons/ionicons';
 
 function Notification() {
-    const [notifications, setNotifications] = useState([]); // Notifikasi yang ditampilkan
-    const [fetchedIds, setFetchedIds] = useState(new Set()); // ID transaksi yang sudah diambil
-    const [removedIds, setRemovedIds] = useState(new Set()); // ID transaksi yang sudah dihapus
-    const [lastChecked, setLastChecked] = useState(null); 
-    const [isFetching, setIsFetching] = useState(false); 
+    const [notifications, setNotifications] = useState([]);
+    const [fetchedIds, setFetchedIds] = useState(new Set());
+    const [removedIds, setRemovedIds] = useState(new Set());
+    const [lastChecked, setLastChecked] = useState(null);
+    const [isFetching, setIsFetching] = useState(false);
+    const [visibleCount, setVisibleCount] = useState(5); 
 
     const fetchReports = async () => {
         if (isFetching) return;
@@ -25,10 +26,7 @@ function Notification() {
             );
 
             if (filteredReports.length > 0) {
-                setNotifications((prev) => {
-                    const updatedNotifications = [...filteredReports, ...prev].slice(0, 5);
-                    return updatedNotifications;
-                });
+                setNotifications((prev) => [...filteredReports, ...prev]);
 
                 setFetchedIds((prev) => {
                     const updatedIds = new Set(prev);
@@ -54,18 +52,19 @@ function Notification() {
         });
     };
 
-    // Panggil fetchReports saat komponen pertama kali dimuat
     useEffect(() => {
         fetchReports();
     }, []);
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         fetchReports();
-    //     }, 5000);
-    //     return () => clearInterval(interval);
-    // }, []);
 
-    const filteredNotifications = notifications.filter(notification => notification.status_job !== 'done');
+    const loadMoreNotifications = () => {
+        setVisibleCount((prev) => prev + 5); 
+    };
+
+    const filteredNotifications = notifications.filter(
+        (notification) => notification.status_job !== 'done' || notification.status_payment !== 'paid'
+    );
+
+    const displayedNotifications = filteredNotifications.slice(0, visibleCount);
 
     return (
         <div>
@@ -85,16 +84,15 @@ function Notification() {
             >
                 <div className="w-56 p-4 bg-white rounded-lg shadow-md">
                     <h1 className="text-sm font-bold">Notifications</h1>
-                    {notifications.length > 0 ? (
-                        notifications
-                            .filter(notification => notification.status_job !== 'done')
-                            .map((notification) => (
+                    {displayedNotifications.length > 0 ? (
+                        <>
+                            {displayedNotifications.map((notification) => (
                                 <div
                                     key={notification.transaction_id}
                                     className="border-b border-gray-200 pb-2 mb-2 flex justify-between items-center"
                                 >
                                     <p className="text-xs text-gray-600">
-                                        <strong>{notification.nama_produk}</strong> - {notification.customer_name} - {notification.start_date} - {notification.status_job}
+                                        <strong>{notification.nama_produk}</strong> - {notification.customer_name} - {notification.start_date} - {notification.status_job} - {notification.status_payment}
                                     </p>
                                     <button
                                         onClick={() => removeNotification(notification.transaction_id)}
@@ -103,7 +101,16 @@ function Notification() {
                                         Remove
                                     </button>
                                 </div>
-                            ))
+                            ))}
+                            {filteredNotifications.length > visibleCount && (
+                                <button
+                                    onClick={loadMoreNotifications}
+                                    className="text-blue-500 text-xs mt-2"
+                                >
+                                    See More
+                                </button>
+                            )}
+                        </>
                     ) : (
                         <p className="text-xs text-gray-500">No new notifications.</p>
                     )}

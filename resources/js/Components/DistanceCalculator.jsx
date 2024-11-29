@@ -34,7 +34,7 @@ const DistanceCalculator = ({ customerAddress }) => {
             <h2 className="font-semibold">Jarak menuju Maung Laundry</h2>
             {distance !== null && (
                 <div className={`mt-2 ${getDistanceClass()}`}>
-                    Distance: {distance.toFixed(2)} km
+                    Jarak: {distance.toFixed(2)} km
                 </div>
             )}
             {error && <div className="mt-2 text-red-600">{error}</div>}

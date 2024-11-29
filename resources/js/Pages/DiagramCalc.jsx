@@ -45,7 +45,6 @@ export default function DiagramCalc({ auth, customers }) {
             chart.data.datasets[0].data = chartData;
             chart.update();
         } else {
-            // Jika grafik belum ada, buat yang baru
             const ctx = chartRef.current.getContext('2d');
             const newChart = new Chart(ctx, {
                 type: 'bar',

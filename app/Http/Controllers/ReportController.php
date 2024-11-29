@@ -105,6 +105,7 @@ class ReportController extends Controller
                 'customer_users.name as customer_name',
                 'report_transactions.nama_produk',
                 'report_transactions.status_job',
+                'report_transactions.status_payment',
                 'report_transactions.start_date',
                 'report_transactions.total_price'
             )

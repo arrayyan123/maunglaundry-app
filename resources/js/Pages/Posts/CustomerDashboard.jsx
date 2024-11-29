@@ -5,6 +5,7 @@ import EntryTransaction from "@/Components/CustomerDashboard/EntryTransaction";
 import TransactionDetail from "@/Components/CustomerDashboard/TransactionDetail";
 import DistanceCalculator from "@/Components/DistanceCalculator";
 import { Fade } from "react-awesome-reveal";
+import NotificationTwilio from "@/Components/AdminDashboard/NotificationTwilio";
 
 const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
 const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
@@ -26,13 +27,13 @@ export default function CustomerDashboard() {
     const [loading, setLoading] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [showEntryTransaction, setShowEntryTransaction] = useState(false);
+    const [showNotificationTwilio, setShowNotificationTwilio] = useState(false);
     const [filterProductName, setFilterProductName] = useState('');
     const [filterPaymentStatus, setFilterPaymentStatus] = useState('');
 
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
 
-    // Pagination logic
     const totalPages = Math.ceil(transactions.length / itemsPerPage);
 
     const handleViewDetails = async (transactionId) => {
@@ -115,6 +116,9 @@ export default function CustomerDashboard() {
     const handleToggleEntryTransaction = () => {
         setShowEntryTransaction(!showEntryTransaction);
     };
+    const handleToggleNotificationTwilio = () => {
+        setShowNotificationTwilio(!showNotificationTwilio);
+    }
 
     return (
         <>
@@ -235,10 +239,10 @@ export default function CustomerDashboard() {
                                 {customerData && (
                                     <div className="mb-6">
                                         <h2 className="text-lg font-medium mb-4">
-                                            Welcome, {customerData.name}!
+                                            Selamat Datang, {customerData.name}!
                                         </h2>
                                         <p>Email: {customerData.email}</p>
-                                        <p>Address: {customerData.address}</p>
+                                        <p>Alamat: {customerData.address}</p>
                                         <DistanceCalculator customerAddress={customerData?.address} />
                                         <div className="flex space-x-4 mt-4">
                                             <button
@@ -253,12 +257,23 @@ export default function CustomerDashboard() {
                                             >
                                                 Masukkan Transaksi
                                             </button>
+                                            <button
+                                                onClick={handleToggleNotificationTwilio}
+                                                className="px-4 py-2 text-white bg-yellow-500 hover:bg-yellow-600 rounded-lg"
+                                            >
+                                                Nyalakan Notifikasi
+                                            </button>
                                         </div>
                                     </div>
                                 )}
 
                                 {loading && <p>Loading transactions...</p>}
 
+                                {showNotificationTwilio && !showEntryTransaction && !selectedTransactionId && (
+                                    <NotificationTwilio
+                                        handleToggleNotificationTwilio={handleToggleNotificationTwilio}
+                                    />
+                                )}
                                 {selectedTransactionId ? (
                                     <TransactionDetail
                                         customerId={customerData?.id}
@@ -267,7 +282,7 @@ export default function CustomerDashboard() {
                                     />
                                 ) : (
                                     <Fade>
-                                        <div id="transactions" className="mx-auto max-w-7xl p-6 mb-10 bg-white rounded-lg">
+                                        <div id="transactions" className="mx-auto max-w-7xl lg:p-6 mb-10 bg-white rounded-lg">
                                             <div className="mb-6">
                                                 {showEntryTransaction && (
                                                     <div className="bg-gray-100 p-6 mb-5 rounded-lg shadow-lg">

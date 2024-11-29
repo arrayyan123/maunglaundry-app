@@ -76,10 +76,10 @@
     </div>
   </div>
 
-  <p style="font-size: 20px;">Nama: {{ $transaction->customer->name }}</p>
-  <p style="font-size: 20px;">No HP: {{ $transaction->customer->phone }}</p>
-  <p style="font-size: 20px;">Alamat: {{$transaction->customer->address }}</p>
-  <p style="font-size: 20px;">Tanggal Masuk: {{ \Carbon\Carbon::parse($transaction->start_date)->format('l, d F Y') }}</p>
+  <p style="font-size: 20px; margin-left: 10px;">Nama: {{ $transaction->customer->name }}</p>
+  <p style="font-size: 20px; margin-left: 10px;">No HP: {{ $transaction->customer->phone }}</p>
+  <p style="font-size: 20px; margin-left: 10px;">Alamat: {{$transaction->customer->address }}</p>
+  <p style="font-size: 20px; margin-left: 10px;">Tanggal Masuk: {{ \Carbon\Carbon::parse($transaction->start_date)->format('l, d F Y') }}</p>
 
   <table>
     <thead>
