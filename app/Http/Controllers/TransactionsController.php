@@ -34,7 +34,7 @@ class TransactionsController extends Controller
                 'services.*.nama_produk' => 'required|string',
             ]);
             $namaProduk = $validated['services'][0]['nama_produk'];
-            $startDate = Carbon::now();
+            $startDate = Carbon::now('Asia/Jakarta');
             $serviceType = ServiceType::findOrFail($validated['services'][0]['service_type_id']);
             $endDate = $startDate->copy()->addDays($serviceType->durasi_hari);
             $transaction = Transaction::create([

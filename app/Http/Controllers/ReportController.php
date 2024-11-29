@@ -96,23 +96,30 @@ class ReportController extends Controller
     public function getNewTransactions(Request $request)
     {
         $lastChecked = $request->input('lastChecked');
+        $removedIds = $request->input('removedIds', []);
+    
         $query = DB::table('report_transactions')
             ->join('customer_users', 'report_transactions.customer_id', '=', 'customer_users.id')
             ->select(
                 'report_transactions.transaction_id',
                 'customer_users.name as customer_name',
                 'report_transactions.nama_produk',
+                'report_transactions.status_job',
                 'report_transactions.start_date',
                 'report_transactions.total_price'
             )
             ->orderBy('report_transactions.start_date', 'desc');
-
+    
         if ($lastChecked) {
             $query->where('report_transactions.start_date', '>', $lastChecked);
         }
-
-        $newTransactions = $query->get();
-
+    
+        if (!empty($removedIds)) {
+            $query->whereNotIn('report_transactions.transaction_id', $removedIds);
+        }
+    
+        $newTransactions = $query->limit(5)->get();
+    
         return response()->json([
             'newTransactions' => $newTransactions,
         ]);

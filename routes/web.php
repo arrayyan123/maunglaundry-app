@@ -42,6 +42,7 @@ Route::prefix('api')->group(function () {
     Route::post('/customer/logout', [CustomerAuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::get('/customer/{id}', [CustomerAuthController::class, 'show']);
 
+    Route::delete('/admin/customer/{id}', [CustomerAuthController::class, 'destroy'])->middleware('auth:sanctum');
     Route::post('/admin/register_customer', [CustomerAuthController::class, 'register_customer_admin']);
     Route::get('/admin/customers', [PagesController::class, 'adminCustomerList'])->middleware('auth:sanctum');
     Route::get('/admin/transaction-details/{transactionId}', [TransactionsController::class, 'getTransactionByUuid']);
@@ -59,7 +60,7 @@ Route::prefix('api')->group(function () {
 
     Route::get('/admin/transactions/{id}', [TransactionsController::class, 'show'])->name('transactions.show');
     Route::get('/admin/transactions/{id}/receipt', [TransactionsController::class, 'printReceipt']);
-    Route::get('/admin/transactions/new', [ReportController::class, 'getNewTransactions']);
+    Route::get('/admin/new-transactions', [ReportController::class, 'getNewTransactions']);
     Route::get('/admin/total-price', [ReportController::class, 'getTotalPrice']);
     Route::get('/admin/reports', [ReportController::class, 'getReport']);
     Route::get('/admin/payment-methods', function () {

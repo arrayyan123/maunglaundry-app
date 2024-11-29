@@ -2,9 +2,11 @@ import { Link } from '@inertiajs/react'
 import React, { useState } from 'react'
 import DistanceCalculator from '../DistanceCalculator';
 
-function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEntry }) {
+function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEntry, onDeleteCustomer }) {
     const [searchQuery, setSearchQuery] = useState(''); 
     const [currentPage, setCurrentPage] = useState(1);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [customerToDelete, setCustomerToDelete] = useState(null);
     const itemsPerPage = 5;
 
     const filteredCustomers = customers.filter((customer) =>
@@ -22,7 +24,22 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEnt
             setCurrentPage(pageNumber);
         }
     };
+    const openDeleteModal = (customer) => {
+        setCustomerToDelete(customer);
+        setDeleteModalOpen(true);
+    };
+    const confirmDelete = () => {
+        if (customerToDelete) {
+            onDeleteCustomer(customerToDelete.id); 
+        }
+        setDeleteModalOpen(false);
+        setCustomerToDelete(null);
+    };
 
+    const closeModal = () => {
+        setDeleteModalOpen(false);
+        setCustomerToDelete(null);
+    };
     return (
         <div className="customer-section py-12">
             <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -112,6 +129,12 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEnt
                                                     >
                                                         See Details
                                                     </button>
+                                                    <button
+                                                        onClick={() => openDeleteModal(customer)}
+                                                        className="bg-red-500 text-white px-4 py-2 rounded"
+                                                    >
+                                                        Delete
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))
@@ -193,6 +216,28 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEnt
                     </div>
                 </div>
             </div>
+            {deleteModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <div className="bg-white p-6 rounded shadow-lg">
+                        <h2 className="text-xl font-semibold mb-4">Delete Customer</h2>
+                        <p>Are you sure you want to delete <strong>{customerToDelete?.name}</strong>?</p>
+                        <div className="mt-4 flex justify-end space-x-4">
+                            <button
+                                onClick={closeModal}
+                                className="px-4 py-2 bg-gray-300 rounded"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="px-4 py-2 bg-red-500 text-white rounded"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

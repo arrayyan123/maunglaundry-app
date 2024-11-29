@@ -10,7 +10,8 @@ import AddCustButton from '@/Components/AdminDashboard/AddCustButton';
 import { Bar } from 'react-chartjs-2';
 import { Fade } from 'react-awesome-reveal';
 
-export default function Dashboard({ auth, customers }) {
+export default function Dashboard({ auth, customers: initialCustomers }) {
+    const [customers, setCustomers] = useState(initialCustomers);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [selectedTransactionId, setSelectedTransactionId] = useState(null);
     const [transactions, setTransactions] = useState([]);
@@ -76,6 +77,20 @@ export default function Dashboard({ auth, customers }) {
         } catch (error) {
             console.error("Error fetching transaction details:", error);
             setLoading(false);
+        }
+    };
+
+    const handleDeleteCustomer = async (customerId) => {
+        try {
+            // Make an API call to delete the customer
+            await axios.delete(`/api/admin/customer/${customerId}`);
+            // Update the customers list after deletion
+            const updatedCustomers = customers.filter(customer => customer.id !== customerId);
+            setCustomers(updatedCustomers);
+            alert("Customer deleted successfully!");
+        } catch (error) {
+            console.error("Error deleting customer:", error);
+            alert("Failed to delete customer. Please try again.");
         }
     };
 
@@ -254,6 +269,7 @@ export default function Dashboard({ auth, customers }) {
                 customers={customers}
                 onSelectCustomer={handleSelectCustomer}
                 onViewDetails={handleViewDetails}
+                onDeleteCustomer={handleDeleteCustomer}
             />
         </AuthenticatedLayout>
     );

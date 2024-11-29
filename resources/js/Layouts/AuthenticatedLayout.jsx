@@ -90,7 +90,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             {header && (
                                 <div className="text-lg font-semibold text-gray-900 truncate">{header}</div>
                             )}
-                            {/* <Notification /> */}
+                            <Notification />
                         </div>
                         <Dropdown>
                             <Dropdown.Trigger>

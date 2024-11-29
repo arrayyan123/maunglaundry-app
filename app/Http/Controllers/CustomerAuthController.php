@@ -52,14 +52,14 @@ class CustomerAuthController extends Controller
     public function register_customer_admin(Request $request)
     {
         Log::debug('Register Customer Admin request:', $request->all());
-    
+
         try {
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'phone' => 'required|string',
                 'email' => 'nullable|string',
                 'address' => 'required|string',
-                'password' => 'required|string|min:6', 
+                'password' => 'required|string|min:6',
             ]);
             Log::debug('Validated data:', $validated);
 
@@ -90,16 +90,16 @@ class CustomerAuthController extends Controller
     {
         try {
             $customer = CustomerUser::findOrFail($id);
-    
+
             $validated = $request->validate([
                 'name' => 'sometimes|string|max:255',
                 'email' => 'sometimes|email|unique:customer_users,email,' . $customer->id,
                 'phone' => 'sometimes|string',
                 'address' => 'sometimes|string',
             ]);
-    
+
             $customer->update($validated);
-    
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Profile updated successfully',
@@ -113,7 +113,7 @@ class CustomerAuthController extends Controller
             ], 500);
         }
     }
-    
+
     public function login(Request $request)
     {
         $request->validate([
@@ -147,8 +147,28 @@ class CustomerAuthController extends Controller
 
     public function show($id)
     {
-        $customer = CustomerUser::find($id); 
+        $customer = CustomerUser::find($id);
         return response()->json($customer);
     }
 
+    public function destroy($id)
+    {
+        try {
+            $customer = CustomerUser::findOrFail($id);
+
+            // Hapus customer
+            $customer->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Customer deleted successfully',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to delete customer',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

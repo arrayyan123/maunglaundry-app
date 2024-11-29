@@ -84,19 +84,19 @@
   <table>
     <thead>
       <tr>
-        <th>Jenis</th>
-        <th>Jmlh</th>
-        <th>Harga Sat/Kg</th>
-        <th>Sub Total</th>
+        <th style="font-size: 20px;">Jenis</th>
+        <th style="font-size: 20px;">Jmlh</th>
+        <th style="font-size: 20px;">Harga Sat/Kg</th>
+        <th style="font-size: 20px;">Sub Total</th>
       </tr>
     </thead>
     <tbody>
       @foreach ($transaction->details as $detail)
       <tr>
-        <td>{{ $detail->servicePrice->nama_produk }}</td>
-        <td>{{ number_format($detail->quantity, 0, ',', '.') }}</td>
-        <td>{{ number_format($detail->servicePrice->harga, 0, ',', '.') }}</td>
-        <td>{{ number_format($detail->price, 0, ',', '.') }}</td>
+        <td style="font-size: 20px;">{{ $detail->servicePrice->nama_produk }}</td>
+        <td style="font-size: 20px;">{{ number_format($detail->quantity, 0, ',', '.') }}</td>
+        <td style="font-size: 20px;">{{ number_format($detail->servicePrice->harga, 0, ',', '.') }}</td>
+        <td style="font-size: 20px;">{{ number_format($detail->price, 0, ',', '.') }}</td>
       </tr>
       @endforeach
       <!-- Baris kosong untuk kesesuaian dengan gambar -->
