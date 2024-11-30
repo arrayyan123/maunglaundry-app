@@ -72,7 +72,7 @@ function Notification() {
                 label=""
                 dismissOnClick={false}
                 renderTrigger={() => (
-                    <span className="text-white font-bold text-lg">
+                    <span className="text-white flex items-center font-bold text-lg">
                         <IonIcon name="notifications-outline" />
                         {filteredNotifications.length > 0 && (
                             <span className="ml-1 text-xs text-red-500">

@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react'
 import React, { useState } from 'react'
 import DistanceCalculator from '../DistanceCalculator';
+import IonIcon from '@reacticons/ionicons';
 
 function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEntry, onDeleteCustomer }) {
     const [searchQuery, setSearchQuery] = useState(''); 
@@ -121,19 +122,28 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEnt
                                                         onClick={() => onSelectCustomer(customer)}
                                                         className="bg-blue-500 text-white px-4 py-2 rounded"
                                                     >
-                                                        Add Transaction
+                                                        <span className='flex flex-row items-center space-x-3'>
+                                                            <IonIcon name='create'></IonIcon>
+                                                            <p>Add Transaction</p>
+                                                        </span>
                                                     </button>
                                                     <button
                                                         onClick={() => onViewDetails(customer.id)}
                                                         className="bg-blue-500 text-white px-4 py-2 rounded"
                                                     >
-                                                        See Details
+                                                        <span className='flex flex-row items-center space-x-3'>
+                                                            <IonIcon name='cash'></IonIcon>
+                                                            <p>See Details</p>
+                                                        </span>
                                                     </button>
                                                     <button
                                                         onClick={() => openDeleteModal(customer)}
                                                         className="bg-red-500 text-white px-4 py-2 rounded"
                                                     >
-                                                        Delete
+                                                        <span className='flex flex-row items-center space-x-3'>
+                                                            <IonIcon name='trash '></IonIcon>
+                                                            <p>Delete</p>
+                                                        </span>
                                                     </button>
                                                 </td>
                                             </tr>
@@ -221,6 +231,7 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEnt
                     <div className="bg-white p-6 rounded shadow-lg">
                         <h2 className="text-xl font-semibold mb-4">Delete Customer</h2>
                         <p>Are you sure you want to delete <strong>{customerToDelete?.name}</strong>?</p>
+                        <p>menghapus data customer akan menghapus transaksi seluruh dari customer tersebut.</p>
                         <div className="mt-4 flex justify-end space-x-4">
                             <button
                                 onClick={closeModal}

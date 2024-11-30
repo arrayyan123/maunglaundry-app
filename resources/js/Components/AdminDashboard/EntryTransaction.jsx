@@ -8,6 +8,8 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
         payment_method_id: "",
         name: ""
     });
+    const [notes, setNotes] = useState([]);
+    const [newNote, setNewNote] = useState("");
     const [showReceiptModal, setShowReceiptModal] = useState(false);
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(null);
@@ -82,6 +84,28 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             [serviceId]: isNaN(parsedQty) || parsedQty <= 0 ? 0 : parsedQty,
         }));
     };
+    const addNote = async (id) => {
+        const noteTransactionId = id || transactionId; 
+        if (!newNote.trim()) {
+            alert("Note content cannot be empty");
+            return;
+        }
+        if (!noteTransactionId) {
+            console.error("Transaction ID is missing");
+            alert("Cannot add note because transaction ID is missing");
+            return;
+        }
+        try {
+            const response = await axios.post(`/api/admin/transactions/${noteTransactionId}/notes`, {
+                content: newNote,
+            });
+            setNotes((prevNotes) => [...prevNotes, response.data.note]);
+            setNewNote("");
+        } catch (error) {
+            console.error("Failed to add note", error);
+            alert("Failed to add note");
+        }
+    };
     const sendWhatsAppNotification = async (transactionData) => {
         try {
             let phone = customerDetails.phone;
@@ -147,6 +171,13 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
         try {
             const response = await axios.post("/api/admin/transactions", dataToSend);
             if (response.status === 201) {
+                const transaction = response.data.transaction;
+                setTransactionId(transaction.id);
+    
+                if (newNote.trim()) {
+                    await addNote(transaction.id); 
+                }
+
                 alert("Transaction saved successfully");
                 setTransactionId(response.data.transaction.id);
                 setShowReceiptModal(true);
@@ -283,7 +314,15 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                     ))}
                 </select>
             </div>
-
+            <div className="mb-6">
+                <h4 className="text-lg font-semibold">Notes</h4>
+                <textarea
+                    className="w-full border border-gray-300 px-4 py-2 rounded-md"
+                    placeholder="Add a note for this transaction"
+                    value={newNote}
+                    onChange={(e) => setNewNote(e.target.value)}
+                />
+            </div>
             <button
                 onClick={handleSave}
                 className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-400"

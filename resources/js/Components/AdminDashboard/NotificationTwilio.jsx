@@ -14,7 +14,6 @@ function NotificationTwilio({ handleToggleNotificationTwilio }) {
                         >
                             Close
                         </button>
-                        
                     </div>
                 </div>
             </Fade>

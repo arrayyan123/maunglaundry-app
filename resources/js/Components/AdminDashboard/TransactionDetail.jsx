@@ -23,7 +23,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
 
   useEffect(() => {
     if (showConfirmModal) {
-      setCountdown(5);
+      setCountdown(3);
       const timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
@@ -66,7 +66,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
             acc[id] = name;
             return acc;
           }, {});
-          setCustomerNames(customerNamesObject);  // Store as an object mapping id to name
+          setCustomerNames(customerNamesObject); 
         }
       } catch (error) {
         console.error("Failed to load transaction details:", error);
@@ -101,20 +101,20 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
   };
 
   const handleUpdatePaymentStatus = (transactionId) => {
-    axios.put(`/api/admin/transactions/${transactionId}/payment`, {
-      status_payment: 'paid'
-    })
+    axios
+      .put(`/api/admin/transactions/${transactionId}/payment`, {
+        status_payment: 'paid',
+      })
       .then(() => {
-        setTransactions(prev =>
-          prev.map(transaction =>
+        setTransactions((prev) =>
+          prev.map((transaction) =>
             transaction.id === transactionId
               ? { ...transaction, status_payment: 'paid' }
               : transaction
           )
         );
-
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Failed to update payment status:', error);
       });
   };
@@ -138,6 +138,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
   };
 
   useEffect(() => {
+    // Filter transaksi berdasarkan query pencarian
     const lowerCaseQuery = searchQuery.toLowerCase();
     const filtered = transactions.filter((transaction) => {
       const matchesProductName = transaction.nama_produk
@@ -151,10 +152,14 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
       );
       return matchesProductName || matchesLaundryType || matchesServiceType;
     });
-
+  
     setFilteredTransactions(filtered);
-    setCurrentPage(1);
-  }, [searchQuery, transactions]);
+  
+    // Reset ke halaman pertama hanya jika query pencarian berubah
+    if (searchQuery !== "") {
+      setCurrentPage(1);
+    }
+  }, [searchQuery, transactions]); // Perhatikan bahwa 'transactions' tetap dalam dependensi
 
   const totalPages = Math.ceil(filteredTransactions.length / transactionsPerPage);
   const indexOfLastTransaction = currentPage * transactionsPerPage;
@@ -163,6 +168,13 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
     indexOfFirstTransaction,
     indexOfLastTransaction
   );
+
+  // useEffect(() => {
+  //   const totalPages = Math.ceil(filteredTransactions.length / transactionsPerPage);
+  //   if (currentPage > totalPages) {
+  //     setCurrentPage(totalPages); 
+  //   }
+  // }, [filteredTransactions, currentPage, transactionsPerPage]);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);

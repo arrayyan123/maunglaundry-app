@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\ServiceType;
 use App\Models\ServicePrice;
 use App\Models\Transaction;
+use App\Models\Note;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -155,11 +156,81 @@ class TransactionsController extends Controller
 
         return response()->json(['message' => 'Transaction marked as done.']);
     }
-
     public function printReceipt($id)
     {
         $transaction = Transaction::with(['customer', 'details.serviceType', 'details.servicePrice'])->findOrFail($id);
         $pdf = Pdf::loadView('pdf.receipt', compact('transaction'));
-        return $pdf->stream('transaction_receipt.pdf'); 
+        return $pdf->stream('transaction_receipt.pdf');
+    }
+    public function addNote(Request $request, $transactionId)
+    {
+        $transaction = Transaction::find($transactionId);
+        if (!$transaction) {
+            return response()->json(['error' => 'Transaction not found'], 404);
+        }
+
+        $validated = $request->validate([
+            'content' => 'required|string|max:1000',
+        ]);
+        try {
+            $note = Note::create([
+                'transaction_id' => $transaction->id,
+                'content' => $validated['content'],
+                'created_at' => now('Asia/Jakarta'), 
+                'updated_at' => now('Asia/Jakarta'),
+            ]);
+
+
+            return response()->json(['message' => 'Note added successfully', 'note' => $note], 201);
+        } catch (\Exception $e) {
+            Log::error('Failed to add note', [
+                'transaction_id' => $transactionId,
+                'content' => $validated['content'],
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json(['error' => 'Failed to add note', 'details' => $e->getMessage()], 500);
+        }
+    }
+    public function getNotes($transactionId)
+    {
+        $notes = Note::where('transaction_id', $transactionId)->get();
+
+        return response()->json($notes, 200);
+    }
+    public function getNotesWithCustomerInfo()
+    {
+        $notes = Note::with(['transaction.customer'])
+            ->get()
+            ->map(function ($note) {
+                $transaction = $note->transaction; 
+                $customer = $transaction->customer;
+
+                return [
+                    'id' => $note->id,
+                    'transaction_id' => $note->transaction_id,
+                    'transaction_nama_produk' => $transaction->nama_produk ?? 'unknown',
+                    'content' => $note->content,
+                    'customer_name' => $customer->name ?? 'Unknown',
+                    'customer_email' => $customer->email ?? 'Unknown',
+                    'customer_phone' => $customer->phone ?? 'Unknown',
+                    'customer_address' => $customer->address ?? 'Unknown',
+                    'created_at' => $note->created_at->format('Y-m-d H:i:s'),
+                ];
+            });
+
+        return response()->json($notes);
+    }
+    public function destroyNote($id)
+    {
+        $note = Note::find($id);
+
+        if (!$note) {
+            return response()->json(['message' => 'Note not found'], 404);
+        }
+
+        $note->delete();
+
+        return response()->json(['message' => 'Note deleted successfully'], 200);
     }
 }

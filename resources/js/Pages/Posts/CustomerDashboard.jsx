@@ -151,13 +151,14 @@ export default function CustomerDashboard() {
                                     Transactions
                                 </a>
                             </li>
-                            <li>
-                                <a
-                                    href="#profile"
-                                    className="block px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-lg"
-                                >
-                                    Profile
-                                </a>
+                            <li>{customerData && (
+                                    <a
+                                        href={`/customer/edit-profile/${customerData.id}`}
+                                        className="block px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-lg"
+                                    >
+                                        Profile
+                                    </a>
+                                )}
                             </li>
                             <li>
                                 <button
@@ -180,9 +181,9 @@ export default function CustomerDashboard() {
                 {/* Main Content */}
                 <div className="flex-1 flex flex-col">
                     {/* Navbar */}
-                    <nav className="bg-blue-400 shadow-sm sticky top-0 z-30">
+                    <nav className="bg-blue-400 shadow-sm sticky inset-0 top-0 z-20">
                         <div className="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8 xl:px-4">
-                            <div className="flex justify-between h-16 items-center">
+                            <div className="flex justify-between h-16 md:space-x-0 space-x-6 items-center">
                                 <button
                                     onClick={() => setSidebarOpen(!sidebarOpen)}
                                     className="text-white focus:outline-none"
@@ -204,6 +205,9 @@ export default function CustomerDashboard() {
                                 </button>
                                 <div className="flex flex-row items-center space-x-5">
                                     <h1 className="text-xl text-white font-semibold">Customer Dashboard</h1>
+                                    {customerData && (
+                                        <h1 className="text-sm text-white">{customerData.name}</h1>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -301,7 +305,7 @@ export default function CustomerDashboard() {
                                                         />
                                                     </div>
                                                 )}
-                                                <div className="flex flex-col md:flex-row md:space-x-4">
+                                                <div className="flex flex-col md:space-y-0 space-y-4 md:flex-row md:space-x-4">
                                                     <input
                                                         type="text"
                                                         placeholder="Search by Product Name"

@@ -55,6 +55,12 @@ class PagesController extends Controller
             'customers' => $customers
         ]);
     }
+    public function inboxdashboard(){
+        $customers = CustomerUser::all();
+        return Inertia::render('InboxDashboard', [
+            'customers' => $customers
+        ]);
+    }
     public function editProfile($customerId)
     {
         $customer = CustomerUser::findOrFail($customerId);

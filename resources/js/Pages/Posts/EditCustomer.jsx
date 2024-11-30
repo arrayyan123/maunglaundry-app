@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Head } from "@inertiajs/react";
 
 const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
@@ -14,6 +14,7 @@ const dummypic = getImageByName("dummy-profpic");
 const logo = getImageByName("Logo_maung");
 
 export default function EditCustomer({ customer }) {
+    const [customerData, setCustomerData] = useState(null);
     const [formData, setFormData] = useState({
         name: customer.name || "",
         email: customer.email || "",
@@ -28,6 +29,18 @@ export default function EditCustomer({ customer }) {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
+    useEffect(() => {
+        const storedToken = localStorage.getItem("customer-token");
+        if (!storedToken) {
+            window.location.href = "/customer/login";
+        } else {
+            const storedCustomer = localStorage.getItem("customer-data");
+            if (storedCustomer) {
+                const customer = JSON.parse(storedCustomer);
+                setCustomerData(customer);
+            }
+        }
+    }, []);
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
@@ -134,12 +147,18 @@ export default function EditCustomer({ customer }) {
                                 </button>
                                 <div className="flex flex-row items-center space-x-5">
                                     <h1 className="text-xl font-semibold text-white">Profile Edit</h1>
+                                    {customerData && (
+                                        <h1 className="text-sm text-white">{customerData.name}</h1>
+                                    )}
                                 </div>
                             </div>
                         </div>
                     </nav>
                     <div>
-                        <div className="lg:w-[50%] w-[85%] my-20 mx-auto p-6 bg-white shadow rounded-lg">
+                        <div className="max-w-7xl my-20 mx-auto p-6 ">
+                            <a href="/customer/dashboard"><button className="text-blue-500 mb-6">
+                                Kembali Ke halaman 
+                            </button></a>
                             <h1 className="text-2xl font-semibold mb-4">Edit Profile</h1>
                             {message && (
                                 <div
@@ -150,45 +169,50 @@ export default function EditCustomer({ customer }) {
                                 </div>
                             )}
                             <form onSubmit={handleFormSubmit} className="space-y-4">
-                                <div>
-                                    <label className="block text-gray-700">Name</label>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleInputChange}
-                                        className="w-full border px-4 py-2 rounded focus:outline-none focus:ring"
-                                    />
+                                <div className="bg-white p-4 space-y-6 shadow sm:rounded-lg sm:p-8">
+                                    <h1 className="font-bold text-xl">Ubah informasi akun anda disini</h1>
+                                    <div>
+                                        <label className="block text-gray-700">Nama</label>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={handleInputChange}
+                                            className="w-full border px-4 py-2 rounded focus:outline-none focus:ring"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-gray-700">Email</label>
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleInputChange}
+                                            className="w-full border px-4 py-2 rounded focus:outline-none focus:ring"
+                                        />
+                                    </div>
                                 </div>
-                                <div>
-                                    <label className="block text-gray-700">Email</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleInputChange}
-                                        className="w-full border px-4 py-2 rounded focus:outline-none focus:ring"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-gray-700">Phone</label>
-                                    <input
-                                        type="text"
-                                        name="phone"
-                                        value={formData.phone}
-                                        onChange={handleInputChange}
-                                        className="w-full border px-4 py-2 rounded focus:outline-none focus:ring"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-gray-700">Address</label>
-                                    <input
-                                        type="text"
-                                        name="address"
-                                        value={formData.address}
-                                        onChange={handleInputChange}
-                                        className="w-full border px-4 py-2 rounded focus:outline-none focus:ring"
-                                    />
+                                <div className="bg-white p-4 space-y-6 shadow sm:rounded-lg sm:p-8">
+                                    <div>
+                                        <label className="block text-gray-700">Nomor Telepon</label>
+                                        <input
+                                            type="text"
+                                            name="phone"
+                                            value={formData.phone}
+                                            onChange={handleInputChange}
+                                            className="w-full border px-4 py-2 rounded focus:outline-none focus:ring"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-gray-700">Address</label>
+                                        <input
+                                            type="text"
+                                            name="address"
+                                            value={formData.address}
+                                            onChange={handleInputChange}
+                                            className="w-full border px-4 py-2 rounded focus:outline-none focus:ring"
+                                        />
+                                    </div>
                                 </div>
                                 <div>
                                     <button
@@ -198,6 +222,7 @@ export default function EditCustomer({ customer }) {
                                     >
                                         {loading ? "Updating..." : "Save Changes"}
                                     </button>
+
                                 </div>
                             </form>
                         </div>

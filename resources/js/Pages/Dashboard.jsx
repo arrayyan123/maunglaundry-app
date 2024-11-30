@@ -9,6 +9,18 @@ import axios from 'axios';
 import AddCustButton from '@/Components/AdminDashboard/AddCustButton';
 import { Bar } from 'react-chartjs-2';
 import { Fade } from 'react-awesome-reveal';
+import IonIcon from '@reacticons/ionicons';
+
+const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
+const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
+const images = { ...pngImages, ...webpImages };
+
+const getImageByName = (name) => {
+    const matchingImage = Object.keys(images).find((path) => path.includes(`${name}`));
+    return matchingImage ? images[matchingImage].default || images[matchingImage] : null;
+};
+
+const adminPic = getImageByName("Admin-Book-cartoon");
 
 export default function Dashboard({ auth, customers: initialCustomers }) {
     const [customers, setCustomers] = useState(initialCustomers);
@@ -82,9 +94,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
 
     const handleDeleteCustomer = async (customerId) => {
         try {
-            // Make an API call to delete the customer
             await axios.delete(`/api/admin/customer/${customerId}`);
-            // Update the customers list after deletion
             const updatedCustomers = customers.filter(customer => customer.id !== customerId);
             setCustomers(updatedCustomers);
             alert("Customer deleted successfully!");
@@ -149,32 +159,49 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
             }
         >
             <Head title="Dashboard" />
-            <div className='my-6'>
-                <h1 className='font-bold text-lg '>Selamat Datang {auth.user.name} !!</h1>
+            <div className="relative my-6 p-10 md:py-12 py-20 bg-blue-200 hover:bg-blue-400 transition-all ease-in-out duration-300 rounded-xl text-black">
+                <div className="absolute z-0 top-1/2 left-10 -translate-y-1/2">
+                    <img
+                        src={adminPic}
+                        className="w-[60%] md:block hidden sm:w-[30%] lg:w-[30%] xl:w-[25%] h-auto"
+                        alt="Admin"
+                    />
+                </div>
+                <h1 className="font-bold lg:text-[35px] text-right sm:text-[25px] text-[20px] text-black">
+                    HI! {auth.user.name}
+                </h1>
+                <p className='text-right'>Selamat Datang di dashboard admin Maung Laundry</p>
             </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
                 <Fade cascade>
                     <div className="bg-blue-500 text-white p-6 rounded-lg shadow-xl">
+                        <IonIcon className='text-xl' name="person"></IonIcon>
                         <h3 className="text-xl font-bold">Total Customers</h3>
                         <p className="text-3xl">{customers.length}</p>
                     </div>
                     <div className="bg-green-500 text-white p-6 rounded-lg shadow-xl">
+                        <IonIcon className='text-xl' name="stats-chart"></IonIcon>
                         <h3 className="text-xl font-bold">Total Transactions</h3>
                         <p className="text-3xl">{reports.length}</p>
                     </div>
                     <div className="bg-yellow-500 text-white p-6 rounded-lg shadow-xl">
+                        <IonIcon className='text-xl' name="warning"></IonIcon>
                         <h3 className="text-xl font-bold">Pending Requests</h3>
                         <p className="text-3xl">{reports.filter(report => report.status_job === 'pending').length}</p>
                     </div>
                     <div className="bg-green-500 text-white p-6 rounded-lg shadow-xl">
+                        <IonIcon className='text-xl font-bold' name="checkmark"></IonIcon>
                         <h3 className="text-xl font-bold">Done Requests</h3>
                         <p className="text-3xl">{reports.filter(report => report.status_job === 'done').length}</p>
                     </div>
                     <div className="bg-red-500 text-white p-6 rounded-lg shadow-xl">
+                        <IonIcon className='text-xl' name="ban"></IonIcon>
                         <h3 className="text-xl font-bold">Cancel Requests</h3>
                         <p className="text-3xl">{reports.filter(report => report.status_job === 'cancel').length}</p>
                     </div>
                     <div className="bg-blue-500 text-white p-6 rounded-lg shadow-xl">
+                        <IonIcon className='text-xl' name="calendar"></IonIcon>
                         <h3 className="text-xl font-bold">Ongoing Requests</h3>
                         <p className="text-3xl">{reports.filter(report => report.status_job === 'ongoing').length}</p>
                     </div>

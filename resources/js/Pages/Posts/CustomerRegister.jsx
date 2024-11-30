@@ -54,13 +54,13 @@ const CustomerRegister = () => {
                 <div className="w-1/2 h-screen hidden lg:block">
                     <img src="https://img.freepik.com/fotos-premium/imagen-fondo_910766-187.jpg?w=826" alt="Placeholder Image" className="object-cover w-full h-full" />
                 </div>
-                <div className="lg:p-20 md:p-32 sm:26 p-10 w-full lg:w-1/2 h-screen">
+                <div className="lg:p-40 lg:-mt-40 mt-0 md:p-32 sm:26 p-10 w-full lg:w-1/2 h-screen">
                     {message && (
                         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
                             {message}
                         </div>
                     )}
-                    <h2 className="text-2xl font-bold mb-6">Customer Registration</h2>
+                    <h2 className="text-4xl font-semibold mb-6">Customer Registration</h2>
                     <form onSubmit={handleSubmit}>
                         <Fade cascade>
                             <div className="mb-4 bg-blue-100">

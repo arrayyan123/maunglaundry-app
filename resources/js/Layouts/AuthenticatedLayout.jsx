@@ -4,7 +4,7 @@ import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import { Link, usePage } from '@inertiajs/react';
 import IonIcon from '@reacticons/ionicons';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const images = import.meta.glob('/public/assets/Images/*.png', { eager: true });
 
@@ -16,6 +16,24 @@ const getImageByName = (name) => {
 const logo = getImageByName('Logo_maung');
 
 export default function AuthenticatedLayout({ header, children }) {
+    const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+    const [activeSection, setActiveSection] = useState("notes");
+    const [time, setTime] = useState(new Date());
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setTime(new Date());
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const formatTime = (date) => {
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    };
+    const formatDate = (date) => {
+        return date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    };
     const { user } = usePage().props.auth;
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -23,7 +41,7 @@ export default function AuthenticatedLayout({ header, children }) {
         <div className="flex h-screen bg-gray-100">
             {/* Sidebar */}
             <aside
-                className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-md transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-md md:hidden block transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
                     }`}
             >
                 <div className="h-full flex flex-col">
@@ -54,44 +72,162 @@ export default function AuthenticatedLayout({ header, children }) {
                     {/* Navigation Links */}
                     <nav className="flex flex-col px-4 py-6 space-y-2">
                         <NavLink href={route('dashboard')} active={route().current('dashboard')}>
-                            Dashboard
+                            <div className='space-x-3 scale-100 hover:scale-110 transition-all ease-in-out duration-300 flex flex-row items-center'>
+                                <p>Dashboard</p>
+                                <IonIcon className='text-[20px]' name="build-outline"></IonIcon>
+                            </div>
                         </NavLink>
                         <NavLink href={route('admin.report')} active={route().current('admin.report')}>
-                            Report
+                            <div className='space-x-3 scale-100 hover:scale-110 transition-all ease-in-out duration-300 flex flex-row items-center'>
+                                <p>Laporan</p>
+                                <IonIcon className='text-[20px]' name="cash-outline"></IonIcon>
+                            </div>
+
                         </NavLink>
                         <NavLink href={route('diagram.page')} active={route().current('diagram.page')}>
-                            Chart Penjualan
+                            <div className='space-x-3 scale-100 hover:scale-110 transition-all ease-in-out duration-300 flex flex-row items-center'>
+                                <p>Chart Penjualan</p>
+                                <IonIcon className='text-[20px]' name="bar-chart-outline"></IonIcon>
+                            </div>
+
+                        </NavLink>
+                        <NavLink href={route('inbox.admin')} active={route().current('inbox.admin')}>
+                            <div className='space-x-3 scale-100 hover:scale-110 transition-all ease-in-out duration-300 flex flex-row items-center'>
+                                <p>Inbox</p>
+                                <IonIcon className='text-[20px]' name="chatbox-outline"></IonIcon>
+                            </div>
                         </NavLink>
                         <NavLink href="#">
-                            Inbox
+                            Coming Soon
                         </NavLink>
                         <NavLink href="#">
-                            Users
-                        </NavLink>
-                        <NavLink href="#">
-                            Products
+                            Coming Soon
                         </NavLink>
                     </nav>
                 </div>
             </aside>
-
+            <aside
+                className={`${isSidebarExpanded ? "w-64" : "w-16"
+                    } bg-blue-400 text-white flex flex-col md:block hidden transition-all duration-300`}
+            >
+                <div
+                    className={`p-4 border-b border-blue-700 flex items-center justify-between ${isSidebarExpanded ? "space-x-8" : "space-x-1"
+                        }`}
+                >
+                    <span
+                        className={`${isSidebarExpanded ? "block" : "hidden"
+                            } font-semibold text-lg flex flex-row items-center space-x-3`}
+                    >
+                        <img src={logo} className="h-9 w-auto" />
+                        <h1>Dashboard</h1>
+                    </span>
+                    <button
+                        onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+                        className="text-white flex items-center mx-auto"
+                    >
+                        <IonIcon name={isSidebarExpanded ? "arrow-down-circle-outline" : "menu-outline"} className={`text-2xl transform transition-transform duration-500 ${isSidebarExpanded ? "rotate-90" : "rotate-0"
+                            }`} />
+                    </button>
+                </div>
+                <nav className="flex-1 p-0">
+                    <ul className="space-y-2">
+                        <li>
+                            <NavLink href={route('dashboard')} active={route().current('dashboard')}>
+                                <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
+                                    <IonIcon className='text-[20px]' name="build"></IonIcon>
+                                    <span
+                                        className={`${isSidebarExpanded ? "block" : "hidden"
+                                            } text-sm`}
+                                    >
+                                        Dashboard
+                                    </span>
+                                </div>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink href={route('admin.report')} active={route().current('admin.report')}>
+                                <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
+                                    <IonIcon className='text-[20px]' name="cash"></IonIcon>
+                                    <span
+                                        className={`${isSidebarExpanded ? "block" : "hidden"
+                                            } text-sm`}
+                                    >
+                                        Laporan
+                                    </span>
+                                </div>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink href={route('diagram.page')} active={route().current('diagram.page')}>
+                                <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
+                                    <IonIcon className='text-[20px]' name="stats-chart"></IonIcon>
+                                    <span
+                                        className={`${isSidebarExpanded ? "block" : "hidden"
+                                            } text-sm`}
+                                    >
+                                        Chart Penjualan
+                                    </span>
+                                </div>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink href={route('inbox.admin')} active={route().current('inbox.admin')}>
+                                <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
+                                    <IonIcon className='text-[20px]' name="chatbox"></IonIcon>
+                                    <span
+                                        className={`${isSidebarExpanded ? "block" : "hidden"
+                                            } text-sm`}
+                                    >
+                                        Inbox
+                                    </span>
+                                </div>
+                            </NavLink>
+                        </li>
+                    </ul>
+                </nav>
+                <div
+                    className={`${isSidebarExpanded ? "p-4" : "p-2"
+                        } border-t border-blue-700`}
+                >
+                    <Link href={route('logout')} method="post">
+                        <button className="w-full bg-blue-700 py-2 rounded text-white hover:bg-blue-600 flex items-center text-sm">
+                            <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
+                                <IonIcon className='text-[20px]' name="log-out-outline"></IonIcon>
+                                <span
+                                    className={`${isSidebarExpanded ? "block" : "hidden"
+                                        } text-sm`}
+                                >
+                                    Logout
+                                </span>
+                            </div>
+                        </button>
+                    </Link>
+                </div>
+            </aside>
             {/* Page Content */}
             <div className="flex-1 flex flex-col overflow-hidden">
-                <header className="flex items-center justify-between bg-blue-400 shadow px-4 py-10 sm:px-6">
-                    <div className='flex sm:flex-row items-center sm:space-x-9 flex-col sm:space-y-0 space-y-4'>
-                        <div className='flex flex-row item-center space-x-6'>
+                <header className="flex items-center justify-around bg-blue-400 shadow px-4 py-10 sm:px-6">
+                    <div className='flex sm:flex-row items-center sm:space-x-9 flex-col sm:space-y-0 space-y-4 w-full'>
+                        <div className='flex items-center space-x-4 sm:space-x-6 w-full'>
                             <button
                                 onClick={() => setIsSidebarOpen(true)}
-                                className=" text-white hover:text-gray-200 items-center focus:outline-none"
+                                className="text-white hover:text-gray-200 md:hidden block flex items-center focus:outline-none"
                             >
-                                <IonIcon name="menu-outline" className='text-[25px]'></IonIcon>
+                                <IonIcon name="menu-outline" className='text-[25px]' />
                             </button>
 
                             {header && (
-                                <div className="text-lg font-semibold text-gray-900 truncate">{header}</div>
+                                <div className="text-lg font-semibold flex items-center text-gray-900 truncate">{header}</div>
                             )}
                             <Notification />
+                            <div className='md:block hidden'>
+                                <div className="text-center text-gray-800 flex flex-row items-center space-x-4">
+                                    <div className="text-[15px] text-white font-medium">{formatDate(time)}</div>
+                                    <div className="text-[15px] text-white font-bold">{formatTime(time)}</div>
+                                </div>
+                            </div>
                         </div>
+
                         <Dropdown>
                             <Dropdown.Trigger>
                                 <button className="flex items-center text-sm font-medium text-white hover:text-gray-200 focus:outline-none">
@@ -121,9 +257,8 @@ export default function AuthenticatedLayout({ header, children }) {
                         </Dropdown>
                     </div>
                 </header>
-
                 {/* Main Content */}
-                <main className="flex-1 overflow-y-auto p-8 sm:p-6">
+                <main className="flex-1 overflow-y-auto p-4 sm:p-6">
                     {children}
                 </main>
             </div>

@@ -35,6 +35,9 @@ Route::get('/reportdata', [PagesController::class, 'report'])
 Route::get('/diagramcalc', [PagesController::class, 'diagramCalc'])
     ->middleware(['auth', 'verified'])
     ->name('diagram.page');
+Route::get('/inbox', [PagesController::class, 'inboxdashboard'])
+    ->middleware(['auth', 'verified'])
+    ->name('inbox.admin');
 
 Route::prefix('api')->group(function () {
     Route::post('/customer/register', [CustomerAuthController::class, 'register_customer']);
@@ -54,6 +57,10 @@ Route::prefix('api')->group(function () {
     Route::get('/admin/service-prices/{serviceTypeId}', [ServicePricesController::class, 'getPricesByServiceType']);
     Route::put('/admin/transactions/{transactionId}/payment', [TransactionsController::class, 'updatePayment']);
 
+    Route::delete('/admin/notes/{id}', [TransactionsController::class, 'destroyNote']);
+    Route::get('/admin/inbox-notes', [TransactionsController::class, 'getNotesWithCustomerInfo']);
+    Route::post('/admin/transactions/{transactionId}/notes', [TransactionsController::class, 'addNote']);
+    Route::get('/admin/transactions/{transactionId}/notes', [TransactionsController::class, 'getNotes']);
     Route::put('/admin/transactions/{id}/update-payment', [TransactionsController::class, 'updatePaymentStatus']);
     Route::put('/admin/transactions/{id}/update-job-status', [TransactionsController::class, 'updateJobStatus']);
     Route::delete('/admin/transactions/{id}', [TransactionsController::class, 'destroy']);

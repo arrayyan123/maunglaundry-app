@@ -9,6 +9,9 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     const [formData, setFormData] = useState({
         payment_method_id: "",
     });
+    const [transactionId, setTransactionId] = useState(null);
+    const [notes, setNotes] = useState([]);
+    const [newNote, setNewNote] = useState("");
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(null);
     const [ customerDetails, setCustomerDetails] = useState({});
@@ -87,7 +90,30 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     useEffect(() => {
         axios.get("/api/admin/payment-methods").then((res) => setPaymentMethod(res.data));
     }, []);
-
+    
+    const addNote = async (id) => {
+        const noteTransactionId = id || transactionId; 
+        if (!newNote.trim()) {
+            alert("Note content cannot be empty");
+            return;
+        }
+        if (!noteTransactionId) {
+            console.error("Transaction ID is missing");
+            alert("Cannot add note because transaction ID is missing");
+            return;
+        }
+        try {
+            const response = await axios.post(`/api/admin/transactions/${noteTransactionId}/notes`, {
+                content: newNote,
+            });
+            setNotes((prevNotes) => [...prevNotes, response.data.note]);
+            setNewNote("");
+        } catch (error) {
+            console.error("Failed to add note", error);
+            alert("Failed to add note");
+        }
+    };
+    
     const sendWhatsAppNotification = async (transactionData) => {
         try {
             let phone = customerDetails.phone;
@@ -160,7 +186,16 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
         try {
             const response = await axios.post("/api/admin/transactions", dataToSend);
             if (response.status === 201) {
+                const transaction = response.data.transaction;
+                setTransactionId(transaction.id);
+    
+                if (newNote.trim()) {
+                    await addNote(transaction.id); 
+                }
+
                 alert("Transaction saved successfully");
+                setTransactionId(response.data.transaction.id);
+                addNote(response.data.transaction.id);
                 sendWhatsAppNotification(dataToSend);
                 onSave && onSave();
             } else {
@@ -292,7 +327,22 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                     ))}
                 </select>
             </div>
-
+            <div className="mb-6">
+                <h4 className="text-lg font-semibold">Notes</h4>
+                <div className="mb-4">
+                    {notes.map((note) => (
+                        <div key={note.id} className="bg-gray-100 p-2 rounded mb-2">
+                            {note.content}
+                        </div>
+                    ))}
+                </div>
+                <textarea
+                    className="w-full border border-gray-300 px-4 py-2 rounded-md"
+                    placeholder="Add a note for this transaction"
+                    value={newNote}
+                    onChange={(e) => setNewNote(e.target.value)}
+                />
+            </div>
             <button
                 onClick={handleSave}
                 className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-400"
@@ -303,7 +353,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
 
             {showModal && selectedPaymentComponent && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-md shadow-md mx-7">
+                    <div className="bg-white  p-6 rounded-md shadow-md mx-7">
                         <button
                             className="absolute top-12 right-12 text-[30px] hover:font-bold text-white"
                             onClick={() => setShowModal(false)}

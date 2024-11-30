@@ -155,8 +155,6 @@ class CustomerAuthController extends Controller
     {
         try {
             $customer = CustomerUser::findOrFail($id);
-
-            // Hapus customer
             $customer->delete();
 
             return response()->json([

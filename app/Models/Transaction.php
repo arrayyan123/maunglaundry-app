@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,7 +24,6 @@ class Transaction extends Model
         'start_date',
         'end_date',
     ];
-
     protected $casts = [
         'start_date' => 'datetime:Y-m-d H:i:s',
         'end_date' => 'datetime:Y-m-d H:i:s',
@@ -46,7 +46,6 @@ class Transaction extends Model
             Transaction::updateTotalPrice();
         });
     }
-
     public static function updateTotalPrice()
     {
         $totalPrice = DB::table('transactions')
@@ -58,7 +57,6 @@ class Transaction extends Model
             ['total_price' => $totalPrice, 'updated_at' => now()]
         );
     }
-
     protected static function boot()
     {
         parent::boot();
@@ -69,14 +67,17 @@ class Transaction extends Model
             }
         });
     }
-
     public function details()
     {
         return $this->hasMany(DetailTransaction::class);
     }
-    
+
     public function paymentMethod()
     {
         return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
+    }
+    public function note()
+    {
+        return $this->hasOne(Note::class, 'transaction_id');
     }
 }

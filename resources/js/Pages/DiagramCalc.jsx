@@ -98,7 +98,7 @@ export default function DiagramCalc({ auth, customers }) {
             }
         >
             <Head title="Diagram Penjualan" />
-            <div className="container mx-auto p-6 bg-white rounded-lg shadow-lg space-y-8">
+            <div className="container mx-auto p-6  bg-white rounded-lg shadow-lg space-y-8">
                 {/* Total Pemasukan dan Grafik */}
                 <div className="flex flex-col lg:flex-row lg:space-x-6 space-y-6 lg:space-y-0">
                     <div className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg p-6 shadow-md">
@@ -107,11 +107,11 @@ export default function DiagramCalc({ auth, customers }) {
                             <canvas ref={chartRef} />
                         </div>
                     </div>
-                    <div className="flex-1 bg-gray-200 p-6 rounded-lg shadow-md">
+                    <div className="flex-1 bg-gray-100 p-6 rounded-lg shadow-md">
                         <h3 className="text-xl font-semibold text-gray-800 mb-4">Pelanggan Paling Aktif</h3>
                         <ul className="space-y-2">
                             {customers.slice(0, 5).map((customer) => (
-                                <li key={customer.id} className="text-lg font-medium">
+                                <li key={customer.id} className="text-lg text-gray-800 font-medium">
                                     {customer.name} 
                                 </li>
                             ))}
