@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Fade, Zoom } from 'react-reveal';
+import IonIcon from '@reacticons/ionicons';
 
 function TransactionDetail({ customerId, transactionId, onClose }) {
   const [transactions, setTransactions] = useState([]);
@@ -293,15 +294,21 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
             )}
           </ul>
 
-          <div className="mt-6 flex space-x-4">
+          <div className="mt-6 flex md:flex-row flex-col md:space-y-0 space-y-4 space-x-0 md:space-x-4">
             <button
               onClick={() => setShowDeleteModal(true)}
               className="bg-red-500 text-white px-4 py-2 rounded"
             >
-              Delete Transaction
+              <span className='flex flex-row items-center space-x-2'>
+                <p>Delete Transaction</p>
+                <IonIcon name='trash'></IonIcon>
+              </span>
             </button>
             <button onClick={() => handleClickPrint(transaction.id)} className='bg-gray-300 text-black px-4 py-2 rounded'>
-              Print Receipt
+              <span className='flex flex-row items-center space-x-2'>
+                <p>Print Receipt</p>
+                <IonIcon name='print'></IonIcon>
+              </span>
             </button>
             <button onClick={onClose} className="bg-gray-300 text-black px-4 py-2 rounded">
               Close

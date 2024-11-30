@@ -109,12 +109,12 @@
   <!-- Section untuk Note & Total -->
   <table class="note-total">
     <tr>
-      <td class="note" colspan="2">NOTE: {{ $transaction->status_payment }}</td>
+      <td class="note" colspan="2">PAYMENT: {{ $transaction->status_payment }}</td>
       <td class="total">TOTAL</td>
       <td class="total">Rp {{ number_format($detail->price, 0, ',', '.') }}</td>
     </tr>
     <tr>
-      <td colspan="2"></td>
+      <td class="note" colspan="2">NOTE: {{$noteContent}}</td>
       <td class="dp">DP</td>
       <td class="dp">Rp {{ number_format($transaction->dp, 0, ',', '.') }}</td>
     </tr>

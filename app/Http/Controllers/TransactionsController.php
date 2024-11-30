@@ -158,8 +158,9 @@ class TransactionsController extends Controller
     }
     public function printReceipt($id)
     {
-        $transaction = Transaction::with(['customer', 'details.serviceType', 'details.servicePrice'])->findOrFail($id);
-        $pdf = Pdf::loadView('pdf.receipt', compact('transaction'));
+        $transaction = Transaction::with(['customer', 'details.serviceType', 'details.servicePrice', 'note'])->findOrFail($id);
+        $noteContent = $transaction->note ? $transaction->note->content : 'Tidak ada catatan';
+        $pdf = Pdf::loadView('pdf.receipt', compact('transaction', 'noteContent'));
         return $pdf->stream('transaction_receipt.pdf');
     }
     public function addNote(Request $request, $transactionId)
@@ -176,7 +177,7 @@ class TransactionsController extends Controller
             $note = Note::create([
                 'transaction_id' => $transaction->id,
                 'content' => $validated['content'],
-                'created_at' => now('Asia/Jakarta'), 
+                'created_at' => now('Asia/Jakarta'),
                 'updated_at' => now('Asia/Jakarta'),
             ]);
 
@@ -198,14 +199,21 @@ class TransactionsController extends Controller
 
         return response()->json($notes, 200);
     }
-    public function getNotesWithCustomerInfo()
+    public function getNotesWithCustomerInfo(Request $request)
     {
+        $sortBy = $request->input('sort_by', 'created_at'); 
+        $sortOrder = $request->input('sort_order', 'desc');
+        if (!in_array(strtolower($sortOrder), ['asc', 'desc'])) {
+            $sortOrder = 'desc';
+        }
+    
         $notes = Note::with(['transaction.customer'])
+            ->orderBy($sortBy, $sortOrder)
             ->get()
             ->map(function ($note) {
-                $transaction = $note->transaction; 
+                $transaction = $note->transaction;
                 $customer = $transaction->customer;
-
+    
                 return [
                     'id' => $note->id,
                     'transaction_id' => $note->transaction_id,
@@ -218,9 +226,10 @@ class TransactionsController extends Controller
                     'created_at' => $note->created_at->format('Y-m-d H:i:s'),
                 ];
             });
-
+    
         return response()->json($notes);
     }
+    
     public function destroyNote($id)
     {
         $note = Note::find($id);

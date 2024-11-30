@@ -141,7 +141,7 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEnt
                                                         className="bg-red-500 text-white px-4 py-2 rounded"
                                                     >
                                                         <span className='flex flex-row items-center space-x-3'>
-                                                            <IonIcon name='trash '></IonIcon>
+                                                            <IonIcon name='trash'></IonIcon>
                                                             <p>Delete</p>
                                                         </span>
                                                     </button>
@@ -167,7 +167,7 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEnt
                                 className="px-4 py-2 text-sm bg-blue-500 text-white rounded disabled:opacity-50"
                                 disabled={currentPage === 1}
                             >
-                                Prev
+                                <IonIcon name='caret-back'></IonIcon>
                             </button>
                             <div className="flex space-x-2">
                                 {/* Display page numbers */}
@@ -220,7 +220,7 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEnt
                                 className="px-4 py-2 text-sm bg-blue-500 text-white rounded disabled:opacity-50"
                                 disabled={currentPage === totalPages}
                             >
-                                Next
+                                <IonIcon name='caret-forward'></IonIcon>
                             </button>
                         </div>
                     </div>

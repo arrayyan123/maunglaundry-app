@@ -5,20 +5,25 @@ import NavLink from '@/Components/NavLink';
 import { Link, usePage } from '@inertiajs/react';
 import IonIcon from '@reacticons/ionicons';
 import { useState, useEffect } from 'react';
+import { Fade } from 'react-awesome-reveal';
 
-const images = import.meta.glob('/public/assets/Images/*.png', { eager: true });
+const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
+const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
+const images = { ...pngImages, ...webpImages };
 
 const getImageByName = (name) => {
-    const matchingImage = Object.keys(images).find((path) => path.includes(`${name}.png`));
+    const matchingImage = Object.keys(images).find((path) => path.includes(`${name}`));
     return matchingImage ? images[matchingImage].default || images[matchingImage] : null;
 };
 
 const logo = getImageByName('Logo_maung');
+const logout = getImageByName('Admin-Person-cartoon');
 
 export default function AuthenticatedLayoutInbox({ header, children }) {
     const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
     const [activeSection, setActiveSection] = useState("notes");
     const [time, setTime] = useState(new Date());
+    const [showLogOutModal, setShowLogOutModal] = useState(false)
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -41,7 +46,7 @@ export default function AuthenticatedLayoutInbox({ header, children }) {
         <div className="flex h-screen bg-gray-100">
             {/* Sidebar */}
             <aside
-                className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-md md:hidden block transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-md hidden transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
                     }`}
             >
                 <div className="h-full flex flex-col">
@@ -108,7 +113,7 @@ export default function AuthenticatedLayoutInbox({ header, children }) {
             </aside>
             <aside
                 className={`${isSidebarExpanded ? "w-64" : "w-16"
-                    } bg-blue-400 text-white flex flex-col md:block hidden transition-all duration-300`}
+                    } bg-gradient-to-t animated-background from-blue-400 to-indigo-400 text-white flex flex-col block transition-all duration-300`}
             >
                 <div
                     className={`p-4 border-b border-blue-700 flex items-center justify-between ${isSidebarExpanded ? "space-x-8" : "space-x-1"
@@ -116,9 +121,10 @@ export default function AuthenticatedLayoutInbox({ header, children }) {
                 >
                     <span
                         className={`${isSidebarExpanded ? "block" : "hidden"
-                            } font-semibold text-lg`}
+                            } font-semibold text-lg flex flex-row items-center space-x-3`}
                     >
-                        Dashboard
+                        <img src={logo} className="h-9 w-auto" />
+                        <h1>Dashboard</h1>
                     </span>
                     <button
                         onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
@@ -188,29 +194,27 @@ export default function AuthenticatedLayoutInbox({ header, children }) {
                     className={`${isSidebarExpanded ? "p-4" : "p-2"
                         } border-t border-blue-700`}
                 >
-                    <Link href={route('logout')} method="post">
-                        <button className="w-full bg-blue-700 py-2 rounded text-white hover:bg-blue-600 flex items-center text-sm">
-                            <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
-                                <IonIcon className='text-[20px]' name="log-out-outline"></IonIcon>
-                                <span
-                                    className={`${isSidebarExpanded ? "block" : "hidden"
-                                        } text-sm`}
-                                >
-                                    Logout
-                                </span>
-                            </div>
-                        </button>
-                    </Link>
+                    <button onClick={() => setShowLogOutModal(true)} className="w-full bg-blue-700 py-2 rounded text-white hover:bg-blue-600 flex items-center text-sm">
+                        <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
+                            <IonIcon className='text-[20px]' name="log-out-outline"></IonIcon>
+                            <span
+                                className={`${isSidebarExpanded ? "block" : "hidden"
+                                    } text-sm`}
+                            >
+                                Logout
+                            </span>
+                        </div>
+                    </button>
                 </div>
             </aside>
             {/* Page Content */}
             <div className="flex-1 flex flex-col overflow-hidden">
-                <header className="flex items-center justify-around bg-blue-400 shadow px-4 py-10 sm:px-6">
+                <header className="flex items-center justify-around bg-gradient-to-l animated-background from-blue-400 to-indigo-400 shadow px-4 py-10 sm:px-6">
                     <div className='flex sm:flex-row items-center sm:space-x-9 flex-col sm:space-y-0 space-y-4 w-full'>
                         <div className='flex items-center space-x-4 sm:space-x-6 w-full'>
                             <button
                                 onClick={() => setIsSidebarOpen(true)}
-                                className="text-white hover:text-gray-200 md:hidden block flex items-center focus:outline-none"
+                                className="text-white hover:text-gray-200 hidden flex items-center focus:outline-none"
                             >
                                 <IonIcon name="menu-outline" className='text-[25px]' />
                             </button>
@@ -261,6 +265,31 @@ export default function AuthenticatedLayoutInbox({ header, children }) {
                     {children}
                 </main>
             </div>
+            {showLogOutModal && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+                    <Fade>
+                        <div className="bg-white p-6 h-auto w-96 flex flex-col items-center justify-center rounded-md shadow-md">
+                            <img src={logout} className='w-56 h-auto' alt="sad log out" />
+                            <h3 className="text-lg font-semibold mb-4">Anda ingin Log Out ?</h3>
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => setShowLogOutModal(false)}
+                                    className="bg-gray-500 text-white px-4 py-2 rounded"
+                                >
+                                    Tidak
+                                </button>
+                                <Link href={route('logout')} method="post">
+                                    <button
+                                        className="bg-blue-500 text-white px-4 py-2 rounded"
+                                    >
+                                        Ya
+                                    </button>
+                                </Link>
+                            </div>
+                        </div>
+                    </Fade>
+                </div>
+            )}
         </div>
     );
 }

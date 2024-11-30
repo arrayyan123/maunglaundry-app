@@ -52,8 +52,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                 </h2>
 
                 <p className="mt-1 text-sm text-gray-600">
-                    Ensure your account is using a long, random password to stay
-                    secure.
+                    Pastikan akun anda menggunakan password yang panjang dan random untuk tetap aman.
                 </p>
             </header>
 

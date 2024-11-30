@@ -53,10 +53,8 @@ export default function DeleteUserForm({ className = '' }) {
                 </h2>
 
                 <p className="mt-1 text-sm text-gray-600">
-                    Once your account is deleted, all of its resources and data
-                    will be permanently deleted. Before deleting your account,
-                    please download any data or information that you wish to
-                    retain.
+                    Ketika akun anda dihapus, semua data yang berada di dashboard akan terhapus permanen.
+                    harap mengunduh data atau informasi apa saja yang anda ingin pertahankan
                 </p>
             </header>
 

@@ -2,7 +2,7 @@ import AddCustomer from '@/Components/AdminDashboard/AddCustomer';
 import Request_Table from '@/Components/AdminDashboard/Request_Table';
 import EntryTransaction from '@/Components/AdminDashboard/EntryTransaction';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { useState, useEffect, useRef } from 'react';
 import TransactionDetail from '@/Components/AdminDashboard/TransactionDetail';
 import axios from 'axios';
@@ -159,7 +159,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
             }
         >
             <Head title="Dashboard" />
-            <div className="relative my-6 p-10 md:py-12 py-20 bg-blue-200 hover:bg-blue-400 transition-all ease-in-out duration-300 rounded-xl text-black">
+            <div className="relative my-6 p-10 md:py-12 py-20 animated-background bg-gradient-to-r from-blue-500 to-indigo-200 rounded-xl text-black">
                 <div className="absolute z-0 top-1/2 left-10 -translate-y-1/2">
                     <img
                         src={adminPic}
@@ -172,39 +172,51 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                 </h1>
                 <p className='text-right'>Selamat Datang di dashboard admin Maung Laundry</p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
                 <Fade cascade>
-                    <div className="bg-blue-500 text-white p-6 rounded-lg shadow-xl">
-                        <IonIcon className='text-xl' name="person"></IonIcon>
-                        <h3 className="text-xl font-bold">Total Customers</h3>
-                        <p className="text-3xl">{customers.length}</p>
-                    </div>
-                    <div className="bg-green-500 text-white p-6 rounded-lg shadow-xl">
-                        <IonIcon className='text-xl' name="stats-chart"></IonIcon>
-                        <h3 className="text-xl font-bold">Total Transactions</h3>
-                        <p className="text-3xl">{reports.length}</p>
-                    </div>
-                    <div className="bg-yellow-500 text-white p-6 rounded-lg shadow-xl">
-                        <IonIcon className='text-xl' name="warning"></IonIcon>
-                        <h3 className="text-xl font-bold">Pending Requests</h3>
-                        <p className="text-3xl">{reports.filter(report => report.status_job === 'pending').length}</p>
-                    </div>
-                    <div className="bg-green-500 text-white p-6 rounded-lg shadow-xl">
-                        <IonIcon className='text-xl font-bold' name="checkmark"></IonIcon>
-                        <h3 className="text-xl font-bold">Done Requests</h3>
-                        <p className="text-3xl">{reports.filter(report => report.status_job === 'done').length}</p>
-                    </div>
-                    <div className="bg-red-500 text-white p-6 rounded-lg shadow-xl">
-                        <IonIcon className='text-xl' name="ban"></IonIcon>
-                        <h3 className="text-xl font-bold">Cancel Requests</h3>
-                        <p className="text-3xl">{reports.filter(report => report.status_job === 'cancel').length}</p>
-                    </div>
-                    <div className="bg-blue-500 text-white p-6 rounded-lg shadow-xl">
-                        <IonIcon className='text-xl' name="calendar"></IonIcon>
-                        <h3 className="text-xl font-bold">Ongoing Requests</h3>
-                        <p className="text-3xl">{reports.filter(report => report.status_job === 'ongoing').length}</p>
-                    </div>
+                    <Link href={route('admin.report')}>
+                        <div className="bg-blue-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <IonIcon className='text-xl' name="person"></IonIcon>
+                            <h3 className="text-xl font-bold">Total Customers</h3>
+                            <p className="text-3xl">{customers.length}</p>
+                        </div>
+                    </Link>
+                    <Link href={route('admin.report')}>
+                        <div className="bg-green-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <IonIcon className='text-xl' name="stats-chart"></IonIcon>
+                            <h3 className="text-xl font-bold">Total Transactions</h3>
+                            <p className="text-3xl">{reports.length}</p>
+                        </div>
+                    </Link>
+                    <Link href={route('admin.report')}>
+                        <div className="bg-yellow-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <IonIcon className='text-xl' name="warning"></IonIcon>
+                            <h3 className="text-xl font-bold">Pending Requests</h3>
+                            <p className="text-3xl">{reports.filter(report => report.status_job === 'pending').length}</p>
+                        </div>
+                    </Link>
+                    <Link href={route('admin.report')}>
+                        <div className="bg-green-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <IonIcon className='text-xl font-bold' name="checkmark"></IonIcon>
+                            <h3 className="text-xl font-bold">Done Requests</h3>
+                            <p className="text-3xl">{reports.filter(report => report.status_job === 'done').length}</p>
+                        </div>
+                    </Link>
+                    <Link href={route('admin.report')}>
+                        <div className="bg-red-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <IonIcon className='text-xl' name="ban"></IonIcon>
+                            <h3 className="text-xl font-bold">Cancel Requests</h3>
+                            <p className="text-3xl">{reports.filter(report => report.status_job === 'cancel').length}</p>
+                        </div>
+                    </Link>
+                    <Link href={route('admin.report')}>
+                        <div className="bg-blue-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <IonIcon className='text-xl' name="calendar"></IonIcon>
+                            <h3 className="text-xl font-bold">Ongoing Requests</h3>
+                            <p className="text-3xl">{reports.filter(report => report.status_job === 'ongoing').length}</p>
+                        </div>
+                    </Link>
                 </Fade>
             </div>
             <div className="bg-gray-100 p-6 rounded-lg shadow my-6">
@@ -231,7 +243,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                 </div>
             )}
             {selectedCustomer && !selectedTransactionId && (
-                <div className='mx-auto max-w-7xl p-6 my-10 bg-white rounded-lg'>
+                <div className='mx-auto max-w-7xl p-3 my-10 bg-white rounded-lg'>
                     <Fade>
                         <EntryTransaction
                             customerId={selectedCustomer.id}

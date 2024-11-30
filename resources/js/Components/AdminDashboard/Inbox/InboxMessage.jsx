@@ -2,6 +2,7 @@ import IonIcon from "@reacticons/ionicons";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "@inertiajs/react";
+import { Fade } from "react-awesome-reveal";
 
 const InboxMessage = () => {
     const [messages, setMessages] = useState([]);
@@ -15,6 +16,7 @@ const InboxMessage = () => {
     const [lastChecked, setLastChecked] = useState(null);
     const [isFetching, setIsFetching] = useState(false);
     const [visibleCount, setVisibleCount] = useState(5);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     const fetchReports = async () => {
         if (isFetching) return;
@@ -101,8 +103,8 @@ const InboxMessage = () => {
             setMessages((prevMessages) =>
                 prevMessages.filter((msg) => !selectedMessages.includes(msg.id))
             );
-            setSelectedMessages([]); // Reset pesan yang dipilih
-            alert("Selected messages deleted successfully");
+            setSelectedMessages([]);
+            setShowDeleteModal(false)
         } catch (error) {
             console.error("Error deleting selected messages:", error);
             alert("Failed to delete selected messages");
@@ -157,7 +159,7 @@ const InboxMessage = () => {
             {/* Sidebar */}
             <aside
                 className={`${isSidebarExpanded ? "w-64" : "w-16"
-                    } bg-blue-400 text-white flex flex-col transition-all duration-300`}
+                    } bg-gradient-to-r animated-background from-blue-400 to-indigo-400 text-white flex flex-col transition-all duration-300`}
             >
                 <div
                     className={`p-4 border-b border-blue-700 flex items-center justify-between ${isSidebarExpanded ? "space-x-8" : "space-x-1"
@@ -234,7 +236,7 @@ const InboxMessage = () => {
                                 </button>
 
                                 <button
-                                    onClick={deleteSelectedMessages}
+                                    onClick={()=>setShowDeleteModal(true)}
                                     className={`px-4 py-2 bg-red-500 text-white flex items-center rounded-md ${selectedMessages.length === 0 ? "opacity-50 cursor-not-allowed" : ""
                                         }`}
                                     disabled={selectedMessages.length === 0}
@@ -292,7 +294,6 @@ const InboxMessage = () => {
                         </div>
                     </section>
                 )}
-
                 {activeSection === "notifications" && (
                     <section id="notifications" className="flex-1 flex flex-col">
                         {/* Header */}
@@ -329,7 +330,7 @@ const InboxMessage = () => {
                                                         onClick={() => removeNotification(notification.transaction_id)}
                                                         className="text-red-500 text-sm"
                                                     >
-                                                        <span className="flex flex-row items-center space-x-3"> 
+                                                        <span className="flex flex-row items-center space-x-3">
                                                             <IonIcon name='trash'></IonIcon>
                                                             <p>Remove</p>
                                                         </span>
@@ -354,6 +355,23 @@ const InboxMessage = () => {
                     </section>
                 )}
             </main>
+            {showDeleteModal && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <Fade>
+                        <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
+                            <p className="text-lg">Anda yakin ingin menghapus catatan ini?</p>
+                            <div className="mt-4 flex justify-end space-x-4">
+                                <button onClick={deleteSelectedMessages} className="bg-red-500 text-white px-4 py-2 rounded">
+                                    Yes, Hapus!!!
+                                </button>
+                                <button onClick={() => setShowDeleteModal(false)} className="bg-gray-300 text-black px-4 py-2 rounded">
+                                    Tidak
+                                </button>
+                            </div>
+                        </div>
+                    </Fade>
+                </div>
+            )}
         </div>
     );
 };
