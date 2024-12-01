@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import DistanceCalculator from '../DistanceCalculator';
 import IonIcon from '@reacticons/ionicons';
 
-function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEntry, onDeleteCustomer }) {
+function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEntry, onDeleteCustomer, className }) {
     const [searchQuery, setSearchQuery] = useState(''); 
     const [currentPage, setCurrentPage] = useState(1);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -42,7 +42,7 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEnt
         setCustomerToDelete(null);
     };
     return (
-        <div className="customer-section py-12">
+        <div className={`${className} py-12`}>
             <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div className="p-6 text-gray-900">

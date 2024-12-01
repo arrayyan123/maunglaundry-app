@@ -9,7 +9,7 @@ function Notification() {
     const [removedIds, setRemovedIds] = useState(new Set());
     const [lastChecked, setLastChecked] = useState(null);
     const [isFetching, setIsFetching] = useState(false);
-    const [visibleCount, setVisibleCount] = useState(5); 
+    const [visibleCount, setVisibleCount] = useState(5);
 
     const fetchReports = async () => {
         if (isFetching) return;
@@ -57,7 +57,7 @@ function Notification() {
     }, []);
 
     const loadMoreNotifications = () => {
-        setVisibleCount((prev) => prev + 5); 
+        setVisibleCount((prev) => prev + 5);
     };
 
     const filteredNotifications = notifications.filter(
@@ -72,7 +72,10 @@ function Notification() {
                 label=""
                 dismissOnClick={false}
                 renderTrigger={() => (
-                    <span className="text-white flex items-center font-bold text-lg">
+                    <span className="flex items-center font-bold text-lg text-white">
+                        {filteredNotifications.length > 0 && (
+                            <span className="animate-ping mx-3 mb-3 absolute inline-flex h-2 w-2 rounded-full bg-red-500 opacity-100"></span>
+                        )}
                         <IonIcon name="notifications-outline" />
                         {filteredNotifications.length > 0 && (
                             <span className="ml-1 text-xs text-red-500">

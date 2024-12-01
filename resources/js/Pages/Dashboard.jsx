@@ -10,6 +10,7 @@ import AddCustButton from '@/Components/AdminDashboard/AddCustButton';
 import { Bar } from 'react-chartjs-2';
 import { Fade } from 'react-awesome-reveal';
 import IonIcon from '@reacticons/ionicons';
+import Joyride from 'react-joyride';
 
 const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
 const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
@@ -39,6 +40,41 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
     const [month, setMonth] = useState('');
     const [year, setYear] = useState('');
     const customerTable = useRef(null);
+    const [run, setRun] = useState(false);
+
+    const handleClickStart = () => {
+        setRun(true);
+    };
+    const steps = [
+        {
+            target: '.start-instruksi',
+            content: 'Selamat Datang di website admin maung laundry',
+        },
+        {
+            target: '.instruksi-pertama',
+            content: 'Disini anda bisa melihat informasi mengenai akun anda',
+        },
+        {
+            target: '.instruksi-kedua',
+            content: 'Disini anda bisa melihat informasi mengenai penjualan toko',
+        },
+        {
+            target: '.instruksi-ketiga',
+            content: 'Disini diberitahu apa saja tugas dari admin',
+        },
+        {
+            target: '.instruksi-keempat',
+            content: 'Tombol ini untuk menambahkan Customer baru yang belum terdaftar. Pastikan dengan benar untuk informasi customer',
+        },
+        {
+            target: '.instruksi-kelima',
+            content: 'Dan disini untuk daftar customer yang telah didaftar/terdaftar oleh admin atau customer',
+        },
+        {
+            target: '.instruksi-keenam',
+            content: 'Coba anda klik Add customer. Selamat Mencoba :)',
+        },
+    ];
 
     const scrollTo = (ref) => {
         if (ref.current) {
@@ -112,7 +148,6 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
         setSelectedCustomer(null);
         setTransactions([]);
     };
-
     const fetchReport = async () => {
         try {
             const response = await axios.get('/api/admin/reports', {
@@ -149,9 +184,10 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
 
     return (
         <AuthenticatedLayout
+            handleClickStart={handleClickStart} // Pass the function here
             user={auth.user}
             header={
-                <div>
+                <div className='start-instruksi'>
                     <h2 className="text-xl font-semibold leading-tight text-white">
                         Dashboard
                     </h2>
@@ -159,7 +195,22 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
             }
         >
             <Head title="Dashboard" />
-            <div className="relative my-6 p-10 md:py-12 py-20 animated-background bg-gradient-to-r from-blue-500 to-indigo-200 rounded-xl text-black">
+            <Joyride
+                run={run}
+                steps={steps}
+                styles={{
+                    options: {
+                        arrowColor: '#e3ffeb',
+                        backgroundColor: '#e3ffeb',
+                        overlayColor: 'rgba(79, 26, 0, 0.4)',
+                        primaryColor: '#000',
+                        textColor: '#004a14',
+                        width: 900,
+                        zIndex: 1000,
+                    },
+                }}
+            />
+            <div className="instruksi-pertama relative my-6 p-10 md:py-12 py-20 animated-background bg-gradient-to-r from-blue-500 to-indigo-200 rounded-xl text-black">
                 <div className="absolute z-0 top-1/2 left-10 -translate-y-1/2">
                     <img
                         src={adminPic}
@@ -173,7 +224,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                 <p className='text-right'>Selamat Datang di dashboard admin Maung Laundry</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+            <div className="instruksi-kedua grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
                 <Fade cascade>
                     <Link href={route('admin.report')}>
                         <div className="bg-blue-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
@@ -219,7 +270,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                     </Link>
                 </Fade>
             </div>
-            <div className="bg-gray-100 p-6 rounded-lg shadow my-6">
+            <div className="instruksi-ketiga bg-gray-100 p-6 rounded-lg shadow my-6">
                 <h3 className="text-lg font-bold">Tugas Admin</h3>
                 <ul className="list-disc pl-6">
                     <li>Menambahkan customer yang belum terdaftar</li>
@@ -229,9 +280,11 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                 </ul>
             </div>
 
-            <AddCustButton onClick={() => setIsAddingCustomer(true)} />
+            <AddCustButton className="instruksi-keempat instruksi-keenam" onClick={() => {
+                setIsAddingCustomer(true);
+            }} />
             {isAddingCustomer && (
-                <div className="mx-auto max-w-7xl p-6 my-10 bg-white rounded-lg">
+                <div className="mx-auto max-w-7xl p-6 my-10 bg-white rounded-lg instruksi-ketujuh">
                     <h3 className="text-lg font-semibold text-center">Add Customer</h3>
                     <AddCustomer />
                     <button
@@ -305,6 +358,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                 </Fade>
             )}
             <Request_Table
+                className="instruksi-kelima"
                 customers={customers}
                 onSelectCustomer={handleSelectCustomer}
                 onViewDetails={handleViewDetails}

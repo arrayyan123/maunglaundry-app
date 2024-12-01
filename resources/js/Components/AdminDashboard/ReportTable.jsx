@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+import IonIcon from '@reacticons/ionicons';
 
 function ReportTable() {
   const [reports, setReports] = useState([]);
@@ -209,16 +210,21 @@ function ReportTable() {
               fetchTotalPrice();
             }}
           >
-            Filter
+            <span className='flex items-center space-x-3'>
+              <IonIcon name='filter'></IonIcon>
+            </span>
           </button>
         </div>
       </div>
       <div className="mt-5">
         <button
-          className="bg-green-500 text-white p-2 rounded"
+          className="bg-green-500 hover:bg-green-600 scale-100 hover:scale-110 transition-all ease-in-out duration-300 text-white p-2 rounded"
           onClick={downloadExcel}
         >
-          Download Excel
+          <span className='flex flex-row items-center space-x-3'>
+            <IonIcon className='text-lg' name='download'></IonIcon>
+            <p>Download Excel</p>
+          </span>
         </button>
       </div>
       {/* Total Price Section */}

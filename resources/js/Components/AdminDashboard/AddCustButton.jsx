@@ -1,10 +1,10 @@
 import IonIcon from '@reacticons/ionicons'
 import React from 'react'
 
-function AddCustButton({ onClick }) {
+function AddCustButton({ onClick, className }) {
   return (
     <div>
-        <div className='mx-auto max-w-7xl sm:px-6 lg:px-8'>
+        <div className={`mx-auto max-w-7xl sm:px-6 lg:px-8 ${className}`}>
             <button 
                 className='bg-blue-500 hover:bg-blue-600 p-3 rounded-xl'
                 onClick={ onClick }

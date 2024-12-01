@@ -20,11 +20,12 @@ const logo = getImageByName('Logo_maung');
 const logout = getImageByName('Admin-Person-cartoon');
 const tutorial = getImageByName('questioning_person')
 
-export default function AuthenticatedLayout({ header, children }) {
+export default function AuthenticatedLayout({ header, children, handleClickStart }) {
     const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
     const [activeSection, setActiveSection] = useState("notes");
     const [time, setTime] = useState(new Date());
-    const [showLogOutModal, setShowLogOutModal] = useState(false)
+    const [showLogOutModal, setShowLogOutModal] = useState(false);
+    const [showTutorialModal, setShowTutorialModal] = useState(false);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -42,6 +43,11 @@ export default function AuthenticatedLayout({ header, children }) {
     };
     const { user } = usePage().props.auth;
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    
+    const handleTutorialButton = () => {
+        setShowTutorialModal(false);
+        handleClickStart(); 
+    };
 
     return (
         <div className="flex h-screen bg-gray-100">
@@ -195,8 +201,10 @@ export default function AuthenticatedLayout({ header, children }) {
                     <Fade>
                         <div className='flex flex-col items-center justify-center space-y-2'>
                             <img src={tutorial} className='w-24 h-24' alt="" />
-                            <h1 className='text-black text-center'>Apakah anda butuh tutorial untuk menggunakan adminnya?</h1>
-                            <button className='bg-blue-400 transition-all scale-100 hover:scale-110 ease-in-out px-4 py-2 rounded-xl'>
+                            <h1 className='text-black text-center'>butuh tutorial untuk menggunakan adminnya?</h1>
+                            <button
+                                onClick={() => setShowTutorialModal(true)}
+                                className='bg-blue-400 transition-all scale-100 hover:scale-110 ease-in-out px-4 py-2 rounded-xl'>
                                 <span className='flex flex-row space-x-2 items-center'>
                                     <p>Ya saya butuh</p>
                                     <IonIcon className='hover:animate-spin' name="accessibility"></IonIcon>
@@ -280,6 +288,30 @@ export default function AuthenticatedLayout({ header, children }) {
                     {children}
                 </main>
             </div>
+            {showTutorialModal && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+                    <Fade>
+                        <div className="bg-white p-6 h-auto w-96 flex flex-col items-center justify-center rounded-md shadow-md">
+                            <img src={tutorial} className='w-56 h-auto' alt="sad log out" />
+                            <h3 className="text-lg font-semibold mb-4">Anda ingin Tutorial</h3>
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => setShowTutorialModal(false)}
+                                    className="bg-gray-500 text-white px-4 py-2 rounded"
+                                >
+                                    Tidak
+                                </button>
+                                <button
+                                    onClick={handleTutorialButton}
+                                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                                >
+                                    Ya
+                                </button>
+                            </div>
+                        </div>
+                    </Fade>
+                </div>
+            )}
             {showLogOutModal && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
                     <Fade>
