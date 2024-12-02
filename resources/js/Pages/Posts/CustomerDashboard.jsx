@@ -9,6 +9,7 @@ import NotificationTwilio from "@/Components/CustomerDashboard/NotificationTwili
 import CustomerDashboardLayout from "@/Layouts/CustomerDashboardLayout";
 import IonIcon from "@reacticons/ionicons";
 import SlotCounter from 'react-slot-counter';
+import Joyride from 'react-joyride';
 
 const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
 const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
@@ -34,11 +35,36 @@ export default function CustomerDashboard() {
     const [showNotificationTwilio, setShowNotificationTwilio] = useState(false);
     const [filterProductName, setFilterProductName] = useState('');
     const [filterPaymentStatus, setFilterPaymentStatus] = useState('');
-
+    const [filterStartDate, setFilterStartDate] = useState('');
+    const [filterEndDate, setFilterEndDate] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
+    const [run, setRun] = useState(false);
 
-    const totalPages = Math.ceil(transactions.length / itemsPerPage);
+    const handleClickStart = () => {
+        setRun(true);
+    };
+    const steps = [
+        {
+            target: '.start-instruksi',
+            content: 'Selamat Datang di website dashboard customer maung laundry',
+        },
+        {
+            target: '.instruksi-pertama',
+            content: 'Disini anda bisa melihat informasi mengenai akun anda',
+        },
+        {
+            target: '.instruksi-kedua',
+            content: 'email anda (jika belum, anda bisa menambahkannya sendiri melalui halaman profil), alamat anda serta jarak dari alamat anda menuju laundry',
+        },
+        {
+            target: '.instruksi-ketiga',
+            content: 'Informasi transaksi anda pada laundry',
+        },
+        {
+            target: '.instruksi-keempat',
+            content: 'Disini adalah area input transaksi mandiri, informasi transaksi serta menyalakan notifikasi untuk transaksi anda yang masuk. Mohon gunakan dengan bijaksana. Terimakasih telah menggunakan layanan kami.',
+        },
+    ];
 
     const handleViewDetails = async (transactionId) => {
         try {
@@ -55,15 +81,25 @@ export default function CustomerDashboard() {
         }
     };
 
-    const filteredTransactions = transactions.filter(transaction => {
+    const filteredTransactions = transactions.filter((transaction) => {
         const matchesProductName = transaction.nama_produk
             .toLowerCase()
             .includes(filterProductName.toLowerCase());
         const matchesPaymentStatus = filterPaymentStatus
             ? transaction.status_payment === filterPaymentStatus
             : true;
-        return matchesProductName && matchesPaymentStatus;
+
+        const transactionStartDate = new Date(transaction.start_date);
+        const isDateInRange =
+            (!filterStartDate || transactionStartDate >= new Date(filterStartDate)) &&
+            (!filterEndDate || transactionStartDate <= new Date(filterEndDate));
+
+        return matchesProductName && matchesPaymentStatus && isDateInRange;
     });
+
+    const itemsPerPage = 5;
+
+    const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
 
     const currentTransactions = filteredTransactions.slice(
         (currentPage - 1) * itemsPerPage,
@@ -120,14 +156,30 @@ export default function CustomerDashboard() {
     return (
         <>
             <CustomerDashboardLayout
+                handleClickStart={handleClickStart}
                 header={
                     <div>
-                        <h2 className="text-xl font-semibold leading-tight text-white">
+                        <h2 className="text-xl start-instruksi font-semibold leading-tight text-white">
                             Customer Dashboard
                         </h2>
                     </div>
                 }
             >
+                <Joyride
+                    run={run}
+                    steps={steps}
+                    styles={{
+                        options: {
+                            arrowColor: '#57c2ff',
+                            backgroundColor: '#57c2ff',
+                            overlayColor: 'rgba(79, 26, 0, 0.4)',
+                            primaryColor: '#000',
+                            textColor: '#004a14',
+                            width: 400,
+                            zIndex: 1000,
+                        },
+                    }}
+                />
                 <Head title="Customer Dashboard" />
                 <div className="instruksi-pertama relative my-6 p-10 md:py-12 py-20 animated-background bg-gradient-to-r from-blue-500 to-indigo-200 rounded-xl text-black">
                     <div className="absolute z-0 top-1/2 left-10 -translate-y-1/2">
@@ -138,14 +190,14 @@ export default function CustomerDashboard() {
                         />
                     </div>
                     {customerData && (
-                    <h1 className="font-bold lg:text-[35px] text-right sm:text-[25px] text-[20px] text-black">
-                        HI! {customerData.name}
-                    </h1>
+                        <h1 className="font-bold lg:text-[35px] text-right sm:text-[25px] text-[20px] text-black">
+                            HI! {customerData.name}
+                        </h1>
                     )}
                     <p className='text-right'>Selamat Datang di Dashboard Customer Maung Laundry</p>
                 </div>
                 {customerData && (
-                    <div className="grid md:grid-cols-2 grid-flow-row md:space-x-2 space-x-0 md:space-y-0 space-y-2">
+                    <div className="grid instruksi-kedua md:grid-cols-2 grid-flow-row md:space-x-2 space-x-0 md:space-y-0 space-y-2">
                         <div className="bg-blue-400 px-5 py-4 rounded-lg flex items-center">
                             <h1 className="text-white font-semibold mx-auto">Email: {customerData.email}</h1>
                         </div>
@@ -155,41 +207,41 @@ export default function CustomerDashboard() {
                         </div>
                     </div>
                 )}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+                <div className="instruksi-ketiga grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
                     <Fade>
                         <div className="bg-green-500 text-white p-6 rounded-lg shadow">
                             <IonIcon className='text-xl' name="stats-chart"></IonIcon>
                             <h3 className="text-xl font-bold">Total Transaksi</h3>
-                            <p className="text-3xl"><SlotCounter value={transactions.length}/></p>
+                            <p className="text-3xl"><SlotCounter value={transactions.length} /></p>
                         </div>
                         <div className="bg-yellow-500 text-white p-6 rounded-lg shadow">
                             <IonIcon className='text-xl' name="warning"></IonIcon>
                             <h3 className="text-xl font-bold">Pending Requests</h3>
-                            <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'pending').length}/></p>
+                            <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'pending').length} /></p>
                         </div>
                         <div className="bg-green-500 text-white p-6 rounded-lg shadow">
                             <IonIcon className='text-xl font-bold' name="checkmark"></IonIcon>
                             <h3 className="text-xl font-bold">Done Requests</h3>
-                            <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'done').length}/></p>
+                            <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'done').length} /></p>
                         </div>
                         <div className="bg-red-500 text-white p-6 rounded-lg shadow">
                             <IonIcon className='text-xl' name="ban"></IonIcon>
                             <h3 className="text-xl font-bold">Cancel Requests</h3>
-                            <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'cancel').length}/></p>
+                            <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'cancel').length} /></p>
                         </div>
                         <div className="bg-blue-500 text-white p-6 rounded-lg shadow">
                             <IonIcon className='text-xl' name="calendar"></IonIcon>
                             <h3 className="text-xl font-bold">Ongoing Requests</h3>
-                            <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'ongoing').length}/></p>
+                            <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'ongoing').length} /></p>
                         </div>
                         <div className="bg-red-500 text-white p-6 rounded-lg shadow">
                             <IonIcon className='text-xl' name="cash"></IonIcon>
                             <h3 className="text-xl font-bold">Unpaid Requests</h3>
-                            <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_payment === 'unpaid').length}/></p>
+                            <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_payment === 'unpaid').length} /></p>
                         </div>
                     </Fade>
                 </div>
-                <main>
+                <main className="instruksi-keempat">
                     <div className="bg-white shadow sm:rounded-lg p-6">
                         {customerData && (
                             <div className="mb-6">
@@ -245,22 +297,47 @@ export default function CustomerDashboard() {
                                             </div>
                                         )}
                                         <div className="flex flex-col md:space-y-0 space-y-4 md:flex-row md:space-x-4">
-                                            <input
-                                                type="text"
-                                                placeholder="Search by Product Name"
-                                                className="border px-4 py-2 rounded-md focus:outline-none focus:ring"
-                                                value={filterProductName}
-                                                onChange={(e) => setFilterProductName(e.target.value)}
-                                            />
-                                            <select
-                                                className="border px-4 py-2 rounded-md focus:outline-none focus:ring"
-                                                value={filterPaymentStatus}
-                                                onChange={(e) => setFilterPaymentStatus(e.target.value)}
-                                            >
-                                                <option value="">All Payment Status</option>
-                                                <option value="paid">Paid</option>
-                                                <option value="unpaid">Unpaid</option>
-                                            </select>
+                                            <div className="flex flex-col">
+                                                <label htmlFor="">Penelusuri</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Search by Product Name"
+                                                    className="border px-4 py-2 rounded-md focus:outline-none focus:ring"
+                                                    value={filterProductName}
+                                                    onChange={(e) => setFilterProductName(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <label htmlFor="">Status Pembayaran</label>
+                                                <select
+                                                    className="border px-4 py-2 rounded-md focus:outline-none focus:ring"
+                                                    value={filterPaymentStatus}
+                                                    onChange={(e) => setFilterPaymentStatus(e.target.value)}
+                                                >
+                                                    <option value="">All Payment Status</option>
+                                                    <option value="paid">Paid</option>
+                                                    <option value="unpaid">Unpaid</option>
+                                                </select>
+                                            </div>
+                                            {/* Date Range Inputs */}
+                                            <div className="flex flex-col">
+                                                <label htmlFor="start date">Tanggal Mulai</label>
+                                                <input
+                                                    type="date"
+                                                    className="border px-4 py-2 rounded-md focus:outline-none focus:ring"
+                                                    value={filterStartDate}
+                                                    onChange={(e) => setFilterStartDate(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <label htmlFor="end date">Tanggal Selesai</label>
+                                                <input
+                                                    type="date"
+                                                    className="border px-4 py-2 rounded-md focus:outline-none focus:ring"
+                                                    value={filterEndDate}
+                                                    onChange={(e) => setFilterEndDate(e.target.value)}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
 
@@ -271,8 +348,14 @@ export default function CustomerDashboard() {
                                                     className="text-blue-600 hover:text-blue-800"
                                                     onClick={() => handleViewDetails(transaction.id)}
                                                 >
-                                                    View Transaction {transaction.nama_produk} status (
-                                                    {transaction.status_payment})
+                                                    <span className="flex flex-row items-center space-x-5 justify-between">
+                                                        <p>
+                                                            View Transaction {transaction.nama_produk} status (
+                                                            {transaction.status_payment})
+                                                        </p>
+                                                        <p>Tanggal Mulai: {transaction.start_date}</p>
+                                                        <p>Tanggal Selesai: {transaction.start_date}</p>
+                                                    </span>
                                                 </button>
                                             </li>
                                         ))}

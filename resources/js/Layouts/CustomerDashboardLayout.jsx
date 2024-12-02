@@ -17,7 +17,7 @@ const logo = getImageByName('Logo_maung');
 const logout = getImageByName('Admin-Person-cartoon');
 const tutorial = getImageByName('questioning_person')
 
-function CustomerDashboardLayout({ header, children }) {
+function CustomerDashboardLayout({ header, children, handleClickStart }) {
     const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
     const [isSidebarSmaller, setIsSidebarSmaller] = useState(false);
     const [activeSection, setActiveSection] = useState("notes");

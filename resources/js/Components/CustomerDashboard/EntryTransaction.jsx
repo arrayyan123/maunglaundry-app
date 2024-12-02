@@ -226,7 +226,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             </div>
 
             <div className="mb-6">
-                <h4 className="text-lg font-semibold">Select Service Type</h4>
+                <h4 className="text-lg font-semibold">Pilih Tipe Layanan</h4>
                 <select
                     onChange={handleServiceTypeChange}
                     value={selectedServiceType}
@@ -243,7 +243,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
 
             {selectedServiceType && (
                 <div className="mb-6">
-                    <h4 className="text-lg font-semibold">Select Laundry Type</h4>
+                    <h4 className="text-lg font-semibold">Pilih Tipe Servis</h4>
                     <div className="flex gap-4">
                         <label className="flex items-center gap-2">
                             <input
@@ -279,7 +279,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                 </div>
             )}
             <div className="mb-6">
-                <h4 className="text-lg font-semibold">Select Service</h4>
+                <h4 className="text-lg font-semibold">Pilih Servis</h4>
                 <select
                     onChange={handleSelectService}
                     className="w-full border border-gray-300 px-4 py-2 rounded-md"
@@ -314,9 +314,9 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                     </div>
                 ))}
             </div>
-            <h4 className="text-lg font-semibold mb-2">Total Price: Rp.{formatNumber(totalPrice)}</h4>
+            <h4 className="text-lg font-semibold mb-2">Total Harga: Rp.{formatNumber(totalPrice)}</h4>
             <div className="mb-6">
-                <h4 className="text-lg font-semibold">Payment Method</h4>
+                <h4 className="text-lg font-semibold">Metode Pembayaran</h4>
                 <select
                     value={formData.payment_method_id}
                     onChange={(e) =>
@@ -333,7 +333,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                 </select>
             </div>
             <div className="mb-6">
-                <h4 className="text-lg font-semibold">Notes</h4>
+                <h4 className="text-lg font-semibold">Catatan</h4>
                 {/* <div className="mb-4">
                     {notes.map((note) => (
                         <div key={note.id} className="bg-gray-100 p-2 rounded mb-2">
@@ -353,7 +353,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                 className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-400"
                 disabled={!formData.payment_method_id || selectedServices.length === 0}
             >
-                Save Transaction
+                Simpan Transaksi
             </button>
 
             {showModal && selectedPaymentComponent && (

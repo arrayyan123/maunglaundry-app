@@ -121,7 +121,7 @@ class ReportController extends Controller
             $query->whereNotIn('report_transactions.transaction_id', $removedIds);
         }
 
-        $newTransactions = $query->limit(5)->get();
+        $newTransactions = $query->get();
 
         return response()->json([
             'newTransactions' => $newTransactions,

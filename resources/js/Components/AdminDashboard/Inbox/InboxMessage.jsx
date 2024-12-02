@@ -336,7 +336,7 @@ const InboxMessage = () => {
                                             {filteredNotifications.length > visibleCount && (
                                                 <button
                                                     onClick={loadMoreNotifications}
-                                                    className="text-blue-500 text-xs mt-2"
+                                                    className="text-blue-500 mx-4 text-xs mt-2"
                                                 >
                                                     See More
                                                 </button>
