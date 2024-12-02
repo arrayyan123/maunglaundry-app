@@ -1,14 +1,9 @@
-import AddCustomer from '@/Components/AdminDashboard/AddCustomer';
-import Request_Table from '@/Components/AdminDashboard/Request_Table';
-import EntryTransaction from '@/Components/AdminDashboard/EntryTransaction';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
-import TransactionDetail from '@/Components/AdminDashboard/TransactionDetail';
 import axios from 'axios';
-import AddCustButton from '@/Components/AdminDashboard/AddCustButton';
-import { Fade } from 'react-reveal';
 import ReportTable from '@/Components/AdminDashboard/ReportTable';
+
 
 export default function ReportPage({ auth, customers }) {
     const [selectedCustomer, setSelectedCustomer] = useState(null);

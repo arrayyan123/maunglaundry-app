@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
+use App\Events\TransactionStored;
 
 
 class TransactionsController extends Controller
@@ -57,7 +58,7 @@ class TransactionsController extends Controller
                     'price' => $service['price'],
                 ]);
             }
-
+            // event(new TransactionStored($transaction));
             return response()->json([
                 'message' => 'Transaction saved successfully',
                 'transaction' => $transaction,
@@ -73,19 +74,25 @@ class TransactionsController extends Controller
     public function show(Request $request, $id)
     {
         try {
-            $sortBy = $request->input('sort_by', 'start_date');
-            $sortOrder = $request->input('sort_order', 'desc');
+            $sortBy = $request->input('sort_by', 'start_date'); // Default: start_date
+            $sortOrder = $request->input('sort_order', 'desc'); // Default: desc
+            $startDate = $request->input('start_date'); // Filter by start_date
+            $endDate = $request->input('end_date'); // Filter by end_date
 
             if (!in_array(strtolower($sortOrder), ['asc', 'desc'])) {
                 $sortOrder = 'desc';
             }
-            $transaction = Transaction::with('paymentMethod', 'details.serviceType', 'details.servicePrice')
-                ->where('customer_id', $id)
-                ->orderBy($sortBy, $sortOrder)
-                ->get();
-
+            $query = Transaction::with('paymentMethod', 'details.serviceType', 'details.servicePrice')
+                ->where('customer_id', $id);
+            if ($startDate) {
+                $query->whereDate('start_date', '>=', $startDate);
+            }
+            if ($endDate) {
+                $query->whereDate('end_date', '<=', $endDate);
+            }
+            $transactions = $query->orderBy($sortBy, $sortOrder)->get();
             return response()->json([
-                'transaction' => $transaction
+                'transaction' => $transactions,
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -180,8 +187,6 @@ class TransactionsController extends Controller
                 'created_at' => now('Asia/Jakarta'),
                 'updated_at' => now('Asia/Jakarta'),
             ]);
-
-
             return response()->json(['message' => 'Note added successfully', 'note' => $note], 201);
         } catch (\Exception $e) {
             Log::error('Failed to add note', [
@@ -193,21 +198,18 @@ class TransactionsController extends Controller
             return response()->json(['error' => 'Failed to add note', 'details' => $e->getMessage()], 500);
         }
     }
-    public function getNotes($transactionId)
+    public function getNotes(Request $request, $transactionId)
     {
-        $notes = Note::where('transaction_id', $transactionId)->get();
-
-        return response()->json($notes, 200);
-    }
-    public function getNotesWithCustomerInfo(Request $request)
-    {
-        $sortBy = $request->input('sort_by', 'created_at'); 
+        $sortBy = $request->input('sort_by', 'created_at');
         $sortOrder = $request->input('sort_order', 'desc');
+    
+        // Validasi sort order (asc/desc)
         if (!in_array(strtolower($sortOrder), ['asc', 'desc'])) {
             $sortOrder = 'desc';
         }
     
         $notes = Note::with(['transaction.customer'])
+            ->where('transaction_id', $transactionId)
             ->orderBy($sortBy, $sortOrder)
             ->get()
             ->map(function ($note) {
@@ -227,9 +229,39 @@ class TransactionsController extends Controller
                 ];
             });
     
+        return response()->json($notes, 200);
+    }
+    public function getNotesWithCustomerInfo(Request $request)
+    {
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortOrder = $request->input('sort_order', 'desc');
+        if (!in_array(strtolower($sortOrder), ['asc', 'desc'])) {
+            $sortOrder = 'desc';
+        }
+
+        $notes = Note::with(['transaction.customer'])
+            ->orderBy($sortBy, $sortOrder)
+            ->get()
+            ->map(function ($note) {
+                $transaction = $note->transaction;
+                $customer = $transaction->customer;
+
+                return [
+                    'id' => $note->id,
+                    'transaction_id' => $note->transaction_id,
+                    'transaction_nama_produk' => $transaction->nama_produk ?? 'unknown',
+                    'content' => $note->content,
+                    'customer_name' => $customer->name ?? 'Unknown',
+                    'customer_email' => $customer->email ?? 'Unknown',
+                    'customer_phone' => $customer->phone ?? 'Unknown',
+                    'customer_address' => $customer->address ?? 'Unknown',
+                    'created_at' => $note->created_at->format('Y-m-d H:i:s'),
+                ];
+            });
+
         return response()->json($notes);
     }
-    
+
     public function destroyNote($id)
     {
         $note = Note::find($id);

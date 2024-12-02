@@ -22,8 +22,7 @@ class PagesController extends Controller
     }
     public function dashboard()
     {
-        $customers = CustomerUser::all();
-
+        $customers = CustomerUser::orderBy('created_at', 'desc')->get();
         return Inertia::render('Dashboard', [
             'customers' => $customers
         ]);
@@ -64,8 +63,21 @@ class PagesController extends Controller
     public function editProfile($customerId)
     {
         $customer = CustomerUser::findOrFail($customerId);
-
         return Inertia::render('Posts/EditCustomer', [
+            'customer' => $customer
+        ]);
+    }
+    public function reportCustomer($customerId)
+    {
+        $customer = CustomerUser::findOrFail($customerId);
+        return Inertia::render('Posts/CustomerReport', [
+            'customer' => $customer
+        ]);
+    }
+    public function CustomerInbox($customerId)
+    {
+        $customer = CustomerUser::findOrFail($customerId);
+        return Inertia::render('Posts/CustomerInbox',[
             'customer' => $customer
         ]);
     }

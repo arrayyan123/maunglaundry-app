@@ -65,6 +65,9 @@ Route::prefix('api')->group(function () {
     Route::put('/admin/transactions/{id}/update-job-status', [TransactionsController::class, 'updateJobStatus']);
     Route::delete('/admin/transactions/{id}', [TransactionsController::class, 'destroy']);
 
+    // Route::get('/admin/transactions/{transactionId}/notes', [TransactionsController::class, 'getNotesByTransactionId']);
+    Route::get('/admin/total-price/customer/{customerId}', [ReportController::class, 'getTotalPriceByCustomerId']);
+    Route::get('/admin/reports/customer/{customerId}', [ReportController::class, 'getReportByCustomerId']);
     Route::get('/admin/transactions/{id}', [TransactionsController::class, 'show'])->name('transactions.show');
     Route::get('/admin/transactions/{id}/receipt', [TransactionsController::class, 'printReceipt']);
     Route::get('/admin/new-transactions', [ReportController::class, 'getNewTransactions']);
@@ -85,7 +88,12 @@ Route::middleware(['guest:customer'])->group(function () {
         ->name('customer.dashboard');
     Route::post('/customer/logout', [CustomerAuthController::class, 'logout'])
         ->name('customer.logout');
-    Route::get('/customer/edit-profile/{id}', [PagesController::class, 'editProfile'])->name('customer.edit-profile');
+    Route::get('/customer/edit-profile/{id}', [PagesController::class, 'editProfile'])
+        ->name('customer.edit-profile');
+    Route::get('/customer/report/{id}', [PagesController::class, 'reportCustomer'])
+        ->name('customer.report');
+    Route::get('/customer/inbox/{id}', [PagesController::class, 'CustomerInbox'])
+        ->name('customer.inbox');
 });
 
 Route::get('/', [PagesController::class, 'home'])->name('home-page');

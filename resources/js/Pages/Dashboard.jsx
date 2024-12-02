@@ -11,6 +11,7 @@ import { Bar } from 'react-chartjs-2';
 import { Fade } from 'react-awesome-reveal';
 import IonIcon from '@reacticons/ionicons';
 import Joyride from 'react-joyride';
+import SlotCounter from 'react-slot-counter';
 
 const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
 const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
@@ -97,6 +98,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
             console.error("Error fetching transactions:", error);
         }
     };
+    
     const handleViewDetails = (transactionId) => {
         console.log("Setting transaction ID:", transactionId);
         setSelectedTransactionId(transactionId);
@@ -148,6 +150,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
         setSelectedCustomer(null);
         setTransactions([]);
     };
+
     const fetchReport = async () => {
         try {
             const response = await axios.get('/api/admin/reports', {
@@ -161,6 +164,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
     useEffect(() => {
         fetchReport();
     }, [month, year, startDate, endDate, status]);
+
     const indexOfLastTransaction = currentPage * transactionsPerPage;
     const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
     const currentTransactions = transactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
@@ -200,12 +204,12 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                 steps={steps}
                 styles={{
                     options: {
-                        arrowColor: '#e3ffeb',
-                        backgroundColor: '#e3ffeb',
+                        arrowColor: '#57c2ff',
+                        backgroundColor: '#57c2ff',
                         overlayColor: 'rgba(79, 26, 0, 0.4)',
                         primaryColor: '#000',
                         textColor: '#004a14',
-                        width: 900,
+                        width: 400,
                         zIndex: 1000,
                     },
                 }}
@@ -225,47 +229,47 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
             </div>
 
             <div className="instruksi-kedua grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
-                <Fade cascade>
+                <Fade>
                     <Link href={route('admin.report')}>
                         <div className="bg-blue-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                             <IonIcon className='text-xl' name="person"></IonIcon>
                             <h3 className="text-xl font-bold">Total Customers</h3>
-                            <p className="text-3xl">{customers.length}</p>
+                            <p className="text-3xl"><SlotCounter value={customers.length} /></p>
                         </div>
                     </Link>
                     <Link href={route('admin.report')}>
                         <div className="bg-green-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                             <IonIcon className='text-xl' name="stats-chart"></IonIcon>
                             <h3 className="text-xl font-bold">Total Transactions</h3>
-                            <p className="text-3xl">{reports.length}</p>
+                            <p className="text-3xl"><SlotCounter value={reports.length} /></p>
                         </div>
                     </Link>
                     <Link href={route('admin.report')}>
                         <div className="bg-yellow-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                             <IonIcon className='text-xl' name="warning"></IonIcon>
                             <h3 className="text-xl font-bold">Pending Requests</h3>
-                            <p className="text-3xl">{reports.filter(report => report.status_job === 'pending').length}</p>
+                            <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'pending').length}/></p>
                         </div>
                     </Link>
                     <Link href={route('admin.report')}>
                         <div className="bg-green-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                             <IonIcon className='text-xl font-bold' name="checkmark"></IonIcon>
                             <h3 className="text-xl font-bold">Done Requests</h3>
-                            <p className="text-3xl">{reports.filter(report => report.status_job === 'done').length}</p>
+                            <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'done').length}/></p>
                         </div>
                     </Link>
                     <Link href={route('admin.report')}>
                         <div className="bg-red-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                             <IonIcon className='text-xl' name="ban"></IonIcon>
                             <h3 className="text-xl font-bold">Cancel Requests</h3>
-                            <p className="text-3xl">{reports.filter(report => report.status_job === 'cancel').length}</p>
+                            <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'cancel').length}/></p>
                         </div>
                     </Link>
                     <Link href={route('admin.report')}>
                         <div className="bg-blue-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                             <IonIcon className='text-xl' name="calendar"></IonIcon>
                             <h3 className="text-xl font-bold">Ongoing Requests</h3>
-                            <p className="text-3xl">{reports.filter(report => report.status_job === 'ongoing').length}</p>
+                            <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'ongoing').length}/></p>
                         </div>
                     </Link>
                 </Fade>

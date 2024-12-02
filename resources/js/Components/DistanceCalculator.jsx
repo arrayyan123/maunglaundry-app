@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import SlotCounter from 'react-slot-counter';
 
 const DistanceCalculator = ({ customerAddress }) => {
     const [distance, setDistance] = useState(null);
@@ -34,7 +35,7 @@ const DistanceCalculator = ({ customerAddress }) => {
             <h2 className="font-semibold">Jarak menuju Maung Laundry</h2>
             {distance !== null && (
                 <div className={`mt-2 ${getDistanceClass()}`}>
-                    Jarak: {distance.toFixed(2)} km
+                    Jarak: <SlotCounter value={distance.toFixed(2)}/> km
                 </div>
             )}
             {error && <div className="mt-2 text-red-600">{error}</div>}

@@ -13,7 +13,7 @@ const InboxMessage = () => {
     const [notifications, setNotifications] = useState([]);
     const [fetchedIds, setFetchedIds] = useState(new Set());
     const [removedIds, setRemovedIds] = useState(new Set());
-    const [lastChecked, setLastChecked] = useState(null);
+    const [lastChecked, setLastChecked] = useState(Date.now());
     const [isFetching, setIsFetching] = useState(false);
     const [visibleCount, setVisibleCount] = useState(5);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -27,23 +27,25 @@ const InboxMessage = () => {
                 params: { lastChecked },
             });
 
-            const newReports = response.data.newTransactions;
+            const newReports = response.data.newTransactions || [];
             const filteredReports = newReports.filter(
                 (report) => !fetchedIds.has(report.transaction_id) && !removedIds.has(report.transaction_id)
             );
 
             if (filteredReports.length > 0) {
-                setNotifications((prev) => [...filteredReports, ...prev]);
-
+                setNotifications((prev) => [...prev, ...filteredReports]);
                 setFetchedIds((prev) => {
                     const updatedIds = new Set(prev);
                     filteredReports.forEach((report) => updatedIds.add(report.transaction_id));
                     return updatedIds;
                 });
-                setLastChecked(newReports[0]?.start_date);
+                const latestTimestamp = Math.max(...filteredReports.map((r) => new Date(r.created_at).getTime()));
+                setLastChecked(latestTimestamp);
+            } else {
+                console.log("No new reports found.");
             }
         } catch (error) {
-            console.error('Error fetching reports:', error);
+            console.error("Error fetching reports:", error);
         } finally {
             setIsFetching(false);
         }
@@ -51,7 +53,6 @@ const InboxMessage = () => {
 
     const removeNotification = (id) => {
         setNotifications((prev) => prev.filter((notification) => notification.transaction_id !== id));
-
         setRemovedIds((prev) => {
             const updatedIds = new Set(prev);
             updatedIds.add(id);
@@ -63,15 +64,18 @@ const InboxMessage = () => {
         fetchReports();
     }, []);
 
-    const loadMoreNotifications = () => {
-        setVisibleCount((prev) => prev + 5);
-    };
-
     const filteredNotifications = notifications.filter(
         (notification) => notification.status_job !== 'done' || notification.status_payment !== 'paid'
     );
 
     const displayedNotifications = filteredNotifications.slice(0, visibleCount);
+
+    const loadMoreNotifications = () => {
+        setVisibleCount((prev) => prev + 5);
+        if (visibleCount >= filteredNotifications.length) {
+            fetchReports();
+        }
+    };
 
     useEffect(() => {
         axios
@@ -83,6 +87,11 @@ const InboxMessage = () => {
                 console.error("Error fetching notes:", error);
             });
     }, []);
+
+    useEffect(() => {
+        console.log("InboxMessage Notifications:", notifications);
+        console.log("InboxMessage Filtered Notifications:", filteredNotifications);
+    }, [notifications, filteredNotifications]);
 
     const deleteMessage = async (id) => {
         try {
@@ -137,7 +146,7 @@ const InboxMessage = () => {
         }
 
         return (
-            <div className="p-4">
+            <div className="p-4 overflow-y-auto min-h-[45vh]">
                 <h1 className="text-xl font-semibold text-gray-700">
                     Nama Produk: {selectedMessage.transaction_nama_produk}
                 </h1>
@@ -209,14 +218,6 @@ const InboxMessage = () => {
                         </li>
                     </ul>
                 </nav>
-                {/* <div
-                    className={`${isSidebarExpanded ? "p-4" : "p-2"
-                        } border-t border-blue-700`}
-                >
-                    <Link href={route('logout')} method="post"><button className="w-full bg-blue-700 py-2 rounded text-white hover:bg-blue-600 text-sm">
-                        {isSidebarExpanded ? "Logout" : <IonIcon name="log-out-outline" />}
-                    </button></Link>
-                </div> */}
             </aside>
             {/* Main Content */}
             <main className="flex-1 flex flex-col">
@@ -236,7 +237,7 @@ const InboxMessage = () => {
                                 </button>
 
                                 <button
-                                    onClick={()=>setShowDeleteModal(true)}
+                                    onClick={() => setShowDeleteModal(true)}
                                     className={`px-4 py-2 bg-red-500 text-white flex items-center rounded-md ${selectedMessages.length === 0 ? "opacity-50 cursor-not-allowed" : ""
                                         }`}
                                     disabled={selectedMessages.length === 0}
@@ -248,7 +249,7 @@ const InboxMessage = () => {
                         {/* Body */}
                         <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
                             {/* Message List */}
-                            <section className="w-full md:w-1/3 border-r bg-white overflow-y-auto max-h-[75vh]">
+                            <section className="w-full md:w-1/3 border-r bg-white overflow-y-auto lg:max-h-[76vh] md:max-h-[77vh] sm:max-h-[28vh] max-h-[26vh]">
                                 <div>
                                     {messages.map((message) => (
                                         <div
@@ -301,15 +302,10 @@ const InboxMessage = () => {
                             <h1 className="text-lg font-semibold text-gray-700 mb-2 md:mb-0">
                                 Notification
                             </h1>
-                            {/* <input
-                                type="text"
-                                placeholder="Search notifications..."
-                                className="px-4 py-2 w-full md:w-1/3 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-                            /> */}
                         </header>
                         {/* Body */}
                         <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
-                            <section className="w-full border-r bg-white overflow-y-auto">
+                            <section className="w-full border-r bg-white overflow-y-auto max-h-[77vh]">
                                 <div>
                                     {displayedNotifications.length > 0 ? (
                                         <>

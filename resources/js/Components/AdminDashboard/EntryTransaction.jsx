@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { addDays, addHours } from "date-fns";
 import axios from "axios";
-
+const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
+const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
+const images = { ...pngImages, ...webpImages };
+const getImageByName = (name) => {
+    const matchingImage = Object.keys(images).find((path) => path.includes(`${name}`));
+    return matchingImage ? images[matchingImage].default || images[matchingImage] : null;
+};
+const logo = getImageByName('Logo_maung');
 
 function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     const [formData, setFormData] = useState({
@@ -25,6 +32,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     const [paymentMethod, setPaymentMethod] = useState([]);
     const [statusPayment, setStatusPayment] = useState("unpaid");
     const [statusJob, setStatusJob] = useState("ongoing");
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         axios.get(`/api/customer/${customerId}`).then((res) => setCustomerDetails(res.data));
@@ -36,7 +44,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         }).format(value);
-    };
+    };   
 
     const handleServiceTypeChange = (e) => {
         const serviceTypeId = e.target.value;
@@ -56,7 +64,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             setEndDate(estimatedEndDate);
         }
     };
-
+        
     const handleLaundryTypeChange = (e) => {
         const laundryType = e.target.value;
         setSelectedLaundryType(laundryType);
@@ -124,16 +132,15 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                 phone: customerDetails.phone,
                 message,
             });
-            alert("WhatsApp notification sent successfully");
+            console.log("WhatsApp notification sent successfully");
         } catch (error) {
             console.error("Error sending WhatsApp notification:", error);
-            alert("Failed to send WhatsApp notification");
         }
     };
 
     useEffect(() => {
         axios.get("/api/admin/payment-methods").then((res) => setPaymentMethod(res.data));
-    }, []);
+    }, []);  
 
     useEffect(() => {
         const total = selectedServices.reduce((acc, service) => {
@@ -144,6 +151,8 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     }, [selectedServices, quantity]);
 
     const handleSave = async () => {
+        if (isSaving) return; 
+        setIsSaving(true);
         if (!customerId || !formData.payment_method_id || selectedServices.length === 0) {
             alert("Please fill all required fields.");
             return;
@@ -172,13 +181,11 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             const response = await axios.post("/api/admin/transactions", dataToSend);
             if (response.status === 201) {
                 const transaction = response.data.transaction;
-                setTransactionId(transaction.id);
-    
+                setTransactionId(transaction.id);                 
                 if (newNote.trim()) {
                     await addNote(transaction.id); 
                 }
-
-                alert("Transaction saved successfully");
+                // alert("Transaction saved succes sfully");
                 setTransactionId(response.data.transaction.id);
                 setShowReceiptModal(true);
                 sendWhatsAppNotification(dataToSend);
@@ -189,6 +196,8 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
         } catch (error) {
             console.error("Error:", error);
             alert("There was an error while saving the transaction");
+        } finally {
+            setIsSaving(false);
         }
     };
     const handlePrintReceipt = () => {
@@ -201,7 +210,9 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     return (
         <div className="max-w-3xl mx-auto p-6 my-8 bg-white shadow-md rounded-md">
             <h2 className="text-xl font-bold mb-4">Entry Transaction</h2>
-
+            <div className="mb-6">
+                <h3 className="text-lg font-semibold">Real-time Notifications</h3>
+            </div>
             <div className="mb-6">
                 <h3 className="text-lg font-semibold">Customer Details</h3>
                 <p className="text-gray-700">Name: {customerDetails.name}</p>

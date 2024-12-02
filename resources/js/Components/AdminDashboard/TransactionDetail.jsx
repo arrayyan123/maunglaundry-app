@@ -20,7 +20,8 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
-
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   useEffect(() => {
     if (showConfirmModal) {
@@ -46,7 +47,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
           ? `/api/admin/transactions/${transactionId}`
           : `/api/customer/${customerId}`;
 
-        const response = await axios.get(endpoint);
+        const response = await axios.get(endpoint)
         const transactionsData = response.data.transaction || response.data.transactions;
         setTransactions(transactionsData);
         setFilteredTransactions(transactionsData);
@@ -67,7 +68,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
             acc[id] = name;
             return acc;
           }, {});
-          setCustomerNames(customerNamesObject); 
+          setCustomerNames(customerNamesObject);
         }
       } catch (error) {
         console.error("Failed to load transaction details:", error);
@@ -79,6 +80,26 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
     if (customerId || transactionId) fetchData();
   }, [customerId, transactionId]);
 
+  const handleFilter = async () => {
+    try {
+      const endpoint = transactionId
+        ? `/api/admin/transactions/${transactionId}`
+        : `/api/customer/${customerId}`;
+
+      const response = await axios.get(endpoint, {
+        params: {
+          start_date: startDate || undefined, // Kirim hanya jika tidak kosong
+          end_date: endDate || undefined,
+        },
+      });
+
+      const transactionsData = response.data.transaction || response.data.transactions;
+      setTransactions(transactionsData);
+      setFilteredTransactions(transactionsData);
+    } catch (error) {
+      console.error("Failed to filter transactions:", error);
+    }
+  };
 
   const customer = customerNames[transaction?.customer_id];
 
@@ -153,9 +174,9 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
       );
       return matchesProductName || matchesLaundryType || matchesServiceType;
     });
-  
+
     setFilteredTransactions(filtered);
-  
+
     // Reset ke halaman pertama hanya jika query pencarian berubah
     if (searchQuery !== "") {
       setCurrentPage(1);
@@ -169,13 +190,6 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
     indexOfFirstTransaction,
     indexOfLastTransaction
   );
-
-  // useEffect(() => {
-  //   const totalPages = Math.ceil(filteredTransactions.length / transactionsPerPage);
-  //   if (currentPage > totalPages) {
-  //     setCurrentPage(totalPages); 
-  //   }
-  // }, [filteredTransactions, currentPage, transactionsPerPage]);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -198,14 +212,14 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
   const handlePrintReceipt = () => {
     if (selectedTransaction) {
       window.open(`/api/admin/transactions/${selectedTransaction}/receipt`, "_blank");
-      setShowReceiptModal(false); 
+      setShowReceiptModal(false);
     }
   };
-  
+
   const handleClickPrint = (transactionId) => {
     setSelectedTransaction(transactionId);
-    setShowReceiptModal(true); 
-  };  
+    setShowReceiptModal(true);
+  };
 
   if (loading) {
     return <div className="flex items-center justify-center h-screen text-gray-700">Loading...</div>;
@@ -217,15 +231,51 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
 
   return (
     <div className="max-w-3xl mx-auto p-6 mb-10 bg-white shadow-md rounded-lg">
-      <div className="mb-6">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => handleSearch(e.target.value)}
-          placeholder="Search by product name, laundry type, or service type..."
-          className="w-full p-2 border border-gray-300 rounded"
-        />
+      <div className="flex justify-evenly md:flex-row flex-col md:space-y-0 space-y-3 space-x-0 md:space-x-4 mb-6">
+        <div>
+          <label htmlFor="search" className="block text-sm font-medium text-gray-700">
+            Search
+          </label>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+            placeholder="Search by product name, laundry type, or service type..."
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <div>
+          <label htmlFor="start-date" className="block text-sm font-medium text-gray-700">
+            Start Date
+          </label>
+          <input
+            type="date"
+            id="start-date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)} // Update state saat tanggal dipilih
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <div>
+          <label htmlFor="end-date" className="block text-sm font-medium text-gray-700">
+            End Date
+          </label>
+          <input
+            type="date"
+            id="end-date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)} // Update state saat tanggal dipilih
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <button
+          onClick={handleFilter}
+          className="self-end px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+        >
+          <IonIcon name='filter'></IonIcon>
+        </button>
       </div>
+
       {currentTransactions.map(transaction => (
         <div key={transaction.id} className='border border-gray-300 rounded-lg p-4 mb-6 bg-gray-50 hover:bg-gray-100'>
           <h3 className="text-lg font-bold text-gray-800 mb-2">Transaction Details</h3>
@@ -460,5 +510,4 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
 
   );
 }
-
 export default TransactionDetail;

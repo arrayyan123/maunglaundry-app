@@ -11,8 +11,10 @@
         "guzzlehttp/guzzle": "^7.9",
         "inertiajs/inertia-laravel": "^1.0",
         "laravel/framework": "^11.9",
+        "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+        "pusher/pusher-php-server": "^7.2",
         "spatie/pdf-to-image": "^1.2",
         "tightenco/ziggy": "^2.0",
         "twilio/sdk": "^8.3"

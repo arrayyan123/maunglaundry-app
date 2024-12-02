@@ -3,6 +3,7 @@ import axios from 'axios';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import IonIcon from '@reacticons/ionicons';
+import SlotCounter from 'react-slot-counter';
 
 function ReportTable() {
   const [reports, setReports] = useState([]);
@@ -34,11 +35,16 @@ function ReportTable() {
       console.error('Error fetching reports:', error);
     }
   };
+
+  const formatDateTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString(); 
+  };
+
   const downloadExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Reports');
 
-    // Header
     worksheet.columns = [
       { header: 'Transaction ID', key: 'transaction_id', width: 15 },
       { header: 'Customer ID', key: 'customer_id', width: 15 },
@@ -61,13 +67,12 @@ function ReportTable() {
         laundry_type: report.laundry_type,
         status_job: report.status_job,
         status_payment: report.status_payment,
-        start_date: new Date(report.start_date).toLocaleDateString(),
-        end_date: new Date(report.end_date).toLocaleDateString(),
+        start_date: formatDateTime(report.start_date),
+        end_date: formatDateTime(report.end_date),
         total_price: formatNumber(report.total_price),
       });
     });
 
-    // Styling (optional)
     worksheet.getRow(1).font = { bold: true };
     worksheet.eachRow((row, rowNumber) => {
       row.eachCell((cell) => {
@@ -229,7 +234,7 @@ function ReportTable() {
       </div>
       {/* Total Price Section */}
       <div className="my-4">
-        <h2 className="text-lg font-semibold">Total Pemasukan: Rp.{formatNumber(totalPrice)}</h2>
+        <h2 className="text-lg font-semibold">Total Pemasukan: Rp.<SlotCounter value={formatNumber(totalPrice)} /></h2>
       </div>
 
       {/* Table Section */}
@@ -274,12 +279,12 @@ function ReportTable() {
                           : 'bg-transparent'
                     }`}>{report.status_payment}</td>
                 <td className="border p-2">
-                  {new Date(report.start_date).toLocaleDateString()}
+                  {formatDateTime(report.start_date)}
                 </td>
                 <td className="border p-2">
-                  {new Date(report.end_date).toLocaleDateString()}
+                  {formatDateTime(report.end_date)}
                 </td>
-                <td className="border px-4 py-2">Rp.{formatNumber(report.total_price)}</td>
+                <td className="border px-4 py-2">Rp.<SlotCounter value={formatNumber(report.total_price)} /></td>
               </tr>
             ))}
           </tbody>

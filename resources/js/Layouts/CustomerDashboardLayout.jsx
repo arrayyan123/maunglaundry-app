@@ -1,11 +1,8 @@
-import Notification from '@/Components/AdminDashboard/Notification';
-import ApplicationLogo from '@/Components/ApplicationLogo';
-import Dropdown from '@/Components/Dropdown';
-import NavLink from '@/Components/NavLink';
 import { Link, usePage } from '@inertiajs/react';
 import IonIcon from '@reacticons/ionicons';
 import { useState, useEffect } from 'react';
-import { Fade } from 'react-awesome-reveal';
+import { Fade, Zoom } from 'react-awesome-reveal';
+import { Dropdown } from "flowbite-react";
 
 const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
 const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
@@ -20,13 +17,32 @@ const logo = getImageByName('Logo_maung');
 const logout = getImageByName('Admin-Person-cartoon');
 const tutorial = getImageByName('questioning_person')
 
-export default function AuthenticatedLayout({ header, children, handleClickStart }) {
+function CustomerDashboardLayout({ header, children }) {
     const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
     const [isSidebarSmaller, setIsSidebarSmaller] = useState(false);
     const [activeSection, setActiveSection] = useState("notes");
     const [time, setTime] = useState(new Date());
     const [showLogOutModal, setShowLogOutModal] = useState(false);
     const [showTutorialModal, setShowTutorialModal] = useState(false);
+    const [customerData, setCustomerData] = useState(null);
+    const [selectedTransactionId, setSelectedTransactionId] = useState(null);
+    const [transactions, setTransactions] = useState([]);
+    const [transactionDetails, setTransactionDetails] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [showEntryTransaction, setShowEntryTransaction] = useState(false);
+    const [showNotificationTwilio, setShowNotificationTwilio] = useState(false);
+    const [filterProductName, setFilterProductName] = useState('');
+    const [filterPaymentStatus, setFilterPaymentStatus] = useState('');
+
+    const fetchTransactions = async (customerId) => {
+        try {
+            const response = await axios.get(`/api/admin/transactions/${customerId}`);
+            setTransactions(response.data.transaction);
+        } catch (error) {
+            console.error("Error fetching transactions:", error);
+        }
+    };
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -48,6 +64,27 @@ export default function AuthenticatedLayout({ header, children, handleClickStart
     const handleTutorialButton = () => {
         setShowTutorialModal(false);
         handleClickStart();
+    };
+
+    useEffect(() => {
+        const storedToken = localStorage.getItem("customer-token");
+        if (!storedToken) {
+            window.location.href = "/customer/login";
+        } else {
+            const storedCustomer = localStorage.getItem("customer-data");
+            if (storedCustomer) {
+                const customer = JSON.parse(storedCustomer);
+                setCustomerData(customer);
+                fetchTransactions(customer.id);
+            }
+        }
+    }, []);
+
+    const handleLogout = (e) => {
+        e.preventDefault();
+        localStorage.removeItem("customer-token");
+        localStorage.removeItem("customer-data");
+        window.location.href = "/customer/login";
     };
 
     return (
@@ -76,59 +113,61 @@ export default function AuthenticatedLayout({ header, children, handleClickStart
                             }`} />
                     </button>
                 </div>
-                <nav className="flex-1 p-0">
+                <nav className="flex-1 p-2">
                     <ul className="space-y-2">
-                        <li>
-                            <NavLink href={route('dashboard')} active={route().current('dashboard')}>
-                                <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
-                                    <IonIcon className='text-[20px]' name="build"></IonIcon>
-                                    <span
-                                        className={`${isSidebarExpanded ? "block" : "hidden"
-                                            } text-sm`}
-                                    >
-                                        Dashboard
-                                    </span>
-                                </div>
-                            </NavLink>
+                        <li><a href="/customer/dashboard">
+                            <div className='py-2 px-4 rounded cursor-pointer text-white flex bg-blue-500 hover:bg-blue-700 items-center gap-4'>
+                                <IonIcon className='text-[20px]' name="build"></IonIcon>
+                                <span
+                                    className={`${isSidebarExpanded ? "block" : "hidden"
+                                        } text-sm`}
+                                >
+                                    Dashboard
+                                </span>
+                            </div>
+                        </a>
                         </li>
                         <li>
-                            <NavLink href={route('admin.report')} active={route().current('admin.report')}>
-                                <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
-                                    <IonIcon className='text-[20px]' name="cash"></IonIcon>
-                                    <span
-                                        className={`${isSidebarExpanded ? "block" : "hidden"
-                                            } text-sm`}
-                                    >
-                                        Laporan
-                                    </span>
-                                </div>
-                            </NavLink>
+                            {customerData && (
+                                <a href={`/customer/report/${customerData.id}`}>
+                                    <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-500 hover:bg-blue-700'>
+                                        <IonIcon className='text-[20px]' name="cash"></IonIcon>
+                                        <span
+                                            className={`${isSidebarExpanded ? "block" : "hidden"
+                                                } text-sm`}
+                                        >
+                                            Laporan Transaksi Anda
+                                        </span>
+
+                                    </div>
+                                </a>
+                            )}
                         </li>
                         <li>
-                            <NavLink href={route('diagram.page')} active={route().current('diagram.page')}>
-                                <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
-                                    <IonIcon className='text-[20px]' name="stats-chart"></IonIcon>
-                                    <span
-                                        className={`${isSidebarExpanded ? "block" : "hidden"
-                                            } text-sm`}
-                                    >
-                                        Chart Penjualan
-                                    </span>
-                                </div>
-                            </NavLink>
+                            <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-500 hover:bg-blue-700'>
+                                <IonIcon className='text-[20px]' name="stats-chart"></IonIcon>
+                                <span
+                                    className={`${isSidebarExpanded ? "block" : "hidden"
+                                        } text-sm`}
+                                >
+                                    Perkembangan Anda
+                                </span>
+                            </div>
                         </li>
                         <li>
-                            <NavLink href={route('inbox.admin')} active={route().current('inbox.admin')}>
-                                <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
-                                    <IonIcon className='text-[20px]' name="chatbox"></IonIcon>
-                                    <span
-                                        className={`${isSidebarExpanded ? "block" : "hidden"
-                                            } text-sm`}
-                                    >
-                                        Inbox
-                                    </span>
-                                </div>
-                            </NavLink>
+                            {customerData && (
+                                <a href={`/customer/inbox/${customerData.id}`}>
+                                    <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-500 hover:bg-blue-700'>
+                                        <IonIcon className='text-[20px]' name="chatbox"></IonIcon>
+                                        <span
+                                            className={`${isSidebarExpanded ? "block" : "hidden"
+                                                } text-sm`}
+                                        >
+                                            Inbox
+                                        </span>
+                                    </div>
+                                </a>
+                            )}
                         </li>
                     </ul>
                 </nav>
@@ -136,7 +175,7 @@ export default function AuthenticatedLayout({ header, children, handleClickStart
                     <Fade>
                         <div className='flex flex-col items-center justify-center space-y-2'>
                             <img src={tutorial} className='w-24 h-24' alt="" />
-                            <h1 className='text-black text-center'>butuh tutorial untuk menggunakan adminnya?</h1>
+                            <h1 className='text-black text-center'>butuh tutorial untuk menggunakan<br /> dashboardnya?</h1>
                             <button
                                 onClick={() => setShowTutorialModal(true)}
                                 className='bg-blue-400 transition-all scale-100 hover:scale-110 ease-in-out px-4 py-2 rounded-xl'>
@@ -175,13 +214,13 @@ export default function AuthenticatedLayout({ header, children, handleClickStart
                                 <button onClick={() => setIsSidebarSmaller(!isSidebarSmaller)}>
                                     <span>
                                         <IonIcon className={`text-2xl transform transition-transform duration-500 text-white ${isSidebarSmaller ? "rotate-90" : "rotate-0"
-                                            }`} name={isSidebarSmaller ? "arrow-up-circle" : "arrow-back-circle"}></IonIcon>
-                                    </span>                                </button>
+                            }`} name={ isSidebarSmaller ? "arrow-up-circle" : "arrow-back-circle"}></IonIcon>
+                                    </span>
+                                </button>
                             </div>
                             {header && (
                                 <div className="text-lg font-semibold flex items-center text-gray-900 truncate">{header}</div>
                             )}
-                            <Notification />
                             <div className='md:block hidden'>
                                 <div className="text-center text-gray-800 flex flex-row items-center space-x-4">
                                     <div className="text-[15px] text-white font-medium">{formatDate(time)}</div>
@@ -189,38 +228,24 @@ export default function AuthenticatedLayout({ header, children, handleClickStart
                                 </div>
                             </div>
                         </div>
-
-                        <Dropdown>
-                            <Dropdown.Trigger>
-                                <button className="flex items-center text-sm font-medium text-white hover:text-gray-200 focus:outline-none">
-                                    {user.name}
-                                    <svg
-                                        className="ml-1 h-4 w-4"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M19 9l-7 7-7-7"
-                                        />
-                                    </svg>
-                                </button>
-                            </Dropdown.Trigger>
-                            <Dropdown.Content>
-                                <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
-                                <Dropdown.Link href={route('logout')} method="post" as="button">
-                                    Log Out
-                                </Dropdown.Link>
-                            </Dropdown.Content>
-                        </Dropdown>
+                        <div className=''>
+                            {customerData && (
+                                <Dropdown renderTrigger={() =>
+                                    <span className="text-sm text-white hover:text-gray-200 cursor-pointer flex flex-row items-center space-x-1">
+                                        <p>{customerData.name}</p>
+                                        <IonIcon className='text-[20px]' name='chevron-down'></IonIcon>
+                                    </span>}>
+                                    <Zoom>
+                                        <Dropdown.Item onClick={() => (window.location.href = `/customer/edit-profile/${customerData.id}`)}>Profile</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => setShowLogOutModal(true)}>Sign out</Dropdown.Item>
+                                    </Zoom>
+                                </Dropdown>
+                            )}
+                        </div>
                     </div>
                 </header>
                 {/* Main Content */}
-                <main className="flex-1 overflow-y-auto p-2 sm:p-4">
+                <main className="flex-1 overflow-y-auto md:px-4 px-4 sm:p-4">
                     {children}
                 </main>
             </div>
@@ -261,13 +286,12 @@ export default function AuthenticatedLayout({ header, children, handleClickStart
                                 >
                                     Tidak
                                 </button>
-                                <Link href={route('logout')} method="post">
-                                    <button
-                                        className="bg-blue-500 text-white px-4 py-2 rounded"
-                                    >
-                                        Ya
-                                    </button>
-                                </Link>
+                                <button
+                                    onClick={handleLogout}
+                                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                                >
+                                    Ya
+                                </button>
                             </div>
                         </div>
                     </Fade>
@@ -276,3 +300,5 @@ export default function AuthenticatedLayout({ header, children, handleClickStart
         </div>
     );
 }
+
+export default CustomerDashboardLayout

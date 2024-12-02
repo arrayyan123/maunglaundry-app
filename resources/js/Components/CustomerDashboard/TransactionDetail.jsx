@@ -13,6 +13,33 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
     const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [selectedPaymentComponent, setSelectedPaymentComponent] = useState(null);
+    const [showNoteArea, setShowNoteArea] = useState(false);
+    const [newNote, setNewNote] = useState("");
+    const [notes, setNotes] = useState([]);  // Added notes state
+
+    const addNote = async () => {
+        if (!newNote.trim()) {
+            alert("Note content cannot be empty");
+            return;
+        }
+        if (!transactionId) {
+            console.error("Transaction ID is missing");
+            alert("Cannot add note because transaction ID is missing");
+            return;
+        }
+        try {
+            const response = await axios.post(`/api/admin/transactions/${transactionId}/notes`, {
+                content: newNote,
+            });
+            setNotes((prevNotes) => [...prevNotes, response.data.note]);
+            alert("Note added successfully!"); 
+            setNewNote("");
+            setShowNoteArea(false);
+        } catch (error) {
+            console.error("Failed to add note", error);
+            alert("Failed to add note");
+        }
+    };
 
     useEffect(() => {
         const fetchCustomerName = async () => {
@@ -101,6 +128,8 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                 </p>
                 <p><strong>Status Payment:</strong> {transaction.status_payment}</p>
                 <p><strong>Status Job:</strong> {transaction.status_job}</p>
+                <p><strong>Start Date:</strong> {transaction.start_date}</p>
+                <p><strong>Estimasi selesai:</strong> {transaction.end_date}</p>
 
                 <h3 className="text-lg font-medium mb-2">Services</h3>
                 <ul className="list-disc list-inside">
@@ -117,7 +146,22 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                         <p>No service details available.</p>
                     )}
                 </ul>
-
+                {showNoteArea && (
+                    <div className="mt-4">
+                        <textarea
+                            value={newNote}
+                            onChange={(e) => setNewNote(e.target.value)}
+                            placeholder="Add your note here..."
+                            className="border rounded p-2 w-full"
+                        />
+                        <button
+                            onClick={addNote}
+                            className="bg-green-500 text-white px-4 py-2 rounded mt-2"
+                        >
+                            Add Note
+                        </button>
+                    </div>
+                )}
                 <div className="mt-6 flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 items-center">
                     <button
                         onClick={() => {
@@ -135,11 +179,18 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                             </button>
                         </a>
                     )}
+                    <button 
+                        onClick={()=>setShowNoteArea(true)}
+                        className="py-2 px-4 bg-blue-500 text-white rounded w-full md:w-auto">
+                        <span>
+                            <p>Berikan Catatan</p>
+                        </span>
+                    </button>
                     <button onClick={onClose} className="bg-gray-300 text-black px-4 py-2 rounded w-full md:w-auto">
                         Close
                     </button>
                 </div>
-
+                
 
                 {showCancelModal && selectedTransaction && (
                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

@@ -21,6 +21,7 @@ const logout = getImageByName('Admin-Person-cartoon');
 
 export default function AuthenticatedLayoutInbox({ header, children }) {
     const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+    const [isSidebarSmaller, setIsSidebarSmaller] = useState(false);
     const [activeSection, setActiveSection] = useState("notes");
     const [time, setTime] = useState(new Date());
     const [showLogOutModal, setShowLogOutModal] = useState(false)
@@ -46,74 +47,8 @@ export default function AuthenticatedLayoutInbox({ header, children }) {
         <div className="flex h-screen bg-gray-100">
             {/* Sidebar */}
             <aside
-                className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-md hidden transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-                    }`}
-            >
-                <div className="h-full flex flex-col">
-                    <div className="flex items-center justify-between h-16 px-4 border-b">
-                        <Link href="/" className="flex items-center space-x-3">
-                            <img src={logo} className="h-9 w-auto" />
-                            <span className="ml-2 text-xl font-semibold">Dashboard</span>
-                        </Link>
-                        <button
-                            onClick={() => setIsSidebarOpen(false)}
-                            className="text-gray-500 hover:text-gray-700 focus:outline-none"
-                        >
-                            <svg
-                                className="w-6 h-6"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    fillRule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                    clipRule="evenodd"
-                                />
-                            </svg>
-                        </button>
-                    </div>
-
-                    {/* Navigation Links */}
-                    <nav className="flex flex-col px-4 py-6 space-y-2">
-                        <NavLink href={route('dashboard')} active={route().current('dashboard')}>
-                            <div className='space-x-3 scale-100 hover:scale-110 transition-all ease-in-out duration-300 flex flex-row items-center'>
-                                <p>Dashboard</p>
-                                <IonIcon className='text-[20px]' name="build-outline"></IonIcon>
-                            </div>
-                        </NavLink>
-                        <NavLink href={route('admin.report')} active={route().current('admin.report')}>
-                            <div className='space-x-3 scale-100 hover:scale-110 transition-all ease-in-out duration-300 flex flex-row items-center'>
-                                <p>Laporan</p>
-                                <IonIcon className='text-[20px]' name="cash-outline"></IonIcon>
-                            </div>
-
-                        </NavLink>
-                        <NavLink href={route('diagram.page')} active={route().current('diagram.page')}>
-                            <div className='space-x-3 scale-100 hover:scale-110 transition-all ease-in-out duration-300 flex flex-row items-center'>
-                                <p>Chart Penjualan</p>
-                                <IonIcon className='text-[20px]' name="bar-chart-outline"></IonIcon>
-                            </div>
-
-                        </NavLink>
-                        <NavLink href={route('inbox.admin')} active={route().current('inbox.admin')}>
-                            <div className='space-x-3 scale-100 hover:scale-110 transition-all ease-in-out duration-300 flex flex-row items-center'>
-                                <p>Inbox</p>
-                                <IonIcon className='text-[20px]' name="chatbox-outline"></IonIcon>
-                            </div>
-                        </NavLink>
-                        <NavLink href="#">
-                            Coming Soon
-                        </NavLink>
-                        <NavLink href="#">
-                            Coming Soon
-                        </NavLink>
-                    </nav>
-                </div>
-            </aside>
-            <aside
                 className={`${isSidebarExpanded ? "w-64" : "w-16"
-                    } bg-gradient-to-t animated-background from-blue-400 to-indigo-400 text-white flex flex-col block transition-all duration-300`}
+                    } ${isSidebarSmaller ? "md:translate-x-0 translate-x-[-100%]" : "translate-x-0"} bg-gradient-to-t animated-background from-blue-400 to-indigo-400 text-white flex flex-col block transition-all duration-300`}
             >
                 <div
                     className={`p-4 border-b border-blue-700 flex items-center justify-between ${isSidebarExpanded ? "space-x-8" : "space-x-1"
@@ -208,17 +143,18 @@ export default function AuthenticatedLayoutInbox({ header, children }) {
                 </div>
             </aside>
             {/* Page Content */}
-            <div className="flex-1 flex flex-col overflow-hidden">
+            <div className={`${isSidebarSmaller ? "absolute md:relative left-0 top-0 w-full h-screen" : "relative"
+                } flex-1 flex flex-col overflow-hidden`}>
                 <header className="flex items-center justify-around bg-gradient-to-l animated-background from-blue-400 to-indigo-400 shadow px-4 py-10 sm:px-6">
                     <div className='flex sm:flex-row items-center sm:space-x-9 flex-col sm:space-y-0 space-y-4 w-full'>
                         <div className='flex items-center space-x-4 sm:space-x-6 w-full'>
-                            <button
-                                onClick={() => setIsSidebarOpen(true)}
-                                className="text-white hover:text-gray-200 hidden flex items-center focus:outline-none"
-                            >
-                                <IonIcon name="menu-outline" className='text-[25px]' />
-                            </button>
-
+                            <div className='mt-1 md:hidden block'>
+                                <button onClick={() => setIsSidebarSmaller(!isSidebarSmaller)}>
+                                    <span>
+                                        <IonIcon className={`text-2xl transform transition-transform duration-500 text-white ${isSidebarSmaller ? "rotate-90" : "rotate-0"
+                                            }`} name={isSidebarSmaller ? "arrow-up-circle" : "arrow-back-circle"}></IonIcon>
+                                    </span>                                </button>
+                            </div>
                             {header && (
                                 <div className="text-lg font-semibold flex items-center text-gray-900 truncate">{header}</div>
                             )}
@@ -261,7 +197,7 @@ export default function AuthenticatedLayoutInbox({ header, children }) {
                     </div>
                 </header>
                 {/* Main Content */}
-                <main className="flex-1 lg:h-svh h-0 lg:overflow-y-hidden overflow-y-auto">
+                <main className="flex-1 lg:h-svh h-0 overflow-y-hidden">
                     {children}
                 </main>
             </div>

@@ -27,6 +27,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     const [paymentMethod, setPaymentMethod] = useState([]);
     const [statusPayment, setStatusPayment] = useState("unpaid");
     const [statusJob, setStatusJob] = useState("ongoing");
+    const [isSaving, setIsSaving] = useState(false);
 
     const formatNumber = (value) => {
         return new Intl.NumberFormat('en-US', {
@@ -102,6 +103,11 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             alert("Cannot add note because transaction ID is missing");
             return;
         }
+
+        if (notes.some((note) => note.content === newNote.trim())) {
+            alert("Note is already added");
+            return;
+        }
         try {
             const response = await axios.post(`/api/admin/transactions/${noteTransactionId}/notes`, {
                 content: newNote,
@@ -148,7 +154,8 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     }, [selectedServices, quantity]);
 
     const handleSave = async () => {
-
+        if (isSaving) return; // Hindari aksi ganda
+        setIsSaving(true);
         if (!customerId || !formData.payment_method_id || selectedServices.length === 0 || !endDate) {
             alert("Please fill all required fields.");
             return;
@@ -192,7 +199,6 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                 if (newNote.trim()) {
                     await addNote(transaction.id); 
                 }
-
                 alert("Transaction saved successfully");
                 setTransactionId(response.data.transaction.id);
                 addNote(response.data.transaction.id);
@@ -204,6 +210,8 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
         } catch (error) {
             console.error("Error:", error);
             alert("There was an error while saving the transaction");
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -306,10 +314,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                     </div>
                 ))}
             </div>
-
-
             <h4 className="text-lg font-semibold mb-2">Total Price: Rp.{formatNumber(totalPrice)}</h4>
-
             <div className="mb-6">
                 <h4 className="text-lg font-semibold">Payment Method</h4>
                 <select
@@ -329,13 +334,13 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             </div>
             <div className="mb-6">
                 <h4 className="text-lg font-semibold">Notes</h4>
-                <div className="mb-4">
+                {/* <div className="mb-4">
                     {notes.map((note) => (
                         <div key={note.id} className="bg-gray-100 p-2 rounded mb-2">
                             {note.content}
                         </div>
                     ))}
-                </div>
+                </div> */}
                 <textarea
                     className="w-full border border-gray-300 px-4 py-2 rounded-md"
                     placeholder="Add a note for this transaction"

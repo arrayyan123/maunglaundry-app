@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Dropdown } from "flowbite-react";
 import IonIcon from '@reacticons/ionicons';
+import { Fade } from 'react-awesome-reveal';
 
 function Notification() {
     const [notifications, setNotifications] = useState([]);
@@ -85,39 +86,41 @@ function Notification() {
                     </span>
                 )}
             >
-                <div className="w-56 p-4 bg-white rounded-lg shadow-md">
-                    <h1 className="text-sm font-bold">Notifications</h1>
-                    {displayedNotifications.length > 0 ? (
-                        <>
-                            {displayedNotifications.map((notification) => (
-                                <div
-                                    key={notification.transaction_id}
-                                    className="border-b border-gray-200 pb-2 mb-2 flex justify-between items-center"
-                                >
-                                    <p className="text-xs text-gray-600">
-                                        <strong>{notification.nama_produk}</strong> - {notification.customer_name} - {notification.start_date} - {notification.status_job} - {notification.status_payment}
-                                    </p>
-                                    <button
-                                        onClick={() => removeNotification(notification.transaction_id)}
-                                        className="text-red-500 text-xs"
+                <Fade>
+                    <div className="w-56 p-4 bg-white rounded-lg shadow-md">
+                        <h1 className="text-sm font-bold">Notifications</h1>
+                        {displayedNotifications.length > 0 ? (
+                            <>
+                                {displayedNotifications.map((notification) => (
+                                    <div
+                                        key={notification.transaction_id}
+                                        className="border-b border-gray-200 pb-2 mb-2 flex justify-between items-center"
                                     >
-                                        Remove
+                                        <p className="text-xs text-gray-600">
+                                            <strong>{notification.nama_produk}</strong> - {notification.customer_name} - {notification.start_date} - {notification.status_job} - {notification.status_payment}
+                                        </p>
+                                        <button
+                                            onClick={() => removeNotification(notification.transaction_id)}
+                                            className="text-red-500 text-xs"
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
+                                ))}
+                                {filteredNotifications.length > visibleCount && (
+                                    <button
+                                        onClick={loadMoreNotifications}
+                                        className="text-blue-500 text-xs mt-2"
+                                    >
+                                        See More
                                     </button>
-                                </div>
-                            ))}
-                            {filteredNotifications.length > visibleCount && (
-                                <button
-                                    onClick={loadMoreNotifications}
-                                    className="text-blue-500 text-xs mt-2"
-                                >
-                                    See More
-                                </button>
-                            )}
-                        </>
-                    ) : (
-                        <p className="text-xs text-gray-500">No new notifications.</p>
-                    )}
-                </div>
+                                )}
+                            </>
+                        ) : (
+                            <p className="text-xs text-gray-500">No new notifications.</p>
+                        )}
+                    </div>
+                </Fade>
             </Dropdown>
         </div>
     );
