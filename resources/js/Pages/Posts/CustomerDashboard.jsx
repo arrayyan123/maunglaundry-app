@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { Swiper, SwiperSlide } from 'swiper/react';
 import { Head } from "@inertiajs/react";
 import axios from "axios";
 import EntryTransaction from "@/Components/CustomerDashboard/EntryTransaction";
@@ -10,6 +11,11 @@ import CustomerDashboardLayout from "@/Layouts/CustomerDashboardLayout";
 import IonIcon from "@reacticons/ionicons";
 import SlotCounter from 'react-slot-counter';
 import Joyride from 'react-joyride';
+
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+import { Keyboard, Pagination, Navigation } from 'swiper/modules';
 
 const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
 const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
@@ -40,6 +46,9 @@ export default function CustomerDashboard() {
     const [currentPage, setCurrentPage] = useState(1);
     const [run, setRun] = useState(false);
     const [showEntryInstructionModal, setShowEntryInstructionModal] = useState(false)
+    const entryTransactionRef = useRef(null);
+    const notificationRef = useRef(null);
+
 
     const handleClickStart = () => {
         setRun(true);
@@ -150,9 +159,26 @@ export default function CustomerDashboard() {
     const handleToggleEntryTransaction = () => {
         setShowEntryTransaction(!showEntryTransaction);
         setShowEntryInstructionModal(true);
+        setTimeout(() => {
+            if (entryTransactionRef.current) {
+                entryTransactionRef.current.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
+            }
+        }, 100);
+
     };
     const handleToggleNotificationTwilio = () => {
         setShowNotificationTwilio(!showNotificationTwilio);
+        setTimeout(() => {
+            if (notificationRef.current) {
+                notificationRef.current.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
+            }
+        }, 100);
     }
 
     return (
@@ -201,7 +227,7 @@ export default function CustomerDashboard() {
                 {customerData && (
                     <div className="grid instruksi-kedua md:grid-cols-2 grid-flow-row md:space-x-2 space-x-0 md:space-y-0 space-y-2">
                         <div className="bg-blue-400 px-5 py-4 rounded-lg flex items-center">
-                            <h1 className="text-white font-semibold mx-auto">Email: {customerData.email}</h1>
+                            <h1 className="text-white text-xl font-semibold mx-auto">Email: {customerData.email}</h1>
                         </div>
                         <div className="bg-blue-400 px-5 py-4 rounded-lg text-white">
                             <h1 className="text-white font-semibold">Alamat: {customerData.address}</h1>
@@ -209,7 +235,86 @@ export default function CustomerDashboard() {
                         </div>
                     </div>
                 )}
-                <div className="instruksi-ketiga grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+                <div className="flex flex-col md:flex-row justify-center md:space-x-4 space-y-4 md:space-y-0 mt-4 w-full">
+                    <button
+                        onClick={handleToggleEntryTransaction}
+                        className="px-4 py-2 text-white bg-green-500 hover:bg-green-600 rounded-lg flex-grow"
+                    >
+                        <span className="flex flex-row items-center justify-center space-x-2">
+                            <IonIcon name="add-circle"></IonIcon>
+                            <p>Masukkan Transaksi</p>
+                        </span>
+                    </button>
+                    <button
+                        onClick={handleToggleNotificationTwilio}
+                        className="px-4 py-2 text-white bg-yellow-500 hover:bg-yellow-600 rounded-lg flex-grow"
+                    >
+                        <span className="flex flex-row items-center justify-center space-x-2">
+                            <IonIcon name="notifications"></IonIcon>
+                            <p>Nyalakan Notifikasi</p>
+                        </span>
+                    </button>
+                </div>
+
+                <div className="my-3 instruksi-ketiga relative z-0 md:hidden block">
+                    <Swiper
+                        slidesPerView={1}
+                        spaceBetween={30}
+                        keyboard={{
+                            enabled: true,
+                        }}
+                        pagination={{
+                            clickable: true,
+                        }}
+                        navigation={true}
+                        modules={[Keyboard, Pagination, Navigation]}
+                        className="mySwiper"
+                    >
+                        <SwiperSlide>
+                            <div className="bg-green-500 text-white p-6 rounded-lg shadow">
+                                <IonIcon className='text-xl' name="stats-chart"></IonIcon>
+                                <h3 className="text-xl font-bold">Total Transaksi</h3>
+                                <p className="text-3xl"><SlotCounter value={transactions.length} /></p>
+                            </div>
+                        </SwiperSlide>
+                        <SwiperSlide>
+                            <div className="bg-yellow-500 text-white p-6 rounded-lg shadow">
+                                <IonIcon className='text-xl' name="warning"></IonIcon>
+                                <h3 className="text-xl font-bold">Pending Requests</h3>
+                                <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'pending').length} /></p>
+                            </div>
+                        </SwiperSlide>
+                        <SwiperSlide>
+                            <div className="bg-green-500 text-white p-6 rounded-lg shadow">
+                                <IonIcon className='text-xl font-bold' name="checkmark"></IonIcon>
+                                <h3 className="text-xl font-bold">Done Requests</h3>
+                                <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'done').length} /></p>
+                            </div>
+                        </SwiperSlide>
+                        <SwiperSlide>
+                            <div className="bg-red-500 text-white p-6 rounded-lg shadow">
+                                <IonIcon className='text-xl' name="ban"></IonIcon>
+                                <h3 className="text-xl font-bold">Cancel Requests</h3>
+                                <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'cancel').length} /></p>
+                            </div>
+                        </SwiperSlide>
+                        <SwiperSlide>
+                            <div className="bg-blue-500 text-white p-6 rounded-lg shadow">
+                                <IonIcon className='text-xl' name="calendar"></IonIcon>
+                                <h3 className="text-xl font-bold">Ongoing Requests</h3>
+                                <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'ongoing').length} /></p>
+                            </div>
+                        </SwiperSlide>
+                        <SwiperSlide>
+                            <div className="bg-red-500 text-white p-6 rounded-lg shadow">
+                                <IonIcon className='text-xl' name="cash"></IonIcon>
+                                <h3 className="text-xl font-bold">Unpaid Requests</h3>
+                                <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_payment === 'unpaid').length} /></p>
+                            </div>
+                        </SwiperSlide>
+                    </Swiper>
+                </div>
+                <div className="instruksi-ketiga md:grid hidden grid-cols-1 md:grid-cols-3 gap-4 my-6">
                     <Fade>
                         <div className="bg-green-500 text-white p-6 rounded-lg shadow">
                             <IonIcon className='text-xl' name="stats-chart"></IonIcon>
@@ -247,29 +352,18 @@ export default function CustomerDashboard() {
                     <div className="bg-white shadow sm:rounded-lg p-6">
                         {customerData && (
                             <div className="mb-6">
-                                <div className="flex space-x-4 mt-4">
-                                    <button
-                                        onClick={handleToggleEntryTransaction}
-                                        className="px-4 py-2 text-white bg-green-500 hover:bg-green-600 rounded-lg"
-                                    >
-                                        Masukkan Transaksi
-                                    </button>
-                                    <button
-                                        onClick={handleToggleNotificationTwilio}
-                                        className="px-4 py-2 text-white bg-yellow-500 hover:bg-yellow-600 rounded-lg"
-                                    >
-                                        Nyalakan Notifikasi
-                                    </button>
-                                </div>
+
                             </div>
                         )}
 
                         {loading && <p>Loading transactions...</p>}
 
                         {showNotificationTwilio && !showEntryTransaction && !selectedTransactionId && (
-                            <NotificationTwilio
-                                handleToggleNotificationTwilio={handleToggleNotificationTwilio}
-                            />
+                            <div ref={notificationRef}>
+                                <NotificationTwilio
+                                    handleToggleNotificationTwilio={handleToggleNotificationTwilio}
+                                />
+                            </div>
                         )}
                         {selectedTransactionId ? (
                             <TransactionDetail
@@ -283,7 +377,7 @@ export default function CustomerDashboard() {
                                     <div className="mb-6">
                                         {showEntryTransaction && (
                                             <div className="bg-gray-100 p-6 mb-5 rounded-lg shadow-lg">
-                                                <div className="flex justify-between items-center mb-4">
+                                                <div ref={entryTransactionRef} className="flex justify-between items-center mb-4">
                                                     <h3 className="text-xl text-center font-semibold">Masukkan Info Transaksi Anda</h3>
                                                     <button
                                                         className="text-red-500 hover:text-red-600 font-bold"
@@ -363,9 +457,10 @@ export default function CustomerDashboard() {
                                         ))}
                                     </ul>
                                     {showEntryInstructionModal && (
-                                        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+                                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                            {console.log("Modal rendered")}
                                             <Slide direction="down">
-                                                <div className="bg-white p-6 h-auto md:w-[48%] mx-auto flex flex-col items-center justify-center rounded-md shadow-md">
+                                                <div className="bg-white p-6 h-auto md:w-[48%] mx-auto flex flex-col items-center justify-center rounded-md shadow-md z-50">
                                                     <img src={logo} className='w-36 h-auto' alt="sad log out" />
                                                     <h3 className="text-lg font-semibold mb-4">Gunakan Fitur ini dengan bijaksana</h3>
                                                     <Fade cascade>

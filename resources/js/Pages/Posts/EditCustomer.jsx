@@ -47,12 +47,33 @@ export default function EditCustomer({ customer }) {
         e.preventDefault();
         setLoading(true);
 
+        const token = localStorage.getItem("customer-token");
+        if (!token) {
+            setMessage({ type: "error", text: "Token not found. Please log in again." });
+            setLoading(false);
+            return;
+        }
         try {
-            const response = await axios.put(`/api/customer/${customer.id}`, formData);
+            const response = await axios.put(
+                `/api/customer/${customer.id}`,
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+            const updatedCustomer = response.data.customer;
+            setCustomerData(updatedCustomer);
+            localStorage.setItem("customer-data", JSON.stringify(updatedCustomer));
+
             setMessage({ type: "success", text: "Profile updated successfully!" });
         } catch (error) {
             console.error("Error updating profile:", error);
-            setMessage({ type: "error", text: "Failed to update profile." });
+            const errorMessage =
+                error.response?.data?.message || "Failed to update profile.";
+            setMessage({ type: "error", text: errorMessage });
         } finally {
             setLoading(false);
         }

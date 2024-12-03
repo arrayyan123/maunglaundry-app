@@ -167,7 +167,7 @@ function CustomerInbox({ customer }) {
                     {/* Sidebar */}
                     <aside
                         className={`${isSidebarExpanded ? "w-64" : "w-16"
-                            } bg-gradient-to-r animated-background from-blue-400 to-indigo-400 text-white flex flex-col transition-all duration-300`}
+                            } bg-gray-900 text-white flex flex-col transition-all duration-300`}
                     >
                         <div
                             className={`p-4 border-b border-blue-700 flex items-center justify-between ${isSidebarExpanded ? "space-x-8" : "space-x-1"
@@ -191,7 +191,7 @@ function CustomerInbox({ customer }) {
                             <ul className="space-y-2">
                                 <li
                                     onClick={() => setActiveSection("notes")}
-                                    className={`py-2 px-4 rounded cursor-pointer flex items-center gap-4 ${activeSection === "notes" ? "bg-blue-700" : "hover:bg-blue-700"
+                                    className={`py-2 px-4 rounded cursor-pointer flex items-center gap-4 ${activeSection === "notes" ? "bg-blue-gray-600" : "hover:bg-blue-gray-600"
                                         }`}
                                 >
                                     <IonIcon name="mail-outline" className="text-[20px] text-white" />
@@ -204,7 +204,7 @@ function CustomerInbox({ customer }) {
                                 </li>
                                 <li
                                     onClick={() => setActiveSection("notifications")}
-                                    className={`py-2 px-4 rounded cursor-pointer flex items-center gap-4 ${activeSection === "notifications" ? "bg-blue-700" : "hover:bg-blue-700"
+                                    className={`py-2 px-4 rounded cursor-pointer flex items-center gap-4 ${activeSection === "notifications" ? "bg-blue-gray-600" : "hover:bg-blue-gray-600"
                                         }`}
                                 >
                                     <IonIcon name="notifications-outline" className="text-[20px] text-white" />

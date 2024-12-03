@@ -4,6 +4,7 @@ import EntryTransaction from '@/Components/AdminDashboard/EntryTransaction';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
 import { useState, useEffect, useRef } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
 import TransactionDetail from '@/Components/AdminDashboard/TransactionDetail';
 import axios from 'axios';
 import AddCustButton from '@/Components/AdminDashboard/AddCustButton';
@@ -12,6 +13,11 @@ import { Fade } from 'react-awesome-reveal';
 import IonIcon from '@reacticons/ionicons';
 import Joyride from 'react-joyride';
 import SlotCounter from 'react-slot-counter';
+
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+import { Keyboard, Pagination, Navigation } from 'swiper/modules';
 
 const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
 const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
@@ -42,6 +48,8 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
     const [year, setYear] = useState('');
     const customerTable = useRef(null);
     const [run, setRun] = useState(false);
+    const entryTransactionRef = useRef(null);
+    const detailTransactionRef = useRef(null);
 
     const handleClickStart = () => {
         setRun(true);
@@ -88,8 +96,28 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
         setSelectedTransactionId(null);
         setTransactionDetails(null);
         fetchTransactions(customer.id);
+    
+        const refsToScroll = [entryTransactionRef, detailTransactionRef];
+        refsToScroll.forEach((ref, index) => {
+            setTimeout(() => {
+                if (ref.current) {
+                    ref.current.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                    });
+                }
+            }, index * 100); 
+        });
     };
-
+    useEffect(() => {
+        if (selectedTransactionId && detailTransactionRef.current) {
+            detailTransactionRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+            });
+        }
+    }, [selectedTransactionId, selectedCustomer]);
+    
     const fetchTransactions = async (customerId) => {
         try {
             const response = await axios.get(`/api/admin/transactions/${customerId}`);
@@ -98,7 +126,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
             console.error("Error fetching transactions:", error);
         }
     };
-    
+
     const handleViewDetails = (transactionId) => {
         console.log("Setting transaction ID:", transactionId);
         setSelectedTransactionId(transactionId);
@@ -227,8 +255,77 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                 </h1>
                 <p className='text-right'>Selamat Datang di dashboard admin Maung Laundry</p>
             </div>
-
-            <div className="instruksi-kedua grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+            <div className='my-3 instruksi-kedua md:hidden block'>
+                <Swiper
+                    slidesPerView={1}
+                    spaceBetween={30}
+                    keyboard={{
+                        enabled: true,
+                    }}
+                    pagination={{
+                        clickable: true,
+                    }}
+                    navigation={true}
+                    modules={[Keyboard, Pagination, Navigation]}
+                    className="mySwiper"
+                >
+                    <SwiperSlide>
+                        <Link href={route('admin.report')}>
+                            <div className="bg-blue-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                                <IonIcon className='text-xl' name="person"></IonIcon>
+                                <h3 className="text-xl font-bold">Total Customers</h3>
+                                <p className="text-3xl"><SlotCounter value={customers.length} /></p>
+                            </div>
+                        </Link>
+                    </SwiperSlide>
+                    <SwiperSlide>
+                        <Link href={route('admin.report')}>
+                            <div className="bg-green-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                                <IonIcon className='text-xl' name="stats-chart"></IonIcon>
+                                <h3 className="text-xl font-bold">Total Transactions</h3>
+                                <p className="text-3xl"><SlotCounter value={reports.length} /></p>
+                            </div>
+                        </Link>
+                    </SwiperSlide>
+                    <SwiperSlide>
+                        <Link href={route('admin.report')}>
+                            <div className="bg-yellow-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                                <IonIcon className='text-xl' name="warning"></IonIcon>
+                                <h3 className="text-xl font-bold">Pending Requests</h3>
+                                <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'pending').length} /></p>
+                            </div>
+                        </Link>
+                    </SwiperSlide>
+                    <SwiperSlide>
+                        <Link href={route('admin.report')}>
+                            <div className="bg-green-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                                <IonIcon className='text-xl font-bold' name="checkmark"></IonIcon>
+                                <h3 className="text-xl font-bold">Done Requests</h3>
+                                <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'done').length} /></p>
+                            </div>
+                        </Link>
+                    </SwiperSlide>
+                    <SwiperSlide>
+                        <Link href={route('admin.report')}>
+                            <div className="bg-red-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                                <IonIcon className='text-xl' name="ban"></IonIcon>
+                                <h3 className="text-xl font-bold">Cancel Requests</h3>
+                                <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'cancel').length} /></p>
+                            </div>
+                        </Link>
+                    </SwiperSlide>
+                    <SwiperSlide>
+                        <Link href={route('admin.report')}>
+                            <div className="bg-blue-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                                <IonIcon className='text-xl' name="calendar"></IonIcon>
+                                <h3 className="text-xl font-bold">Ongoing Requests</h3>
+                                <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'ongoing').length} /></p>
+                            </div>
+                        </Link>
+                    </SwiperSlide>
+                </Swiper>
+            </div>
+            <div className="instruksi-kedua md:grid hidden grid-cols-1 md:grid-cols-3 gap-4 my-6">
                 <Fade>
                     <Link href={route('admin.report')}>
                         <div className="bg-blue-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
@@ -248,28 +345,28 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                         <div className="bg-yellow-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                             <IonIcon className='text-xl' name="warning"></IonIcon>
                             <h3 className="text-xl font-bold">Pending Requests</h3>
-                            <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'pending').length}/></p>
+                            <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'pending').length} /></p>
                         </div>
                     </Link>
                     <Link href={route('admin.report')}>
                         <div className="bg-green-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                             <IonIcon className='text-xl font-bold' name="checkmark"></IonIcon>
                             <h3 className="text-xl font-bold">Done Requests</h3>
-                            <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'done').length}/></p>
+                            <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'done').length} /></p>
                         </div>
                     </Link>
                     <Link href={route('admin.report')}>
                         <div className="bg-red-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                             <IonIcon className='text-xl' name="ban"></IonIcon>
                             <h3 className="text-xl font-bold">Cancel Requests</h3>
-                            <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'cancel').length}/></p>
+                            <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'cancel').length} /></p>
                         </div>
                     </Link>
                     <Link href={route('admin.report')}>
                         <div className="bg-blue-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                             <IonIcon className='text-xl' name="calendar"></IonIcon>
                             <h3 className="text-xl font-bold">Ongoing Requests</h3>
-                            <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'ongoing').length}/></p>
+                            <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'ongoing').length} /></p>
                         </div>
                     </Link>
                 </Fade>
@@ -300,7 +397,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                 </div>
             )}
             {selectedCustomer && !selectedTransactionId && (
-                <div className='mx-auto max-w-7xl p-3 my-10 bg-white rounded-lg'>
+                <div ref={entryTransactionRef} className='mx-auto max-w-7xl p-3 my-10 bg-white rounded-lg'>
                     <Fade>
                         <EntryTransaction
                             customerId={selectedCustomer.id}
@@ -318,11 +415,13 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
             )}
 
             {selectedTransactionId && selectedCustomer && (
-                <TransactionDetail
-                    customerId={selectedCustomer.id}
-                    transactionId={selectedTransactionId}
-                    onClose={handleCloseTransactionDetail}
-                />
+                <div ref={detailTransactionRef}>
+                    <TransactionDetail
+                        customerId={selectedCustomer.id}
+                        transactionId={selectedTransactionId}
+                        onClose={handleCloseTransactionDetail}
+                    />
+                </div>
             )}
             {selectedCustomer && !selectedTransactionId && transactions.length > 0 && (
                 <Fade>

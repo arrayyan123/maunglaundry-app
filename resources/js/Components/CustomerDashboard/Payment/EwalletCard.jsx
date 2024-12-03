@@ -14,7 +14,7 @@ function EwalletCard() {
     return (
         <div>
             <Fade>
-                <h1 className='font-bold text-[30px]'>EwalletCard</h1>
+                <h1 className='font-bold text-[30px]'>E-wallet (QRIS)</h1>
                 <a href=""><button className='text-blue-500 my-5'>Harap hubungi pihak admin untuk mengirim bukti pembayaran</button></a>
                 <img src={logo} className='lg:w-auto lg:h-[600px]' alt="" />
             </Fade>

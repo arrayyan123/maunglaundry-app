@@ -333,7 +333,9 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                   <p><strong>Service Type:</strong> {detail?.service_type?.jenis_pelayanan || "N/A"}</p>
                   <p><strong>Service Price:</strong> Rp.{formatNumber(detail?.service_price?.harga || "N/A")}</p>
                   <p><strong>Quantity:</strong> {detail?.quantity || "N/A"}</p>
-                  <p><strong>Total Price:</strong> Rp.{formatNumber(detail?.price || "N/A")}</p>
+                  <div className='py-2 px-4 bg-green-400 rounded-lg mt-3 w-48'>
+                    <p className='font-bold text-[20px]'><strong>Total Harga:</strong> Rp.{formatNumber(detail?.price || "N/A")}</p>
+                  </div>
                 </li>
               ))
             ) : (

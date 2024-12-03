@@ -92,7 +92,7 @@ function CustomerDashboardLayoutInbox({ header, children }) {
             {/* Sidebar */}
             <aside
                 className={`${isSidebarExpanded ? "w-64" : "w-16"
-                    } ${isSidebarSmaller ? "md:translate-x-0 translate-x-[-100%]" : "translate-x-0"} bg-gradient-to-t animated-background from-blue-400 to-indigo-400 text-white flex flex-col block transition-all duration-300`}
+                    } ${isSidebarSmaller ? "md:translate-x-0 translate-x-[-100%]" : "translate-x-0"} bg-gray-900 text-white flex flex-col block transition-all duration-300`}
             >
                 <div
                     className={`p-4 border-b border-blue-700 flex items-center justify-between ${isSidebarExpanded ? "space-x-8" : "space-x-1"
@@ -116,7 +116,7 @@ function CustomerDashboardLayoutInbox({ header, children }) {
                 <nav className="flex-1 p-2">
                     <ul className="space-y-2">
                         <li><a href="/customer/dashboard">
-                            <div className='py-2 px-4 rounded cursor-pointer text-white flex bg-blue-500 hover:bg-blue-700 items-center gap-4'>
+                            <div className='py-2 px-4 rounded cursor-pointer text-white flex bg-blue-gray-600 hover:bg-blue-gray-800 items-center gap-4'>
                                 <IonIcon className='text-[20px]' name="build"></IonIcon>
                                 <span
                                     className={`${isSidebarExpanded ? "block" : "hidden"
@@ -130,7 +130,7 @@ function CustomerDashboardLayoutInbox({ header, children }) {
                         <li>
                             {customerData && (
                                 <a href={`/customer/report/${customerData.id}`}>
-                                    <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-500 hover:bg-blue-700'>
+                                    <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-gray-600 hover:bg-blue-gray-800'>
                                         <IonIcon className='text-[20px]' name="cash"></IonIcon>
                                         <span
                                             className={`${isSidebarExpanded ? "block" : "hidden"
@@ -144,7 +144,7 @@ function CustomerDashboardLayoutInbox({ header, children }) {
                             )}
                         </li>
                         <li>
-                            <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-500 hover:bg-blue-700'>
+                            <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-gray-600 hover:bg-blue-gray-800'>
                                 <IonIcon className='text-[20px]' name="stats-chart"></IonIcon>
                                 <span
                                     className={`${isSidebarExpanded ? "block" : "hidden"
@@ -157,7 +157,7 @@ function CustomerDashboardLayoutInbox({ header, children }) {
                         <li>
                             {customerData && (
                                 <a href={`/customer/inbox/${customerData.id}`}>
-                                    <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-500 hover:bg-blue-700'>
+                                    <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-gray-600 hover:bg-blue-gray-800'>
                                         <IonIcon className='text-[20px]' name="chatbox"></IonIcon>
                                         <span
                                             className={`${isSidebarExpanded ? "block" : "hidden"
@@ -191,7 +191,7 @@ function CustomerDashboardLayoutInbox({ header, children }) {
                     className={`${isSidebarExpanded ? "p-4" : "p-2"
                         } border-t border-blue-700`}
                 >
-                    <button onClick={() => setShowLogOutModal(true)} className="w-full bg-blue-700 py-2 rounded text-white hover:bg-blue-600 flex items-center text-sm">
+                    <button onClick={() => setShowLogOutModal(true)} className="w-full bg-blue-gray-600 hover:bg-blue-gray-800 py-2 rounded text-white flex items-center text-sm">
                         <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
                             <IonIcon className='text-[20px]' name="log-out-outline"></IonIcon>
                             <span
@@ -207,7 +207,7 @@ function CustomerDashboardLayoutInbox({ header, children }) {
             {/* Page Content */}
             <div className={`${isSidebarSmaller ? "absolute md:relative left-0 top-0 w-full h-screen" : "relative"
                 } flex-1 flex flex-col overflow-hidden`}>
-                <header className="flex items-center justify-around bg-gradient-to-l animated-background from-blue-400 to-indigo-400 shadow px-4 py-10 sm:px-6">
+                <header className="flex items-center justify-around bg-gray-900 shadow px-4 py-10 sm:px-6">
                     <div className='flex sm:flex-row items-center sm:space-x-9 flex-col sm:space-y-0 space-y-4 w-full'>
                         <div className='flex items-center space-x-4 sm:space-x-6 w-full'>
                             <div className='mt-1 md:hidden block'>

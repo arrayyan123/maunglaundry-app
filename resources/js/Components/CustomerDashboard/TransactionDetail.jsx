@@ -111,7 +111,12 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
     return (
         <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg border border-gray-200">
             <div className="mb-6">
-                <h3 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Transaction Details</h3>
+                <div className="flex flex-row justify-between items-center border-b py-2 mb-3">
+                    <h3 className="text-2xl font-bold text-gray-800">Transaction Details</h3>
+                    <button onClick={onClose} className="bg-gray-300 text-black px-4 py-2 rounded w-full md:w-auto">
+                        Close
+                    </button>
+                </div>
                 <p><strong>Nama Customer:</strong> {customerName} </p>
                 <p><strong>Nama Produk:</strong> {transaction?.nama_produk}</p>
                 <p><strong>Laundry Type:</strong> {transaction?.laundry_type}</p>
@@ -131,8 +136,8 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                 <p><strong>Start Date:</strong> {transaction.start_date}</p>
                 <p><strong>Estimasi selesai:</strong> {transaction.end_date}</p>
 
-                <h3 className="text-lg font-medium mb-2">Services</h3>
-                <ul className="list-disc list-inside">
+                <h3 className="text-lg font-bold my-2">Services</h3>
+                <ul className="list-inside">
                     {Array.isArray(transaction?.details) && transaction.details.length > 0 ? (
                         transaction.details.map((detail) => (
                             <li key={detail.id} className="mb-2">
@@ -185,9 +190,6 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                         <span>
                             <p>Berikan Catatan</p>
                         </span>
-                    </button>
-                    <button onClick={onClose} className="bg-gray-300 text-black px-4 py-2 rounded w-full md:w-auto">
-                        Close
                     </button>
                 </div>
                 
