@@ -2,7 +2,9 @@ import React from 'react'
 
 function TransferCard() {
   return (
-    <div>TransferCard</div>
+    <div>
+      TransferCard
+    </div>
   )
 }
 

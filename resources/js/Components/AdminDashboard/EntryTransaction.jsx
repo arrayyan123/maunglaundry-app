@@ -185,7 +185,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                 if (newNote.trim()) {
                     await addNote(transaction.id); 
                 }
-                // alert("Transaction saved succes sfully");
+                alert("Transaction saved successfully");
                 setTransactionId(response.data.transaction.id);
                 setShowReceiptModal(true);
                 sendWhatsAppNotification(dataToSend);

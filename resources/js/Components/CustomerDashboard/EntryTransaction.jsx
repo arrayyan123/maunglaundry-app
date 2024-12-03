@@ -103,11 +103,6 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             alert("Cannot add note because transaction ID is missing");
             return;
         }
-
-        if (notes.some((note) => note.content === newNote.trim())) {
-            alert("Note is already added");
-            return;
-        }
         try {
             const response = await axios.post(`/api/admin/transactions/${noteTransactionId}/notes`, {
                 content: newNote,

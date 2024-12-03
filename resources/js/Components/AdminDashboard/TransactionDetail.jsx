@@ -230,8 +230,8 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6 mb-10 bg-white shadow-md rounded-lg">
-      <div className="flex justify-evenly md:flex-row flex-col md:space-y-0 space-y-3 space-x-0 md:space-x-4 mb-6">
+    <div className="max-w-full mx-auto p-6 mb-10 bg-white shadow-md rounded-lg">
+      <div className="flex max-w-full md:flex-row flex-col md:space-y-0 space-y-3 space-x-0 md:space-x-4 mb-6">
         <div>
           <label htmlFor="search" className="block text-sm font-medium text-gray-700">
             Search
@@ -277,59 +277,56 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
       </div>
 
       {currentTransactions.map(transaction => (
-        <div key={transaction.id} className='border border-gray-300 rounded-lg p-4 mb-6 bg-gray-50 hover:bg-gray-100'>
-          <h3 className="text-lg font-bold text-gray-800 mb-2">Transaction Details</h3>
-          {transaction?.customer_id && customerNames[transaction?.customer_id] ? (
-            <p><strong>Customer Name:</strong> {customerNames[transaction?.customer_id]}</p>
-          ) : (
-            <p><strong>Customer Name:</strong> Loading...</p>
-          )}
-          <p><strong>Nama Produk:</strong> {transaction?.nama_produk}</p>
-          <p><strong>Laundry Type:</strong> {transaction?.laundry_type}</p>
+        <div key={transaction.id} className='border border-gray-300 w-full rounded-lg p-4 mb-6 bg-gray-50 hover:bg-gray-100'>
+          <div className='flex items-center justify-between'>
+            <h3 className="text-lg font-bold text-gray-800">Transaction Details</h3>
+            <button
+              onClick={onClose}
+              className="bg-gray-300 text-black px-4 py-2 rounded"
+            >
+              Close
+            </button>
+          </div>
+          <div className='flex md:flex-row flex-col md:space-x-2 space-x-0 md:items-center items-start'>
+            {transaction?.customer_id && customerNames[transaction?.customer_id] ? (
+              <p> {customerNames[transaction?.customer_id]}</p>
+            ) : (
+              <p> Loading...</p>
+            )}
+            <p className='font-bold md:block hidden'>
+              |
+            </p>
+            <div className='flex md:flex-row flex-col md:items-center items-start space-x-0 md:space-x-2'>
+              <p>
+                {transaction?.start_date
+                  ? new Date(transaction.start_date).toLocaleString()
+                  : "N/A"}
+              </p>
+              <p className='font-bold md:block hidden'>
+                |
+              </p>
+              <p className={`mr-2 p-2 text-white rounded-lg ${transaction.status_payment === 'unpaid' ?
+                'bg-red-500' : transaction.status_payment === 'paid' ?
+                  'bg-green-500' : 'bg-transparent'
+                }`}> {transaction.status_payment}</p>
+            </div>
+          </div>
+          <div className='flex md:flex-row flex-col space-x-0 md:space-x-2'>
+            <p> {transaction?.nama_produk}</p>
+            <p className='font-bold md:block hidden'>
+              -
+            </p>
+            <p><strong>Laundry Type:</strong> {transaction?.laundry_type}</p>
+          </div>
           <p>
-            <strong>Start Date:</strong>{" "}
-            {transaction?.start_date
-              ? new Date(transaction.start_date).toLocaleString()
-              : "N/A"}
-          </p>
-          <p>
-            <strong>End Date:</strong>{" "}
+            <strong>Estimasi Selesai:</strong>{" "}
             {transaction?.end_date
               ? new Date(transaction.end_date).toLocaleString()
               : "N/A"}
           </p>
-
-          {/* Payment Method Display */}
           <p><strong>Payment Method:</strong> {transaction?.payment_method?.name || "N/A"}</p>
-
-          <div className="flex items-center mb-4">
-            <p className="mr-2"><strong>Status Payment:</strong> {transaction.status_payment}</p>
-            <button
-              className={`px-4 py-2 rounded ${transaction?.status_payment === "paid" ? "bg-gray-400" : "bg-green-500"} text-white`}
-              onClick={() => openConfirmModal(transaction)}
-              disabled={transaction?.status_payment === "paid"}
-            >
-              {transaction?.status_payment === "unpaid" ? "Mark as Paid" : "Paid"}
-            </button>
-          </div>
-
-          <div className="mb-4">
-            <p><strong>Status Job:</strong> {transaction.status_job}</p>
-            <select
-              value={transaction?.status_job || "ongoing"}
-              onChange={(e) => handleUpdateJobStatus(transaction.id, e.target.value)}
-              className="border border-gray-300 p-2 rounded mt-2 w-full"
-            // disabled={transaction?.status_job === "done"}
-            >
-              <option value="ongoing">Ongoing</option>
-              <option value="pending">Pending</option>
-              <option value="done">Done</option>
-              <option value="cancel">Cancel</option>
-            </select>
-          </div>
-
           <h3 className="text-lg font-medium mb-2">Services</h3>
-          <ul className="list-disc list-inside">
+          <ul className=" list-inside">
             {Array.isArray(transaction?.details) && transaction.details.length > 0 ? (
               transaction.details.map((detail) => (
                 <li key={detail.id} className="mb-2">
@@ -344,26 +341,57 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
             )}
           </ul>
 
-          <div className="mt-6 flex md:flex-row flex-col md:space-y-0 space-y-4 space-x-0 md:space-x-4">
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="bg-red-500 text-white px-4 py-2 rounded"
-            >
-              <span className='flex flex-row items-center space-x-2'>
-                <p>Delete Transaction</p>
-                <IonIcon name='trash'></IonIcon>
-              </span>
-            </button>
-            <button onClick={() => handleClickPrint(transaction.id)} className='bg-gray-300 text-black px-4 py-2 rounded'>
-              <span className='flex flex-row items-center space-x-2'>
-                <p>Print Receipt</p>
-                <IonIcon name='print'></IonIcon>
-              </span>
-            </button>
-            <button onClick={onClose} className="bg-gray-300 text-black px-4 py-2 rounded">
-              Close
-            </button>
+          <div className="mt-6 flex lg:flex-row flex-col items-center md:space-y-0 space-y-4 w-full md:space-x-4 space-x-0">
+            <div className="flex-1 flex flex-col w-full">
+              <p><strong>Mark As Paid</strong></p>
+              <button
+                className={`px-4 py-2 mt-2 rounded w-full ${transaction?.status_payment === "paid" ? "bg-gray-400" : "bg-green-500"} text-white`}
+                onClick={() => openConfirmModal(transaction)}
+                disabled={transaction?.status_payment === "paid"}
+              >
+                {transaction?.status_payment === "unpaid" ? "Mark as Paid" : "Paid"}
+              </button>
+            </div>
+            <div className="flex-1 flex flex-col w-full">
+              <p><strong>Status Job:</strong> {transaction.status_job}</p>
+              <select
+                value={transaction?.status_job || "ongoing"}
+                onChange={(e) => handleUpdateJobStatus(transaction.id, e.target.value)}
+                className="border border-gray-300 p-2 rounded mt-2 w-full"
+              >
+                <option value="ongoing">Ongoing</option>
+                <option value="pending">Pending</option>
+                <option value="done">Done</option>
+                <option value="cancel">Cancel</option>
+              </select>
+            </div>
+            <div className="flex-1 flex flex-col w-full">
+              <p><strong>Hapus Transaksi</strong></p>
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="bg-red-500 text-white px-4 py-2 rounded mt-2 w-full"
+              >
+                <span className="flex flex-row items-center justify-center space-x-2">
+                  <p>Hapus</p>
+                  <IonIcon name="trash"></IonIcon>
+                </span>
+              </button>
+            </div>
+            <div className="flex-1 flex flex-col w-full">
+              <p><strong>Print Transaksi</strong></p>
+              <button
+                onClick={() => handleClickPrint(transaction.id)}
+                className="bg-gray-300 text-black px-4 py-2 rounded mt-2 w-full"
+              >
+                <span className="flex flex-row items-center justify-center space-x-2">
+                  <p>Cetak Struk</p>
+                  <IonIcon name="print"></IonIcon>
+                </span>
+              </button>
+            </div>
           </div>
+
+
           {showDeleteModal && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
               <Fade>
@@ -464,7 +492,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
               </div>
             </div>
           )}
-          <div className='border-b-2 border-b-gray-900 w-full h-0 my-10' />
+          <div className='border-b-2 border-b-gray-400 w-full h-0 my-6' />
         </div>
       ))}
       <div className="flex justify-center items-center space-x-2 mt-4">
