@@ -86,27 +86,30 @@ function Notification() {
                     </span>
                 )}
             >
+                {/* saya mau bagian sini ketika klik see more, dia bisa di scroll dengan ada max-h */}
                 <Fade>
                     <div className="w-56 p-4 bg-white rounded-lg shadow-md">
                         <h1 className="text-sm font-bold">Notifications</h1>
                         {displayedNotifications.length > 0 ? (
                             <>
-                                {displayedNotifications.map((notification) => (
-                                    <div
-                                        key={notification.transaction_id}
-                                        className="border-b border-gray-200 pb-2 mb-2 flex justify-between items-center"
-                                    >
-                                        <p className="text-xs text-gray-600">
-                                            <strong>{notification.nama_produk}</strong> - {notification.customer_name} - {notification.start_date} - {notification.status_job} - {notification.status_payment}
-                                        </p>
-                                        <button
-                                            onClick={() => removeNotification(notification.transaction_id)}
-                                            className="text-red-500 text-xs"
+                                <div className='max-h-56 overflow-y-scroll'>
+                                    {displayedNotifications.map((notification) => (
+                                        <div
+                                            key={notification.transaction_id}
+                                            className="border-b border-gray-200 pb-2 mb-2 flex justify-between items-center"
                                         >
-                                            Remove
-                                        </button>
-                                    </div>
-                                ))}
+                                            <p className="text-xs text-gray-600">
+                                                <strong>{notification.nama_produk}</strong> - {notification.customer_name} - {notification.start_date} - {notification.status_job} - {notification.status_payment}
+                                            </p>
+                                            <button
+                                                onClick={() => removeNotification(notification.transaction_id)}
+                                                className="text-red-500 text-xs"
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
                                 {filteredNotifications.length > visibleCount && (
                                     <button
                                         onClick={loadMoreNotifications}
@@ -115,6 +118,7 @@ function Notification() {
                                         See More
                                     </button>
                                 )}
+
                             </>
                         ) : (
                             <p className="text-xs text-gray-500">No new notifications.</p>

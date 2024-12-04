@@ -50,6 +50,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
     const [run, setRun] = useState(false);
     const entryTransactionRef = useRef(null);
     const detailTransactionRef = useRef(null);
+    const addCustomerRef = useRef(null);
 
     const handleClickStart = () => {
         setRun(true);
@@ -158,6 +159,18 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
         }
     };
 
+    const handleAddCustomer = () => {
+        setIsAddingCustomer(true)
+        setTimeout(() => {
+            if (addCustomerRef.current) {
+                addCustomerRef.current.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
+            }
+        }, 100);
+    }
+
     const handleDeleteCustomer = async (customerId) => {
         try {
             await axios.delete(`/api/admin/customer/${customerId}`);
@@ -242,7 +255,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                     },
                 }}
             />
-            <div className="instruksi-pertama relative my-6 p-10 md:py-12 py-20 animated-background bg-gradient-to-r from-blue-500 to-indigo-200 rounded-xl text-black">
+            <div className="instruksi-pertama relative my-6 p-10 md:py-12 py-20 animated-background bg-gradient-to-r from-[#5482FF] to-indigo-300 rounded-xl text-black">
                 <div className="absolute z-0 top-1/2 left-10 -translate-y-1/2">
                     <img
                         src={adminPic}
@@ -381,11 +394,9 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                 </ul>
             </div>
 
-            <AddCustButton className="instruksi-keempat instruksi-keenam" onClick={() => {
-                setIsAddingCustomer(true);
-            }} />
+            <AddCustButton className="instruksi-keempat instruksi-keenam" onClick={handleAddCustomer} />
             {isAddingCustomer && (
-                <div className="mx-auto max-w-7xl p-6 my-10 bg-white rounded-lg instruksi-ketujuh">
+                <div ref={addCustomerRef} className="mx-auto max-w-7xl p-6 my-10 bg-white rounded-lg instruksi-ketujuh">
                     <h3 className="text-lg font-semibold text-center">Add Customer</h3>
                     <AddCustomer />
                     <button
@@ -432,7 +443,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                                 <li key={transaction.id} className="border-b py-2">
                                     <button
                                         className="text-blue-600 hover:text-blue-800"
-                                        onClick={() => handleViewDetails(transaction.id)}
+                                        // onClick={() => handleViewDetails(transaction.id)}
                                     >
                                         Lihat Transaksi {transaction.nama_produk} status ({transaction.status_payment})
                                     </button>

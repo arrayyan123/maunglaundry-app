@@ -15,7 +15,9 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
     const [selectedPaymentComponent, setSelectedPaymentComponent] = useState(null);
     const [showNoteArea, setShowNoteArea] = useState(false);
     const [newNote, setNewNote] = useState("");
-    const [notes, setNotes] = useState([]);  // Added notes state
+    const [notes, setNotes] = useState([]);  
+
+    const linkNo = 'https://wa.link/o7et11';
 
     const addNote = async () => {
         if (!newNote.trim()) {
@@ -178,7 +180,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                         Cancel Request
                     </button>
                     {transaction?.status_payment === 'unpaid' && (
-                        <a href="">
+                        <a href={linkNo}>
                             <button className="px-4 py-2 rounded text-white bg-blue-500 w-full md:w-auto">
                                 Belum Membayar? hubungi Admin
                             </button>

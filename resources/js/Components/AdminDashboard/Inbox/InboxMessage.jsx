@@ -88,11 +88,6 @@ const InboxMessage = () => {
             });
     }, []);
 
-    useEffect(() => {
-        console.log("InboxMessage Notifications:", notifications);
-        console.log("InboxMessage Filtered Notifications:", filteredNotifications);
-    }, [notifications, filteredNotifications]);
-
     const deleteMessage = async (id) => {
         try {
             await axios.delete(`/api/admin/notes/${id}`);

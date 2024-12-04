@@ -22,6 +22,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
   const [alertMessage, setAlertMessage] = useState('');
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [paymentFilter, setPaymentFilter] = useState('');
 
   useEffect(() => {
     if (showConfirmModal) {
@@ -110,28 +111,17 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
     }).format(value);
   };
 
-  const openConfirmModal = (transaction) => {
-    setSelectedTransaction(transaction);
-    setShowConfirmModal(true);
-  };
-
-  const confirmMarkAsPaid = () => {
-    if (selectedTransaction) {
-      handleUpdatePaymentStatus(selectedTransaction.id);
-      setShowConfirmModal(false);
-    }
-  };
-
-  const handleUpdatePaymentStatus = (transactionId) => {
+  const handleUpdatePaymentStatus = (transactionId, currentStatus) => {
+    const newStatus = currentStatus === 'paid' ? 'unpaid' : 'paid';
     axios
       .put(`/api/admin/transactions/${transactionId}/payment`, {
-        status_payment: 'paid',
+        status_payment: newStatus,
       })
       .then(() => {
         setTransactions((prev) =>
           prev.map((transaction) =>
             transaction.id === transactionId
-              ? { ...transaction, status_payment: 'paid' }
+              ? { ...transaction, status_payment: newStatus }
               : transaction
           )
         );
@@ -139,6 +129,18 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
       .catch((error) => {
         console.error('Failed to update payment status:', error);
       });
+  };
+
+  const openConfirmModal = (transaction) => {
+    setSelectedTransaction(transaction);
+    setShowConfirmModal(true);
+  };
+
+  const confirmMarkAsPaid = () => {
+    if (selectedTransaction) {
+      handleUpdatePaymentStatus(selectedTransaction.id, selectedTransaction.status_payment);
+      setShowConfirmModal(false);
+    }
   };
 
   const handleUpdateJobStatus = (transactionId, status) => {
@@ -160,8 +162,8 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
   };
 
   useEffect(() => {
-    // Filter transaksi berdasarkan query pencarian
     const lowerCaseQuery = searchQuery.toLowerCase();
+
     const filtered = transactions.filter((transaction) => {
       const matchesProductName = transaction.nama_produk
         ?.toLowerCase()
@@ -172,16 +174,22 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
       const matchesServiceType = transaction.details?.some((detail) =>
         detail.service_type?.jenis_pelayanan?.toLowerCase().includes(lowerCaseQuery)
       );
-      return matchesProductName || matchesLaundryType || matchesServiceType;
+
+      const matchesPaymentFilter =
+        paymentFilter === '' || transaction.status_payment === paymentFilter;
+
+      return (
+        (matchesProductName || matchesLaundryType || matchesServiceType) &&
+        matchesPaymentFilter
+      );
     });
 
     setFilteredTransactions(filtered);
 
-    // Reset ke halaman pertama hanya jika query pencarian berubah
-    if (searchQuery !== "") {
+    if (searchQuery !== '') {
       setCurrentPage(1);
     }
-  }, [searchQuery, transactions]); // Perhatikan bahwa 'transactions' tetap dalam dependensi
+  }, [searchQuery, paymentFilter, transactions]);
 
   const totalPages = Math.ceil(filteredTransactions.length / transactionsPerPage);
   const indexOfLastTransaction = currentPage * transactionsPerPage;
@@ -268,6 +276,21 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
             className="w-full p-2 border border-gray-300 rounded"
           />
         </div>
+        <div>
+          <label htmlFor="payment-filter" className="block text-sm font-medium text-gray-700">
+            Payment Status
+          </label>
+          <select
+            id="payment-filter"
+            value={paymentFilter}
+            onChange={(e) => setPaymentFilter(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded"
+          >
+            <option value="">All</option>
+            <option value="paid">Paid</option>
+            <option value="unpaid">Unpaid</option>
+          </select>
+        </div>
         <button
           onClick={handleFilter}
           className="self-end px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
@@ -334,7 +357,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                   <p><strong>Service Price:</strong> Rp.{formatNumber(detail?.service_price?.harga || "N/A")}</p>
                   <p><strong>Quantity:</strong> {detail?.quantity || "N/A"}</p>
                   <div className='py-2 px-4 bg-green-400 rounded-lg mt-3 w-48'>
-                    <p className='font-bold text-[20px]'><strong>Total Harga:</strong> Rp.{formatNumber(detail?.price || "N/A")}</p>
+                    <p className='font-bold text-[20px] text-white'><strong>Total Harga:</strong> Rp.{formatNumber(detail?.price || "N/A")}</p>
                   </div>
                 </li>
               ))
@@ -347,11 +370,11 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
             <div className="flex-1 flex flex-col w-full">
               <p><strong>Mark As Paid</strong></p>
               <button
-                className={`px-4 py-2 mt-2 rounded w-full ${transaction?.status_payment === "paid" ? "bg-gray-400" : "bg-green-500"} text-white`}
-                onClick={() => openConfirmModal(transaction)}
-                disabled={transaction?.status_payment === "paid"}
+                className={`px-4 py-2 mt-2 rounded w-full ${transaction?.status_payment === "paid" ? "bg-red-500" : "bg-green-500"
+                  } text-white`}
+                onClick={() => handleUpdatePaymentStatus(transaction.id, transaction.status_payment)}
               >
-                {transaction?.status_payment === "unpaid" ? "Mark as Paid" : "Paid"}
+                {transaction?.status_payment === "unpaid" ? "Mark as Paid" : "Mark as Unpaid"}
               </button>
             </div>
             <div className="flex-1 flex flex-col w-full">
@@ -416,9 +439,11 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
               <Fade>
                 <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
                   <h2 className="text-lg font-semibold mb-4">Confirm Payment</h2>
-                  <p>Apakah anda yakin bahwa customer telah membayar?</p>
+                  <p>
+                    Apakah anda yakin bahwa customer telah membayar?
+                    {selectedTransaction?.status_payment === 'paid' ? 'Unpaid' : 'Paid'}?
+                  </p>
                   <p className="text-sm text-gray-500 mt-2">
-                    {/* <strong>Customer:</strong> {selectedTransaction?.customer_id}<br /> */}
                     {transaction?.customer_id && customerNames[transaction?.customer_id] ? (
                       <p><strong>Customer Name:</strong> {customerNames[transaction?.customer_id]}</p>
                     ) : (

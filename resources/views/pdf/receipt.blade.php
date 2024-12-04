@@ -9,7 +9,7 @@
         margin: 0; /* Hapus margin di seluruh halaman PDF */
     }
     body {
-        margin: 0;
+        margin: 10px;
         padding: 0;
       font-family: Arial, sans-serif;
     }
