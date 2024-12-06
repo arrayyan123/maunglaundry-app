@@ -3,7 +3,7 @@ import axios from 'axios';
 import moment from 'moment';
 
 function ContentItem({ title, description, image, created_at, isImageLeft }) {
-  const formattedDate = moment(created_at).format('MMMM Do, YYYY, h:mm A'); // Format the date
+  const formattedDate = moment(created_at).format('MMMM Do, YYYY, h:mm A'); 
 
   return (
     <div className="gap-16 items-center py-8 px-4 mx-auto max-w-screen-xl lg:grid lg:grid-cols-2 lg:py-16 lg:px-6">
@@ -53,14 +53,8 @@ function ContentSection({ servicesRef }) {
           console.error('Error fetching contents:', error);
         });
     };
-
-    // Lakukan polling setiap 5 detik (5000 ms)
     const interval = setInterval(fetchContents, 5000);
-
-    // Ambil data awal sekali ketika komponen di-mount
     fetchContents();
-
-    // Bersihkan interval ketika komponen unmount
     return () => clearInterval(interval);
   }, []);
 
@@ -76,7 +70,7 @@ function ContentSection({ servicesRef }) {
           description={content.description}
           created_at={content.created_at}
           image={content.image}
-          isImageLeft={index % 2 === 0} // Gambar di kiri jika index genap
+          isImageLeft={index % 2 === 0} 
         />
       ))}
     </section>

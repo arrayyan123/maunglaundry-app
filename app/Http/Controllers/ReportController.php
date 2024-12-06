@@ -51,6 +51,12 @@ class ReportController extends Controller
         if ($endDate) {
             $query->whereDate('report_transactions.end_date', '<=', $endDate);
         }
+
+        $customerName = $request->input('customer_name');
+        if (!empty($customerName)) {
+            $query->where('customer_users.name', 'like', '%' . $customerName . '%');
+        }
+        
         $query->orderBy($sortBy, $sortOrder);
         $reports = $query->get();
 

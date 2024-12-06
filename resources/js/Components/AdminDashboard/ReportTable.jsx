@@ -15,6 +15,7 @@ function ReportTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [status, setStatus] = useState('');
   const [statuspayment, setStatusPayment] = useState('');
+  const [customerName, setCustomerName] = useState('');
   const itemsPerPage = 15;
 
   const formatNumber = (value) => {
@@ -27,7 +28,7 @@ function ReportTable() {
   const fetchReport = async () => {
     try {
       const response = await axios.get('/api/admin/reports', {
-        params: { month, year, start_date: startDate, end_date: endDate, status_job: status, status_payment: statuspayment },
+        params: { month, year, start_date: startDate, end_date: endDate, status_job: status, status_payment: statuspayment, customer_name: customerName, },
       });
       console.log('API Response:', response.data);
       setReports(response.data.data);
@@ -38,7 +39,7 @@ function ReportTable() {
 
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleString(); 
+    return date.toLocaleString();
   };
 
   const downloadExcel = async () => {
@@ -107,7 +108,7 @@ function ReportTable() {
   const fetchTotalPrice = async () => {
     try {
       const response = await axios.get('/api/admin/total-price', {
-        params: { month, year, start_date: startDate, end_date: endDate, status_job: status, status_payment: statuspayment },
+        params: { month, year, start_date: startDate, end_date: endDate, status_job: status, status_payment: statuspayment, customer_name: customerName, },
       });
       setTotalPrice(response.data.total_price);
     } catch (error) {
@@ -118,12 +119,21 @@ function ReportTable() {
   useEffect(() => {
     fetchReport();
     fetchTotalPrice();
-  }, [month, year, startDate, endDate, status, statuspayment]);
+  }, [month, year, startDate, endDate, status, statuspayment, customerName]);
 
   return (
     <div className="p-4">
       {/* Filter Section */}
       <div className="flex flex-col lg:flex-row lg:space-x-6 mb-6 items-start lg:items-center">
+        <div className="flex flex-col w-full lg:w-auto">
+          <label className="text-sm font-medium mb-1">Customer Name</label>
+          <input
+            type="text"
+            className="border border-gray-300 rounded-md p-3 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={customerName}
+            onChange={(e) => setCustomerName(e.target.value)}
+          />
+        </div>
         {/* Select Month */}
         <div className="flex flex-col w-full lg:w-auto">
           <label className="text-sm font-medium mb-1">Select Month</label>
@@ -276,7 +286,7 @@ function ReportTable() {
                     ? 'bg-green-500'
                     : report.status_payment === 'unpaid'
                       ? 'bg-red-500'
-                          : 'bg-transparent'
+                      : 'bg-transparent'
                     }`}>{report.status_payment}</td>
                 <td className="border p-2">
                   {formatDateTime(report.start_date)}

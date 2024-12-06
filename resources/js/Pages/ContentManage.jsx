@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import EditContent from './EditContent';
 import { Head } from '@inertiajs/react';
@@ -16,6 +16,7 @@ function ContentManage({ auth }) {
     });
     const [contents, setContents] = useState([]);
     const [editingContentId, setEditingContentId] = useState(null);
+    const editContentRef = useRef(null);
 
     useEffect(() => {
         fetchContents();
@@ -73,12 +74,24 @@ function ContentManage({ auth }) {
 
     const handleEditClick = (id) => {
         setEditingContentId(id);
+        setTimeout(() => {
+            if (editContentRef.current) {
+                editContentRef.current.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
+            }
+        }, 100);
     };
 
     const handleCloseEdit = () => {
         setEditingContentId(null);
         fetchContents();
     };
+
+    const handleRefresh = () => {
+
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -91,7 +104,7 @@ function ContentManage({ auth }) {
             .then(() => {
                 alert('Content uploaded successfully!');
                 fetchContents();
-                setFormData({ title: '', description: '', image: null }); // Reset the form
+                setFormData({ title: '', description: '', image: null }); 
             })
             .catch((err) => console.error(err));
     };
@@ -216,7 +229,9 @@ function ContentManage({ auth }) {
                         </table>
                     </div>
                     {editingContentId && (
-                        <EditContent contentId={editingContentId} onClose={handleCloseEdit} />
+                        <div ref={editContentRef}>
+                            <EditContent contentId={editingContentId} onClose={handleCloseEdit} />
+                        </div>
                     )}
                 </div>
             </AuthenticatedLayout>

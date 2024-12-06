@@ -63,8 +63,8 @@ Route::prefix('api')->group(function () {
 
     Route::get('/contents', [ContentController::class, 'index']);
     Route::post('/contents', [ContentController::class, 'store']);
-    Route::get('/contents/{id}', [ContentController::class, 'show']); // Menampilkan konten spesifik
-    Route::put('/contents/{id}', [ContentController::class, 'update']); // Update konten    Route::delete('/contents/{content}', [ContentController::class, 'destroy']);
+    Route::get('/contents/{id}', [ContentController::class, 'show']); 
+    Route::put('/contents/{id}', [ContentController::class, 'update']); 
     Route::get('/contents/{id}/edit', [ContentController::class, 'edit']);
     Route::delete('/contents/{id}', [ContentController::class, 'destroy']);
 

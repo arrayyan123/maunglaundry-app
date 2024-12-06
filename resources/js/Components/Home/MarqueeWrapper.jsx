@@ -9,7 +9,7 @@ const MarqueeWrapper = () => {
     <>
         <div className="mt-0">
             <div className="">
-                <Marquee className="h-[60px] bg-[#364351]">
+                <Marquee className="h-[60px] bg-gray-900">
                     {textArray.map((text, index) => (
                     <span key={index} className="mx-5 font-outline-2 text-[23px] text-white font-bold">
                         {text}
