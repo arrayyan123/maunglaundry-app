@@ -130,6 +130,19 @@ export default function AuthenticatedLayout({ header, children, handleClickStart
                                 </div>
                             </NavLink>
                         </li>
+                        <li>
+                            <NavLink href={route('content.manage')} active={route().current('content.manage')}>
+                                <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
+                                    <IonIcon className='text-[20px]' name="newspaper"></IonIcon>
+                                    <span
+                                        className={`${isSidebarExpanded ? "block" : "hidden"
+                                            } text-sm`}
+                                    >
+                                        Content Management
+                                    </span>
+                                </div>
+                            </NavLink>
+                        </li>
                     </ul>
                 </nav>
                 <div className={`bg-white mx-auto my-2 w-56 h-60 rounded-xl ${isSidebarExpanded ? "block" : "hidden"}`}>

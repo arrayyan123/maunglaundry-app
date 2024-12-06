@@ -61,7 +61,7 @@ export default function DiagramCalc({ auth, customers }) {
             }
             const ctx = chartRef01.current.getContext('2d');
             const newChart = new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: {
                     labels,
                     datasets: [

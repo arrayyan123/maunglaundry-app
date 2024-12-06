@@ -47,6 +47,9 @@ class PagesController extends Controller
         $customer = CustomerUser::findOrFail($customerId);
         return view('admin.entry_transaction', compact('customer'));
     }
+    public function contentManage(){
+        return Inertia::render('ContentManage');
+    }
     public function diagramCalc()
     {
         $customers = CustomerUser::all();

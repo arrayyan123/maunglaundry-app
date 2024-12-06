@@ -248,8 +248,8 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                         arrowColor: '#57c2ff',
                         backgroundColor: '#57c2ff',
                         overlayColor: 'rgba(79, 26, 0, 0.4)',
-                        primaryColor: '#000',
-                        textColor: '#004a14',
+                        primaryColor: '#fff',
+                        textColor: '#000x',
                         width: 400,
                         zIndex: 1000,
                     },
@@ -268,7 +268,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                 </h1>
                 <p className='text-right'>Selamat Datang di dashboard admin Maung Laundry</p>
             </div>
-            <div className='my-3 instruksi-kedua md:hidden block'>
+            <div className='my-3 instruksi-kedua relative z-0 md:hidden block'>
                 <Swiper
                     slidesPerView={1}
                     spaceBetween={30}

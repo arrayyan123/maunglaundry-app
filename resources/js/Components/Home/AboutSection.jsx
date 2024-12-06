@@ -1,10 +1,10 @@
 import React from 'react'
 
-function AboutSection() {
+function AboutSection({aboutRef}) {
   return (
     <>
-        <section className="bg-gray-900 text-white">
-            <div className="max-w-screen px-4 py-8 lg:h-screen h-full sm:px-6 sm:py-12 lg:px-8 lg:py-40">
+        <section ref={aboutRef} className="bg-gray-900 text-white">
+            <div className="max-w-screen px-4 py-8 items-center h-full sm:px-6 sm:py-12 lg:px-8 lg:py-20">
                 <div className="max-w-xl">
                     <h2 className="text-3xl font-bold sm:text-4xl">What makes us special</h2>
                     <p className="mt-4 text-gray-300">

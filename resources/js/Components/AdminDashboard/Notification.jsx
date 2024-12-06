@@ -27,8 +27,12 @@ function Notification() {
             );
 
             if (filteredReports.length > 0) {
-                setNotifications((prev) => [...filteredReports, ...prev]);
-
+                setNotifications((prev) => {
+                    const newNotifications = filteredReports.filter(
+                        (report) => !prev.some((notification) => notification.transaction_id === report.transaction_id)
+                    );
+                    return [...newNotifications, ...prev];
+                });
                 setFetchedIds((prev) => {
                     const updatedIds = new Set(prev);
                     filteredReports.forEach((report) => updatedIds.add(report.transaction_id));
@@ -55,6 +59,11 @@ function Notification() {
 
     useEffect(() => {
         fetchReports();
+        const interval = setInterval(() => {
+            fetchReports();
+        }, 10000);
+
+        return () => clearInterval(interval);
     }, []);
 
     const loadMoreNotifications = () => {
@@ -86,7 +95,6 @@ function Notification() {
                     </span>
                 )}
             >
-                {/* saya mau bagian sini ketika klik see more, dia bisa di scroll dengan ada max-h */}
                 <Fade>
                     <div className="w-56 p-4 bg-white rounded-lg shadow-md">
                         <h1 className="text-sm font-bold">Notifications</h1>

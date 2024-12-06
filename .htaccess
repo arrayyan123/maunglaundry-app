@@ -1,0 +1,23 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Redirect all requests to the public folder
+    RewriteRule ^(.*)$ public/$1 [L]
+    RewriteRule ^(storage|images)/(.+)$ /storage/app/public/$2 [L]
+
+    # Handle front controller
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+
+    # Allow access to storage folder for uploaded files
+    RewriteCond %{REQUEST_URI} ^/storage/ [NC]
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # Prevent access to .env and sensitive files
+    <FilesMatch "^\.">
+        Order Deny,Allow
+        Deny from all
+    </FilesMatch>
+</IfModule>

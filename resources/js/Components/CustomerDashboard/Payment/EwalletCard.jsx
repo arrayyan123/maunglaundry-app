@@ -11,11 +11,12 @@ const getImageByName = (name) => {
 const logo = getImageByName('qrisPayment');
 
 function EwalletCard() {
+    const linkNo = 'https://wa.link/kn9lsq';
     return (
         <div>
             <Fade>
                 <h1 className='font-bold text-[30px]'>E-wallet (QRIS)</h1>
-                <a href=""><button className='text-blue-500 my-5'>Harap hubungi pihak admin untuk mengirim bukti pembayaran</button></a>
+                <a href={linkNo} target="_blank" rel="noopener noreferrer"><button className='text-blue-500 my-5'>Harap hubungi pihak admin untuk mengirim bukti pembayaran</button></a>
                 <img src={logo} className='lg:w-auto lg:h-[600px]' alt="" />
             </Fade>
         </div>
