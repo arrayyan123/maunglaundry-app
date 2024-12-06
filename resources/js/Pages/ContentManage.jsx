@@ -164,55 +164,57 @@ function ContentManage({ auth }) {
                 )}
                 <div className="p-4">
                     <h1 className="text-2xl font-bold mb-4">Content Dashboard</h1>
-                    <table className="table-auto w-full border-collapse border border-gray-300">
-                        <thead className="bg-gray-200">
-                            <tr>
-                                <th className="border border-gray-300 px-4 py-2">No</th>
-                                <th className="border border-gray-300 px-4 py-2">Judul</th>
-                                <th className="border border-gray-300 px-4 py-2">Deskripsi</th>
-                                <th className="border border-gray-300 px-4 py-2">Gambar</th>
-                                <th className="border border-gray-300 px-4 py-2">Tindakan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {contents.map((content, index) => (
-                                <tr key={content.id}>
-                                    <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
-                                    <td className="border border-gray-300 px-4 py-2">{content.title}</td>
-                                    <td className="border border-gray-300 px-4 py-2">
-                                        <div
-                                            dangerouslySetInnerHTML={{ __html: content.description }}
-                                        />
-                                    </td>
-                                    <td className="border border-gray-300 px-4 py-2">
-                                        <img
-                                            src={`/storage/public/${content.image}`}
-                                            alt={content.title}
-                                            className="w-20 h-20 object-cover"
-                                        />
-                                    </td>
-                                    <td className="border space-y-1 border-gray-300 px-4 py-2">
-                                        <button
-                                            className="bg-red-500 text-white px-4 py-2 rounded mr-2"
-                                            onClick={() => handleDelete(content.id)}
-                                        >
-                                            <span className='flex flex-row space-x-3 items-center'>
-                                                <IonIcon name='trash' />
-                                            </span>
-                                        </button>
-                                        <button
-                                            className="bg-blue-500 text-white px-4 py-2 rounded"
-                                            onClick={() => handleEditClick(content.id)}
-                                        >
-                                            <span className='flex flex-row space-x-3 items-center'>
-                                                <IonIcon name='create' />
-                                            </span>
-                                        </button>
-                                    </td>
+                    <div className="overflow-x-auto">
+                        <table className="table-auto w-full border-collapse border border-gray-300">
+                            <thead className="bg-gray-200">
+                                <tr>
+                                    <th className="border border-gray-300 px-4 py-2">No</th>
+                                    <th className="border border-gray-300 px-4 py-2">Judul</th>
+                                    <th className="border border-gray-300 px-4 py-2">Deskripsi</th>
+                                    <th className="border border-gray-300 px-4 py-2">Gambar</th>
+                                    <th className="border border-gray-300 px-4 py-2">Tindakan</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {contents.map((content, index) => (
+                                    <tr key={content.id}>
+                                        <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
+                                        <td className="border border-gray-300 px-4 py-2">{content.title}</td>
+                                        <td className="border border-gray-300 px-4 py-2">
+                                            <div
+                                                dangerouslySetInnerHTML={{ __html: content.description }}
+                                            />
+                                        </td>
+                                        <td className="border border-gray-300 px-4 py-2">
+                                            <img
+                                                src={`/storage/public/${content.image}`}
+                                                alt={content.title}
+                                                className="w-20 h-20 object-cover"
+                                            />
+                                        </td>
+                                        <td className="border space-y-1 border-gray-300 px-4 py-2">
+                                            <button
+                                                className="bg-red-500 text-white px-4 py-2 rounded mr-2"
+                                                onClick={() => handleDelete(content.id)}
+                                            >
+                                                <span className='flex flex-row space-x-3 items-center'>
+                                                    <IonIcon name='trash' />
+                                                </span>
+                                            </button>
+                                            <button
+                                                className="bg-blue-500 text-white px-4 py-2 rounded"
+                                                onClick={() => handleEditClick(content.id)}
+                                            >
+                                                <span className='flex flex-row space-x-3 items-center'>
+                                                    <IonIcon name='create' />
+                                                </span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                     {editingContentId && (
                         <EditContent contentId={editingContentId} onClose={handleCloseEdit} />
                     )}
