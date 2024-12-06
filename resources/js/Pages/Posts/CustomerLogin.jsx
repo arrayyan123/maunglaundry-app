@@ -11,11 +11,20 @@ export default function CustomerLogin() {
   });
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState('');
+  const [warning, setWarning] = useState('');
+
+  const suspiciousPatterns = /[-';"]/;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
     setMessage('');
+    setWarning('');
+
+    if (suspiciousPatterns.test(formData.phone) || suspiciousPatterns.test(formData.password)) {
+      setWarning('Input mencurigakan terdeteksi. Harap periksa kembali data Anda.');
+      return;
+    }
 
     try {
       const response = await axios.post('/api/customer/login', formData);
@@ -47,6 +56,11 @@ export default function CustomerLogin() {
           {message && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
               {message}
+            </div>
+          )}
+          {warning && (
+            <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
+              {warning}
             </div>
           )}
           <h1 className="text-4xl font-semibold mb-4">Login</h1>
