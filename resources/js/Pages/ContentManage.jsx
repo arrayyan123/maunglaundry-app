@@ -4,7 +4,8 @@ import axios from 'axios';
 import EditContent from './EditContent';
 import { Head } from '@inertiajs/react';
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // Import CSS untuk Quill editor
+import 'react-quill/dist/quill.snow.css';
+import IonIcon from '@reacticons/ionicons';
 
 function ContentManage({ auth }) {
     const [formData, setFormData] = useState({
@@ -54,7 +55,7 @@ function ContentManage({ auth }) {
     const handleDescriptionChange = (value) => {
         setFormData((prev) => ({
             ...prev,
-            description: value, 
+            description: value,
         }));
     };
 
@@ -154,7 +155,10 @@ function ContentManage({ auth }) {
                             type="submit"
                             className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
                         >
-                            Upload
+                            <span className='flex flex-row items-center space-x-3'>
+                                <p>Upload</p>
+                                <IonIcon name='save' />
+                            </span>
                         </button>
                     </form>
                 )}
@@ -187,18 +191,22 @@ function ContentManage({ auth }) {
                                             className="w-20 h-20 object-cover"
                                         />
                                     </td>
-                                    <td className="border border-gray-300 px-4 py-2">
+                                    <td className="border space-y-1 border-gray-300 px-4 py-2">
                                         <button
                                             className="bg-red-500 text-white px-4 py-2 rounded mr-2"
                                             onClick={() => handleDelete(content.id)}
                                         >
-                                            Delete
+                                            <span className='flex flex-row space-x-3 items-center'>
+                                                <IonIcon name='trash' />
+                                            </span>
                                         </button>
                                         <button
                                             className="bg-blue-500 text-white px-4 py-2 rounded"
                                             onClick={() => handleEditClick(content.id)}
                                         >
-                                            Edit
+                                            <span className='flex flex-row space-x-3 items-center'>
+                                                <IonIcon name='create' />
+                                            </span>
                                         </button>
                                     </td>
                                 </tr>

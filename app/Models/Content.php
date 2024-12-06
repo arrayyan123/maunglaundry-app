@@ -14,6 +14,8 @@ class Content extends Model
         'title',
         'description',
         'image',
+        'created_at',
+        'updated_at',
     ];
 
     public static function boot()

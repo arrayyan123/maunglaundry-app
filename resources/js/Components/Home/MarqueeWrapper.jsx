@@ -2,8 +2,8 @@ import React from 'react';
 import Marquee from 'react-fast-marquee';
 
 const MarqueeWrapper = () => {
-  const marqueeText = "Maung Perkasa Abadi";
-  const textArray = new Array(5).fill(marqueeText);
+  const marqueeText = "Maung Laundry";
+  const textArray = new Array(8).fill(marqueeText);
 
   return (
     <>
