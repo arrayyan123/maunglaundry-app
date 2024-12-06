@@ -6,7 +6,6 @@ function ContentItem({ title, description, image, isImageLeft }) {
   return (
     <div className="gap-16 items-center py-8 px-4 mx-auto max-w-screen-xl lg:grid lg:grid-cols-2 lg:py-16 lg:px-6">
       {isImageLeft ? (
-        // Jika gambar di sebelah kiri
         <>
           <div className="grid grid-cols-1 gap-4 shadow-lg">
             <img className="w-full rounded-lg" src={`/storage/public/${image}`} alt={title} />

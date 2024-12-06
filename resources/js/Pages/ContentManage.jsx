@@ -9,7 +9,7 @@ import 'react-quill/dist/quill.snow.css'; // Import CSS untuk Quill editor
 function ContentManage({ auth }) {
     const [formData, setFormData] = useState({
         title: '',
-        description: '', // Start with an empty description
+        description: '',
         image: null,
         preview: null,
     });
@@ -54,7 +54,7 @@ function ContentManage({ auth }) {
     const handleDescriptionChange = (value) => {
         setFormData((prev) => ({
             ...prev,
-            description: value, // Update description state with Quill editor content
+            description: value, 
         }));
     };
 
@@ -164,10 +164,10 @@ function ContentManage({ auth }) {
                         <thead className="bg-gray-200">
                             <tr>
                                 <th className="border border-gray-300 px-4 py-2">No</th>
-                                <th className="border border-gray-300 px-4 py-2">Title</th>
-                                <th className="border border-gray-300 px-4 py-2">Description</th>
-                                <th className="border border-gray-300 px-4 py-2">Image</th>
-                                <th className="border border-gray-300 px-4 py-2">Actions</th>
+                                <th className="border border-gray-300 px-4 py-2">Judul</th>
+                                <th className="border border-gray-300 px-4 py-2">Deskripsi</th>
+                                <th className="border border-gray-300 px-4 py-2">Gambar</th>
+                                <th className="border border-gray-300 px-4 py-2">Tindakan</th>
                             </tr>
                         </thead>
                         <tbody>

@@ -204,6 +204,11 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
     };
     useEffect(() => {
         fetchReport();
+        const interval = setInterval(() => {
+            fetchReport();
+        }, 10000);
+
+        return () => clearInterval(interval);
     }, [month, year, startDate, endDate, status]);
 
     const indexOfLastTransaction = currentPage * transactionsPerPage;
