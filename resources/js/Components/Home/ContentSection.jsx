@@ -23,7 +23,7 @@ function ContentItem({ title, description, image, created_at, isImageLeft }) {
         </>
       ) : (
         <>
-          <div className="font-light text-gray-500 sm:text-lg dark:text-gray-400">
+          <div className="font-light md:mb-0 mb-4 text-gray-500 sm:text-lg dark:text-gray-400">
             <h2 className="mb-4 md:text-4xl text-xl tracking-tight font-extrabold text-gray-900 dark:text-white">{title}</h2>
             <div
               className="break-words text-black"
