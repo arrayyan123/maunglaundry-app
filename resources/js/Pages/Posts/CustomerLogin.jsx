@@ -99,16 +99,16 @@ export default function CustomerLogin() {
                 <label for="remember" className="text-green-900 ml-2">Remember Me</label>
               </div>
               <div className="mb-6 text-blue-500">
-                <a href="#" className="hover:underline">Forgot Password?</a>
+                <Link href="#" className="hover:underline">Forgot Password?</Link>
               </div>
               <button type="submit" className="bg-red-500 hover:bg-blue-600 text-white font-semibold rounded-md py-2 px-4 w-full">Login</button>
             </Fade>
           </form>
           <div className="mt-6 mb-6 text-green-500 text-center">
-            <Link to="/customer/register" className="hover:underline">Daftarkan disini</Link>
+            <Link href="/customer/register" className="hover:underline">Daftarkan disini</Link>
           </div>
           <div>
-            <Link to="/">
+            <Link href="/">
               <button className="px-4 py-2 bg-blue-500 text-white rounded-lg w-full flex justify-center items-center">
                 <span className="flex flex-row space-x-3 items-center scale-100 hover:scale-110 transition-all ease-in-out">
                   <p>Back to home</p>

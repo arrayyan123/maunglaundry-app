@@ -134,7 +134,7 @@ const CustomerRegister = () => {
                             </div>
                         </Fade>
                         <div className="mt-6 mb-6 text-green-500 text-center">
-                            <Link to="/customer/login" className="hover:underline">Already have account? login here</Link>
+                            <Link href="/customer/login" className="hover:underline">Already have account? login here</Link>
                         </div>
                         <button
                             type="submit"
@@ -144,7 +144,7 @@ const CustomerRegister = () => {
                         </button>
                     </form>
                     <div className='my-5'>
-                        <Link to="/">
+                        <Link href="/">
                             <button className="px-4 py-2 bg-blue-500 text-white rounded-lg w-full flex justify-center items-center">
                                 <span className="flex flex-row space-x-3 items-center scale-100 hover:scale-110 transition-all ease-in-out">
                                     <p>Back to home</p>

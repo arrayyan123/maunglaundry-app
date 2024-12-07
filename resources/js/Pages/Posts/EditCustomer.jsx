@@ -92,7 +92,7 @@ export default function EditCustomer({ customer }) {
                 }
             >
                 <div className="max-w-7xl mx-auto pt-10 md:pb-0 pb-10 md:pt-0 p-0 md:p-6 ">
-                    <Link to="/customer/dashboard"><button className="text-blue-500 my -6">
+                    <Link href="/customer/dashboard"><button className="text-blue-500 my -6">
                         Kembali Ke halaman
                     </button></Link>
                     <h1 className="text-2xl font-semibold mb-4">Edit Profile</h1>
