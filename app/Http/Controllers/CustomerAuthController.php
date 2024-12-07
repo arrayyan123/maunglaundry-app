@@ -51,8 +51,8 @@ class CustomerAuthController extends Controller
     //sisi admin
     public function register_customer_admin(Request $request)
     {
-        Log::debug('Register Customer Admin request:', $request->all());
-
+        Log::debug('Received request in register_customer_admin function');
+        Log::debug('Request data:', $request->all());
         try {
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
