@@ -190,13 +190,12 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             if (response.status === 201) {
                 const transaction = response.data.transaction;
                 setTransactionId(transaction.id);
-    
                 if (newNote.trim()) {
                     await addNote(transaction.id); 
                 }
                 alert("Transaction saved successfully");
                 setTransactionId(response.data.transaction.id);
-                addNote(response.data.transaction.id);
+                // addNote(response.data.transaction.id);
                 sendWhatsAppNotification(dataToSend);
                 onSave && onSave();
             } else {

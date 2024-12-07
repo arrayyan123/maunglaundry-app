@@ -294,7 +294,7 @@ export default function CustomerDashboard() {
                         <SwiperSlide>
                             <div className="bg-red-500 text-white p-6 rounded-lg shadow">
                                 <IonIcon className='text-xl' name="ban"></IonIcon>
-                                <h3 className="text-xl font-bold">Cancel Requests</h3>
+                                <h3 className="text-xl font-bold">Canceled Requests</h3>
                                 <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'cancel').length} /></p>
                             </div>
                         </SwiperSlide>
@@ -333,7 +333,7 @@ export default function CustomerDashboard() {
                         </div>
                         <div className="bg-red-500 text-white p-6 rounded-lg shadow">
                             <IonIcon className='text-xl' name="ban"></IonIcon>
-                            <h3 className="text-xl font-bold">Cancel Requests</h3>
+                            <h3 className="text-xl font-bold">Canceled Requests</h3>
                             <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'cancel').length} /></p>
                         </div>
                         <div className="bg-blue-500 text-white p-6 rounded-lg shadow">
