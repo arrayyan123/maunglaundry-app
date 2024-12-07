@@ -1,5 +1,6 @@
+import { Link } from '@inertiajs/react';
 import React from 'react'
-import { Fade } from 'react-reveal';
+import { Fade } from 'react-awesome-reveal';
 
 const images = import.meta.glob('/public/assets/images/*.webp', { eager: true });
 
@@ -33,7 +34,7 @@ function EwalletCard() {
                         </li>
                     </div>
                 </ul>
-                <a href={linkNo} target="_blank" rel="noopener noreferrer"><button className='text-blue-500 my-5'>Harap hubungi pihak admin untuk mengirim bukti pembayaran dengan klik teks ini.</button></a>
+                <Link href={linkNo} target="_blank" rel="noopener noreferrer"><button className='text-blue-500 my-5'>Harap hubungi pihak admin untuk mengirim bukti pembayaran dengan klik teks ini.</button></Link>
                 <img src={qris} className='lg:w-auto lg:h-[400px]' alt="" />
             </Fade>
         </div>

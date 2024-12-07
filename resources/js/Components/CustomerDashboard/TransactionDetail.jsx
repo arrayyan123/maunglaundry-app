@@ -4,6 +4,7 @@ import { Fade } from "react-reveal";
 import TransferCard from "./Payment/TransferCard";
 import CashCard from "./Payment/CashCard";
 import EwalletCard from "./Payment/EwalletCard";
+import { Link } from "@inertiajs/react";
 
 function TransactionDetail({ customerId, transactionId, onClose }) {
     const [transaction, setTransaction] = useState(null);
@@ -182,11 +183,11 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                     </button>
                     )}
                     {transaction?.status_payment === 'unpaid' && (
-                        <a href={linkNo} target="_blank" rel="noopener noreferrer">
+                        <Link href={linkNo} target="_blank" rel="noopener noreferrer">
                             <button className="px-4 py-2 rounded text-white bg-blue-500 w-full md:w-auto">
                                 Belum Membayar? hubungi Admin
                             </button>
-                        </a>
+                        </Link>
                     )}
                     <button 
                         onClick={()=>setShowNoteArea(true)}

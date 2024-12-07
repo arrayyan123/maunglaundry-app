@@ -115,7 +115,7 @@ function CustomerDashboardLayout({ header, children, handleClickStart }) {
                 </div>
                 <nav className="flex-1 p-2">
                     <ul className="space-y-2">
-                        <li><a href="/customer/dashboard">
+                        <li><Link href="/customer/dashboard">
                             <div className='py-2 px-4 rounded cursor-pointer text-white flex bg-blue-gray-600 hover:bg-blue-gray-800 items-center gap-4'>
                                 <IonIcon className='text-[20px]' name="build"></IonIcon>
                                 <span
@@ -125,11 +125,11 @@ function CustomerDashboardLayout({ header, children, handleClickStart }) {
                                     Dashboard
                                 </span>
                             </div>
-                        </a>
+                        </Link>
                         </li>
                         <li>
                             {customerData && (
-                                <a href={`/customer/report/${customerData.id}`}>
+                                <Link href={`/customer/report/${customerData.id}`}>
                                     <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-gray-600 hover:bg-blue-gray-800'>
                                         <IonIcon className='text-[20px]' name="cash"></IonIcon>
                                         <span
@@ -140,7 +140,7 @@ function CustomerDashboardLayout({ header, children, handleClickStart }) {
                                         </span>
 
                                     </div>
-                                </a>
+                                </Link>
                             )}
                         </li>
                         <li>
@@ -156,7 +156,7 @@ function CustomerDashboardLayout({ header, children, handleClickStart }) {
                         </li>
                         <li>
                             {customerData && (
-                                <a href={`/customer/inbox/${customerData.id}`}>
+                                <Link href={`/customer/inbox/${customerData.id}`}>
                                     <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-gray-600 hover:bg-blue-gray-800'>
                                         <IonIcon className='text-[20px]' name="chatbox"></IonIcon>
                                         <span
@@ -166,7 +166,7 @@ function CustomerDashboardLayout({ header, children, handleClickStart }) {
                                             Inbox
                                         </span>
                                     </div>
-                                </a>
+                                </Link>
                             )}
                         </li>
                     </ul>

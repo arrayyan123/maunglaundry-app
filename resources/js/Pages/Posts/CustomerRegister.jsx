@@ -144,7 +144,7 @@ const CustomerRegister = () => {
                         </button>
                     </form>
                     <div className='my-5'>
-                        <a href="/">
+                        <Link to="/">
                             <button className="px-4 py-2 bg-blue-500 text-white rounded-lg w-full flex justify-center items-center">
                                 <span className="flex flex-row space-x-3 items-center scale-100 hover:scale-110 transition-all ease-in-out">
                                     <p>Back to home</p>
@@ -152,7 +152,7 @@ const CustomerRegister = () => {
                                 </span>
                             </button>
 
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>
