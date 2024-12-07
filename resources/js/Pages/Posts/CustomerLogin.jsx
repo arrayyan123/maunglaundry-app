@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import axios from 'axios';
 import { Fade, Slide } from 'react-awesome-reveal';
 import IonIcon from '@reacticons/ionicons';
@@ -105,17 +105,17 @@ export default function CustomerLogin() {
             </Fade>
           </form>
           <div className="mt-6 mb-6 text-green-500 text-center">
-            <a href="/customer/register" className="hover:underline">Daftarkan disini</a>
+            <Link to="/customer/register" className="hover:underline">Daftarkan disini</Link>
           </div>
           <div>
-            <a href="/">
+            <Link to="/">
               <button className="px-4 py-2 bg-blue-500 text-white rounded-lg w-full flex justify-center items-center">
                 <span className="flex flex-row space-x-3 items-center scale-100 hover:scale-110 transition-all ease-in-out">
                   <p>Back to home</p>
                   <IonIcon name="home-outline"></IonIcon>
                 </span>
               </button>
-            </a>
+            </Link>
           </div>
         </div>
       </div>

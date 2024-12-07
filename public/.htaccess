@@ -2,8 +2,12 @@
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
-
     RewriteEngine On
+
+    # Handle Requests to Build Assets
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_URI} ^/build
+    RewriteRule ^ - [L]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

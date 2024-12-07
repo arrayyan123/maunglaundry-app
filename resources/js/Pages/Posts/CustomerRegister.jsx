@@ -1,7 +1,7 @@
 // resources/js/Pages/CustomerRegister.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import IonIcon from '@reacticons/ionicons';
 import { Fade, Slide } from 'react-awesome-reveal';
 
@@ -134,7 +134,7 @@ const CustomerRegister = () => {
                             </div>
                         </Fade>
                         <div className="mt-6 mb-6 text-green-500 text-center">
-                            <a href="/customer/login" className="hover:underline">Already have account? login here</a>
+                            <Link to="/customer/login" className="hover:underline">Already have account? login here</Link>
                         </div>
                         <button
                             type="submit"

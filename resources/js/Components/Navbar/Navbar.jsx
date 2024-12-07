@@ -1,10 +1,11 @@
+import { Link } from '@inertiajs/react';
 import React, { useState, useEffect } from 'react';
 
 const images = import.meta.glob('/public/assets/Images/*.png', { eager: true });
 
 const getImageByName = (name) => {
-    const matchingImage = Object.keys(images).find((path) => path.includes(`${name}.png`));
-    return matchingImage ? images[matchingImage].default || images[matchingImage] : null;
+  const matchingImage = Object.keys(images).find((path) => path.includes(`${name}.png`));
+  return matchingImage ? images[matchingImage].default || images[matchingImage] : null;
 };
 
 const logo = getImageByName('Logo_maung');
@@ -48,7 +49,7 @@ const Navbar = ({ homeRef, aboutRef, servicesRef, scrollToSection }) => {
     <nav className={`fixed lg:flex-row flex-col px-6 py-6 z-30 w-screen flex justify-between items-start lg:items-center ${navbarBackground} transition-colors duration-300`}>
       <div className="flex flex-row items-center lg:justify-normal justify-between lg:w-40 w-full">
         <a className="" href="#">
-          <img src={logo} className="w-40 h-30" alt="Logo" />
+          <img src={logo} className="md:w-40 md:h-30 w-30 h-20" alt="Logo" />
         </a>
         <div className="lg:hidden">
           <button onClick={toggleMenu} className={`navbar-burger flex items-center ${navbarText} p-3`}>
@@ -60,16 +61,15 @@ const Navbar = ({ homeRef, aboutRef, servicesRef, scrollToSection }) => {
         </div>
       </div>
       <div className="flex lg:flex-row flex-col lg:justify-between space-x-10">
-        <ul className={`${
-          isMenuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-        } lg:opacity-100 lg:max-h-full lg:flex lg:mx-auto lg:flex-row flex-col lg:items-center lg:w-auto lg:space-x-6 overflow-hidden transition-all duration-300 ease-in-out`}>
+        <ul className={`${isMenuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+          } lg:opacity-100 lg:max-h-full lg:flex lg:mx-auto lg:flex-row flex-col lg:items-center lg:w-auto lg:space-x-6 overflow-hidden transition-all duration-300 ease-in-out`}>
           <li><a className={`text-sm ${navbarText} hover:text-gray-500`} onClick={(e) => scrollToSection(homeRef, e)} href="#">Home</a></li>
           <li className="text-gray-300">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" className="w-4 h-4 current-fill" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v0m0 7v0m0 7v0m0-13a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
             </svg>
           </li>
-          <li><a className={`text-sm ${navbarText} hover:text-gray-500`} onClick={(e) => scrollToSection(aboutRef, e)}href="#">About Us</a></li>
+          <li><a className={`text-sm ${navbarText} hover:text-gray-500`} onClick={(e) => scrollToSection(aboutRef, e)} href="#">About Us</a></li>
           <li className="text-gray-300">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" className="w-4 h-4 current-fill" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v0m0 7v0m0 7v0m0-13a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
@@ -81,11 +81,11 @@ const Navbar = ({ homeRef, aboutRef, servicesRef, scrollToSection }) => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v0m0 7v0m0 7v0m0-13a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
             </svg>
           </li>
-          <button className="bg-gray-200 text-black hover:bg-gray-white py-2 px-6 rounded-full text-lg font-semibold transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg lg:mt-0 mt-6">
-            <a href="/customer/login">
+          <Link href={'/customer/login'}>
+            <button className="bg-gray-200 text-black hover:bg-gray-white py-2 px-6 rounded-full text-lg font-semibold transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg lg:mt-0 mt-6">
               Daftar Sekarang
-            </a>
-          </button>
+            </button>
+          </Link>
         </ul>
       </div>
     </nav>
