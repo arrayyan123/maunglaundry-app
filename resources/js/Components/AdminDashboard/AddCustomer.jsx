@@ -25,26 +25,31 @@ const AddCustomer = () => {
     setSuccess(null);
 
     try {
-        const response = await axios.post("/api/admin/register_customer", {
-            ...formData,
-            password: formData.phone,
-        });
+      const response = await axios.post("/api/admin/register_customer", {
+        ...formData,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        password: formData.phone,
+      });
 
-        if (response.data.status === "success") {
-            setSuccess("Customer added successfully!");
-            setFormData({
-                name: "",
-                phone: "",
-                address: "",
-            });
-        }
+      if (response.data.status === "success") {
+        setSuccess("Customer added successfully!");
+        setFormData({
+          name: "",
+          phone: "",
+          address: "",
+        });
+      }
     } catch (err) {
-        console.error(err.response ? err.response.data : err.message);
-        if (err.response && err.response.data.errors) {
-            setError(err.response.data.errors);
-        } else {
-            setError("An error occurred while adding the customer.");
-        }
+      console.error(err.response ? err.response.data : err.message);
+      if (err.response && err.response.data.errors) {
+        setError(err.response.data.errors);
+      } else {
+        setError("An error occurred while adding the customer.");
+      }
     }
   };
 

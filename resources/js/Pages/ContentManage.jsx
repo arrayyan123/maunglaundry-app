@@ -100,7 +100,13 @@ function ContentManage({ auth }) {
         data.append('description', formData.description);
         data.append('image', formData.image);
 
-        axios.post('/api/contents', data)
+        axios.post('/api/contents', data, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+        })
             .then(() => {
                 alert('Content uploaded successfully!');
                 fetchContents();

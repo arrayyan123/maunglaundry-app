@@ -178,7 +178,14 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
 
         console.log("Data to send:", dataToSend);
         try {
-            const response = await axios.post("/api/admin/transactions", dataToSend);
+            const response = await axios.post("/api/admin/transactions", dataToSend, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+            });
+
             if (response.status === 201) {
                 const transaction = response.data.transaction;
                 setTransactionId(transaction.id);                 

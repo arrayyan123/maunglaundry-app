@@ -55,7 +55,13 @@ function EditContent({ contentId, onClose }) {
     }
 
     axios
-      .post(`/api/contents/${contentId}?_method=PUT`, data)
+      .post(`/api/contents/${contentId}?_method=PUT`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+      })
       .then(() => {
         alert("Content updated successfully!");
         onClose(); // Close the edit form
