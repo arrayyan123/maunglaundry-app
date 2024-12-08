@@ -199,7 +199,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
 
         console.log("Data to send:", dataToSend);
         try {
-            const response = await axios.post("/api/admin/transactions", dataToSend, {
+            const response = await axios.post("/api/customer/transactions", dataToSend, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',

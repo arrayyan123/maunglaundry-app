@@ -48,25 +48,20 @@ Route::prefix('api')->group(function () {
     Route::post('/customer/login', [CustomerAuthController::class, 'login']);
     Route::post('/customer/logout', [CustomerAuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::get('/customer/{id}', [CustomerAuthController::class, 'show']);
+    Route::put('/customer/{id}', [CustomerAuthController::class, 'update'])->middleware('guest:customer');
 
     Route::delete('/admin/customer/{id}', [CustomerAuthController::class, 'destroy'])->middleware('auth:sanctum');
-    Route::post('/admin/register_customer', [CustomerAuthController::class, 'register_customer_admin']);
+    Route::post('/admin/register_customer', [CustomerAuthController::class, 'register_customer_admin'])->middleware('auth:sanctum');
     Route::get('/admin/customers', [PagesController::class, 'adminCustomerList'])->middleware('auth:sanctum');
     Route::get('/admin/transaction-details/{transactionId}', [TransactionsController::class, 'getTransactionByUuid']);
 
-    Route::post('/admin/transactions', [TransactionsController::class, 'store']);
+    Route::post('/customer/transactions', [TransactionsController::class, 'store']);
+    Route::post('/admin/transactions', [TransactionsController::class, 'store'])->middleware('auth:sanctum');
     //Route::get('/admin/transactions/{customerId}', [TransactionsController::class, 'show'])->name('transactions.show');
     Route::put('/admin/transactions/{id}/update', [TransactionsController::class, 'updatePaymentStatus']);
     Route::get('/admin/service-types', [ServiceTypesController::class, 'index']);
     Route::get('/admin/service-prices/{serviceTypeId}', [ServicePricesController::class, 'getPricesByServiceType']);
     Route::put('/admin/transactions/{transactionId}/payment', [TransactionsController::class, 'updatePayment']);
-
-    Route::get('/contents', [ContentController::class, 'index']);
-    Route::post('/contents', [ContentController::class, 'store']);
-    Route::get('/contents/{id}', [ContentController::class, 'show']); 
-    Route::put('/contents/{id}', [ContentController::class, 'update']); 
-    Route::get('/contents/{id}/edit', [ContentController::class, 'edit']);
-    Route::delete('/contents/{id}', [ContentController::class, 'destroy']);
 
     Route::delete('/admin/notes/{id}', [TransactionsController::class, 'destroyNote']);
     Route::get('/admin/inbox-notes', [TransactionsController::class, 'getNotesWithCustomerInfo']);
@@ -87,16 +82,15 @@ Route::prefix('api')->group(function () {
     Route::get('/admin/payment-methods', function () {
         return \App\Models\PaymentMethod::all();
     });
-    Route::put('/customer/{id}', [CustomerAuthController::class, 'update'])->middleware('guest:customer');
-});
 
-// Route::prefix('contents')->group(function () {
-//     Route::get('/', [ContentController::class, 'index']);
-//     Route::post('/', [ContentController::class, 'store']);
-//     Route::put('/{content}', [ContentController::class, 'update']);
-//     Route::delete('/{content}', [ContentController::class, 'destroy']);
-//     Route::get('/{id}/edit', [ContentController::class, 'edit']);
-// });
+    Route::get('/contents', [ContentController::class, 'index']);
+    Route::post('/contents', [ContentController::class, 'store']);
+    Route::get('/contents/{id}', [ContentController::class, 'show']); 
+    Route::put('/contents/{id}', [ContentController::class, 'update']); 
+    Route::get('/contents/{id}/edit', [ContentController::class, 'edit']);
+    Route::delete('/contents/{id}', [ContentController::class, 'destroy']);
+
+});
 
 Route::get('/customer/login', [PagesController::class, 'customerLogin'])
     ->name('customer.login')
@@ -119,7 +113,6 @@ Route::get('/', [PagesController::class, 'home'])->name('home-page');
 Route::get('/customer/register', [PagesController::class, 'customerRegister'])->name('customer-register-page');
 Route::get('/customer/login', [PagesController::class, 'customerLogin'])->name('customer-login-page');
 Route::get('/', [PagesController::class, 'home'])->name('home-page');
-Route::get('/laundry', [PagesController::class, 'laundryform'])->name('customer.form');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
