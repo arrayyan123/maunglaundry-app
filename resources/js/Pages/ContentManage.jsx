@@ -8,7 +8,7 @@ import 'react-quill/dist/quill.snow.css';
 import IonIcon from '@reacticons/ionicons';
 
 function ContentManage({ auth }) {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    //const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -105,7 +105,7 @@ function ContentManage({ auth }) {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
+                //'X-CSRF-TOKEN': csrfToken
             },
         })
             .then(() => {

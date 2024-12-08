@@ -4,7 +4,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import CSS for Quill editor
 
 function EditContent({ contentId, onClose }) {
-  const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  //const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -60,7 +60,7 @@ function EditContent({ contentId, onClose }) {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'X-CSRF-TOKEN': csrfToken
+          //'X-CSRF-TOKEN': csrfToken
         },
       })
       .then(() => {

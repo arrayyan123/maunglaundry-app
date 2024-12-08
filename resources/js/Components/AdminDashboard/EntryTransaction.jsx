@@ -11,7 +11,7 @@ const getImageByName = (name) => {
 const logo = getImageByName('Logo_maung');
 
 function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    // const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const [formData, setFormData] = useState({
         payment_method_id: "",
         name: ""
@@ -183,7 +183,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken
+                    // 'X-CSRF-TOKEN': csrfToken
                 },
             });
 

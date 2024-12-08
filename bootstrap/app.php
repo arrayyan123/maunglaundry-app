@@ -38,6 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->validateCsrfTokens(except: [
+            '/api/*',
             'api/admin/register_customer',
             'api/admin/transactions',
             'api',
