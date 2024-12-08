@@ -21,6 +21,7 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         // Tambahkan URI yang tidak memerlukan verifikasi CSRF
+        'api',
         'api/*',
         'send-whatsapp',
     ];
