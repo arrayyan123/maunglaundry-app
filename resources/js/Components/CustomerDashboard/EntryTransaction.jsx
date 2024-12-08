@@ -6,6 +6,7 @@ import EwalletCard from "./Payment/EwalletCard";
 import CashCard from "./Payment/CashCard";
 
 function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const [formData, setFormData] = useState({
         payment_method_id: "",
     });
@@ -190,7 +191,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'X-CSRF-TOKEN': csrfToken
                 },
             });
             if (response.status === 201) {

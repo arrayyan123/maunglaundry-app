@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const AddCustomer = () => {
+  const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -27,12 +28,13 @@ const AddCustomer = () => {
     try {
       const response = await axios.post("/api/admin/register_customer", {
         ...formData,
+        password: formData.phone,
+      }, {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          'X-CSRF-TOKEN': csrfToken,
         },
-        password: formData.phone,
       });
 
       if (response.data.status === "success") {
