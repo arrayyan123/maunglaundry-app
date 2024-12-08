@@ -11,7 +11,7 @@ const getImageByName = (name) => {
 const logo = getImageByName('Logo_maung');
 
 function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
-    // const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const [formData, setFormData] = useState({
         payment_method_id: "",
         name: ""
@@ -107,6 +107,12 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
         try {
             const response = await axios.post(`/api/admin/transactions/${noteTransactionId}/notes`, {
                 content: newNote,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
             });
             setNotes((prevNotes) => [...prevNotes, response.data.note]);
             setNewNote("");
@@ -132,6 +138,12 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             await axios.post("/send-whatsapp", {
                 phone: customerDetails.phone,
                 message,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
             });
             console.log("WhatsApp notification sent successfully");
         } catch (error) {
@@ -183,7 +195,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    // 'X-CSRF-TOKEN': csrfToken
+                    'X-CSRF-TOKEN': csrfToken
                 },
             });
 

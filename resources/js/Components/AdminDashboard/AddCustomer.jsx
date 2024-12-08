@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const AddCustomer = () => {
-  //const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -33,7 +33,7 @@ const AddCustomer = () => {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          //'X-CSRF-TOKEN': csrfToken,
+          'X-CSRF-TOKEN': csrfToken,
         },
       });
 

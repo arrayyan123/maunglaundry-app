@@ -6,7 +6,7 @@ import EwalletCard from "./Payment/EwalletCard";
 import CashCard from "./Payment/CashCard";
 
 function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
-    //const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const [formData, setFormData] = useState({
         payment_method_id: "",
     });
@@ -107,6 +107,12 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
         try {
             const response = await axios.post(`/api/admin/transactions/${noteTransactionId}/notes`, {
                 content: newNote,
+            },{
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
             });
             setNotes((prevNotes) => [...prevNotes, response.data.note]);
             setNewNote("");
@@ -133,6 +139,12 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             await axios.post("/send-whatsapp", {
                 phone: customerDetails.phone,
                 message,
+            },{
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
             });
             alert("WhatsApp notification sent successfully");
         } catch (error) {
@@ -150,7 +162,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     }, [selectedServices, quantity]);
 
     const handleSave = async () => {
-        if (isSaving) return; // Hindari aksi ganda
+        if (isSaving) return;
         setIsSaving(true);
         if (!customerId || !formData.payment_method_id || selectedServices.length === 0 || !endDate) {
             alert("Please fill all required fields.");
@@ -191,7 +203,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    //'X-CSRF-TOKEN': csrfToken
+                    'X-CSRF-TOKEN': csrfToken
                 },
             });
             if (response.status === 201) {
