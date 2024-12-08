@@ -55,7 +55,7 @@ Route::prefix('api')->group(function () {
     Route::get('/admin/transaction-details/{transactionId}', [TransactionsController::class, 'getTransactionByUuid']);
 
     Route::post('/admin/transactions', [TransactionsController::class, 'store']);
-    Route::get('/admin/transactions/{customerId}', [TransactionsController::class, 'show'])->name('transactions.show');
+    //Route::get('/admin/transactions/{customerId}', [TransactionsController::class, 'show'])->name('transactions.show');
     Route::put('/admin/transactions/{id}/update', [TransactionsController::class, 'updatePaymentStatus']);
     Route::get('/admin/service-types', [ServiceTypesController::class, 'index']);
     Route::get('/admin/service-prices/{serviceTypeId}', [ServicePricesController::class, 'getPricesByServiceType']);
