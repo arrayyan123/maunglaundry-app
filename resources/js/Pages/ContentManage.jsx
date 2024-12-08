@@ -103,7 +103,6 @@ function ContentManage({ auth }) {
 
         axios.post('/api/contents', data, {
             headers: {
-                'Content-Type': 'application/json',
                 'Accept': 'application/json',
                 //'X-CSRF-TOKEN': csrfToken
             },
