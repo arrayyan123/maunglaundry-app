@@ -168,7 +168,7 @@ function CustomerInbox() {
                 header={
                     <div>
                         <h2 className="text-xl font-semibold leading-tight text-white">
-                            Inbox Pelanggan
+                            Inbox Customer
                         </h2>
                     </div>
                 }

@@ -129,7 +129,7 @@ function CustomerDashboardLayoutInbox({ header, children }) {
                         </li>
                         <li>
                             {customerData && (
-                                <Link href={`/customer/report/${customerData.id}`}>
+                                <Link href={`/customer/report`}>
                                     <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-gray-600 hover:bg-blue-gray-800'>
                                         <IonIcon className='text-[20px]' name="cash"></IonIcon>
                                         <span

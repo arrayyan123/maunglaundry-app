@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/react';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Chart from 'chart.js/auto';
+import IonIcon from '@reacticons/ionicons';
 
 export default function DiagramCalc({ auth, customers }) {
     const [totalPrice, setTotalPrice] = useState(0);
@@ -37,7 +38,6 @@ export default function DiagramCalc({ auth, customers }) {
                     status_job: status || null
                 },
             });
-            console.log('Server Response:', response.data);
             setReports(response.data.data);
             updateBarChart(response.data.data);
             updateDoughnutChart(response.data.data);
@@ -159,8 +159,22 @@ export default function DiagramCalc({ auth, customers }) {
             }
         >
             <Head title="Diagram Penjualan" />
-            <div className="container mx-auto p-6  bg-white rounded-lg shadow-lg space-y-8">
+            <div className="container mx-auto p-6 bg-white rounded-lg shadow-lg space-y-8">
                 {/* Total Pemasukan dan Grafik */}
+                <div className='flex lg:flex-row flex-col p-2 lg:space-x-2 space-x-0 lg:space-y-0 space-y-2'>
+                    <div className='bg-white flex flex-row space-x-3 items-center border w-full p-10 h-full rounded-xl'>
+                        <IonIcon className='text-black text-[30px]' name='cash' />
+                        <h2 className="text-lg text-black font-semibold">Total Transaksi:<br /> {reports.length} transaksi</h2>
+                    </div>
+                    <div className='bg-green-500 flex flex-row space-x-3 items-center border w-full p-10 h-full rounded-xl'>
+                        <IonIcon className='text-white text-[30px]' name='man' />
+                        <h2 className="text-lg text-white font-semibold">Rata-rata Nilai Transaksi:<br /> Rp.{formatNumber(totalPrice / reports.length || 0)}</h2>
+                    </div>
+                    <div className='bg-red-500 flex flex-row space-x-3 items-center border w-full p-10 h-full rounded-xl'>
+                        <IonIcon className='text-white text-[30px]' name='man' />
+                        <h2 className="text-lg text-white font-semibold">Pelanggan Baru Bulan Ini:<br /> {reports.slice(0, 5).length}</h2>
+                    </div>
+                </div>
                 <div className='flex-1 bg-gray-300 text-gray-700 rounded-lg p-6 shadow-md'>
                     <h2 className="text-lg font-semibold mb-4">Total Pemasukan: Rp.{formatNumber(totalPrice)}</h2>
                     <div className="p-4 bg-white w-full h-auto shadow rounded">
@@ -255,14 +269,6 @@ export default function DiagramCalc({ auth, customers }) {
                                 />
                             </div>
                         </div>
-                    </div>
-                    <div className="flex-1 bg-gray-200 p-6 rounded-lg shadow-md">
-                        <h3 className="text-xl font-semibold mb-4">Statistik Penjualan</h3>
-                        <ul className="space-y-2">
-                            <li>Total Transaksi: {reports.length}</li>
-                            <li>Rata-rata Nilai Transaksi: Rp.{formatNumber(totalPrice / reports.length || 0)}</li>
-                            <li>Pelanggan Baru Bulan Ini: {reports.slice(0, 5).length}</li>
-                        </ul>
                     </div>
                 </div>
 
