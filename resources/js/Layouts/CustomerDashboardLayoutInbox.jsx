@@ -145,7 +145,7 @@ function CustomerDashboardLayoutInbox({ header, children }) {
                         </li>
                         <li>
                             {customerData && (
-                                <Link href={`/customer/graph/${customerData.id}`}>
+                                <Link href={`/customer/graph`}>
                                     <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-gray-600 hover:bg-blue-gray-800'>
                                         <IonIcon className='text-[20px]' name="stats-chart"></IonIcon>
                                         <span
@@ -160,7 +160,7 @@ function CustomerDashboardLayoutInbox({ header, children }) {
                         </li>
                         <li>
                             {customerData && (
-                                <Link href={`/customer/inbox/${customerData.id}`}>
+                                <Link href={`/customer/inbox`}>
                                     <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-gray-600 hover:bg-blue-gray-800'>
                                         <IonIcon className='text-[20px]' name="chatbox"></IonIcon>
                                         <span
@@ -240,7 +240,7 @@ function CustomerDashboardLayoutInbox({ header, children }) {
                                         <IonIcon className='text-[20px]' name='chevron-down'></IonIcon>
                                     </span>}>
                                     <Zoom>
-                                        <Dropdown.Item onClick={() => (window.location.href = `/customer/edit-profile/${customerData.id}`)}>Profile</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => (window.location.href = `/customer/edit-profile`)}>Profile</Dropdown.Item>
                                         <Dropdown.Item onClick={() => setShowLogOutModal(true)}>Sign out</Dropdown.Item>
                                     </Zoom>
                                 </Dropdown>

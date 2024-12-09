@@ -101,13 +101,13 @@ Route::middleware(['guest:customer'])->group(function () {
         ->name('customer.dashboard');
     Route::post('/customer/logout', [CustomerAuthController::class, 'logout'])
         ->name('customer.logout');
-    Route::get('/customer/edit-profile/{id}', [PagesController::class, 'editProfile'])
+    Route::get('/customer/edit-profile', [PagesController::class, 'editProfile'])
         ->name('customer.edit-profile');
-    Route::get('/customer/report/{id}', [PagesController::class, 'reportCustomer'])
+    Route::get('/customer/report', [PagesController::class, 'reportCustomer'])
         ->name('customer.report');
-    Route::get('/customer/inbox/{id}', [PagesController::class, 'CustomerInbox'])
+    Route::get('/customer/inbox', [PagesController::class, 'CustomerInbox'])
         ->name('customer.inbox');
-    Route::get('/customer/graph/{id}', [PagesController::class, 'customerGraph'])
+    Route::get('/customer/graph', [PagesController::class, 'customerGraph'])
         ->name('customer.graph');
 });
 

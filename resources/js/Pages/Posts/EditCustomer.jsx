@@ -14,34 +14,45 @@ const getImageByName = (name) => {
 const dummypic = getImageByName("dummy-profpic");
 const logo = getImageByName("Logo_maung");
 
-export default function EditCustomer({ customer }) {
+export default function EditCustomer() {
     const [customerData, setCustomerData] = useState(null);
     const [formData, setFormData] = useState({
-        name: customer.name || "",
-        email: customer.email || "",
-        phone: customer.phone || "",
-        address: customer.address || "",
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
     });
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
-    useEffect(() => {
+    const loadCustomerData = () => {
         const storedToken = localStorage.getItem("customer-token");
         if (!storedToken) {
             window.location.href = "/customer/login";
-        } else {
-            const storedCustomer = localStorage.getItem("customer-data");
-            if (storedCustomer) {
-                const customer = JSON.parse(storedCustomer);
-                setCustomerData(customer);
-            }
+            return;
         }
+
+        const storedCustomer = localStorage.getItem("customer-data");
+        if (storedCustomer) {
+            const customer = JSON.parse(storedCustomer);
+            setCustomerData(customer);
+            setFormData({
+                name: customer.name || "",
+                email: customer.email || "",
+                phone: customer.phone || "",
+                address: customer.address || "",
+            });
+        }
+    };
+    useEffect(() => {
+        loadCustomerData();
     }, []);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
+    };
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
@@ -53,18 +64,22 @@ export default function EditCustomer({ customer }) {
             setLoading(false);
             return;
         }
+
         try {
             const response = await axios.put(
-                `/api/customer/${customer.id}`,
+                `/api/customer/${customerData.id}`,
                 formData,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json",
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        "X-CSRF-TOKEN": document
+                            .querySelector('meta[name="csrf-token"]')
+                            .getAttribute("content"),
                     },
                 }
             );
+
             const updatedCustomer = response.data.customer;
             setCustomerData(updatedCustomer);
             localStorage.setItem("customer-data", JSON.stringify(updatedCustomer));

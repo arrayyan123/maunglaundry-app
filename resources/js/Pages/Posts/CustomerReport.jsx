@@ -4,7 +4,7 @@ import IonIcon from '@reacticons/ionicons';
 import React, { useState, useEffect } from "react";
 import SlotCounter from 'react-slot-counter';
 
-function CustomerReport({ customer }) {
+function CustomerReport() {
     const [customerData, setCustomerData] = useState(null);
     const [reports, setReports] = useState([]);
     const [startDate, setStartDate] = useState('');
@@ -17,9 +17,24 @@ function CustomerReport({ customer }) {
     const [statuspayment, setStatusPayment] = useState('');
     const itemsPerPage = 15;
 
-    const fetchReport = async () => {
+    useEffect(() => {
+        const storedToken = localStorage.getItem("customer-token");
+        if (!storedToken) {
+            window.location.href = "/customer/login";
+        } else {
+            const storedCustomer = localStorage.getItem("customer-data");
+            if (storedCustomer) {
+                const customer = JSON.parse(storedCustomer);
+                setCustomerData(customer);
+                fetchReport(customer.id);
+                fetchTotalPrice(customer.id);
+            }
+        }
+    }, []);
+
+    const fetchReport = async (customerId) => {
         try {
-            const response = await axios.get(`/api/admin/reports/customer/${customer.id}`, {
+            const response = await axios.get(`/api/admin/reports/customer/${customerId}`, {
                 params: { month, year, start_date: startDate, end_date: endDate, status_job: status, status_payment: statuspayment },
             });
             console.log('API Response:', response.data);
@@ -29,9 +44,9 @@ function CustomerReport({ customer }) {
         }
     };
 
-    const fetchTotalPrice = async () => {
+    const fetchTotalPrice = async (customerId) => {
         try {
-            const response = await axios.get(`/api/admin/total-price/customer/${customer.id}`, {
+            const response = await axios.get(`/api/admin/total-price/customer/${customerId}`, {
                 params: { month, year, start_date: startDate, end_date: endDate, status_job: status, status_payment: statuspayment },
             });
             setTotalPrice(response.data.total_price);
@@ -65,22 +80,12 @@ function CustomerReport({ customer }) {
     };
 
     useEffect(() => {
-        const storedToken = localStorage.getItem("customer-token");
-        if (!storedToken) {
-            window.location.href = "/customer/login";
-        } else {
-            const storedCustomer = localStorage.getItem("customer-data");
-            if (storedCustomer) {
-                const customer = JSON.parse(storedCustomer);
-                setCustomerData(customer);
-            }
+        if (customerData) {
+            fetchReport(customerData.id);
+            fetchTotalPrice(customerData.id);
         }
-    }, []);
-
-    useEffect(() => {
-        fetchReport();
-        fetchTotalPrice();
-    }, [month, year, startDate, endDate, status, statuspayment]);
+    }, [customerData, month, year, startDate, endDate, status, statuspayment]);
+    
 
     return (
         <div>

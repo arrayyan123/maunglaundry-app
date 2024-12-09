@@ -4,7 +4,8 @@ import IonIcon from '@reacticons/ionicons';
 import { useState, useEffect } from 'react';
 import { Fade } from 'react-awesome-reveal';
 
-function CustomerInbox({ customer }) {
+function CustomerInbox() {
+    const [customerData, setCustomerData] = useState(null);
     const [transactions, setTransactions] = useState([]);
     const [lastChecked, setLastChecked] = useState(null);
     const [messages, setMessages] = useState([]);
@@ -20,12 +21,26 @@ function CustomerInbox({ customer }) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [notes, setNotes] = useState()
 
-    const fetchReports = async () => {
+    useEffect(() => {
+        const storedToken = localStorage.getItem("customer-token");
+        if (!storedToken) {
+            window.location.href = "/customer/login";
+        } else {
+            const storedCustomer = localStorage.getItem("customer-data");
+            if (storedCustomer) {
+                const customer = JSON.parse(storedCustomer);
+                setCustomerData(customer);
+                fetchReports(customer.id);
+            }
+        }
+    }, []);
+
+    const fetchReports = async (customerId) => {
         if (isFetching) return;
         setIsFetching(true);
 
         try {
-            const response = await axios.get(`/api/admin/reports/customer/${customer.id}`);
+            const response = await axios.get(`/api/admin/reports/customer/${customerId}`);
             const newTransactions = response.data.data;
             const filteredTransactions = newTransactions.filter(
                 (transaction) => !fetchedIds.has(transaction.transaction_id) && !removedIds.has(transaction.transaction_id)

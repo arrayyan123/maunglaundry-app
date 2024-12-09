@@ -63,32 +63,20 @@ class PagesController extends Controller
             'customers' => $customers
         ]);
     }
-    public function editProfile($customerId)
+    public function editProfile()
     {
-        $customer = CustomerUser::findOrFail($customerId);
-        return Inertia::render('Posts/EditCustomer', [
-            'customer' => $customer
-        ]);
+        return Inertia::render('Posts/EditCustomer');
     }
-    public function reportCustomer($customerId)
+    public function reportCustomer()
     {
-        $customer = CustomerUser::findOrFail($customerId);
-        return Inertia::render('Posts/CustomerReport', [
-            'customer' => $customer
-        ]);
+        return Inertia::render('Posts/CustomerReport');
     }
-    public function CustomerInbox($customerId)
+    public function CustomerInbox()
     {
-        $customer = CustomerUser::findOrFail($customerId);
-        return Inertia::render('Posts/CustomerInbox',[
-            'customer' => $customer
-        ]);
+        return Inertia::render('Posts/CustomerInbox');
     }
-    public function customerGraph($customerId)
+    public function customerGraph()
     {
-        $customer = CustomerUser::findOrFail($customerId);
-        return Inertia::render('Posts/CustomerGraph',[
-            'customer' => $customer
-        ]);
+        return Inertia::render('Posts/CustomerGraph');
     }
 }

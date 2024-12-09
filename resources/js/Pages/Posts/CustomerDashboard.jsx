@@ -245,7 +245,7 @@ export default function CustomerDashboard() {
                 {customerData && (
                     <div className="grid instruksi-kedua md:grid-cols-2 grid-flow-row md:space-x-2 space-x-0 md:space-y-0 space-y-2">
                         <div className="bg-blue-400 px-5 py-4 rounded-lg flex items-center">
-                            <h1 className="text-white lg:text-xl md:text-lg text-sm font-semibold mx-auto">Email: {customerData.email}</h1>
+                            <h1 className="text-white lg:text-xl md:text-lg text-sm font-semibold mx-auto">Email: {customerData.email || "(masukkan email anda dengan edit profile)"}</h1>
                         </div>
                         <div className="bg-blue-400 px-5 py-4 rounded-lg text-white">
                             <h1 className="text-white font-semibold">Alamat: {customerData.address}</h1>
@@ -410,7 +410,7 @@ export default function CustomerDashboard() {
                                                 />
                                             </div>
                                         )}
-                                        <div className="flex flex-col md:space-y-0 space-y-4 md:flex-row md:space-x-4">
+                                        <div className="flex flex-col lg:space-y-0 space-y-4 lg:flex-row lg:space-x-4">
                                             <div className="flex flex-col">
                                                 <label htmlFor="">Penelusuri</label>
                                                 <input

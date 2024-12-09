@@ -52,9 +52,9 @@ function CustomerGraph() {
                     </div>
                 }
             >
-                <div className='flex flex-row bg-white overflow-hidden h-[82vh] p-8 space-x-3 justify-between items-center m-auto'>
+                <div className='flex md:flex-row flex-col bg-white overflow-hidden h-[82vh] p-8 space-x-0 md:space-x-3 md:justify-between items-center m-auto'>
                     <img src={Maintenance} className='w-[40%]  h-auto' alt="website maintenance" />
-                    <h1 className='text-[50px]'>Fitur ini akan hadir</h1>
+                    <h1 className='text-[50px] md:text-left text-center'>Fitur ini akan hadir</h1>
                 </div>
             </CustomerDashboardLayout>
         </div>
