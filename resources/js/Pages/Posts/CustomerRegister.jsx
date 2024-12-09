@@ -138,7 +138,7 @@ const CustomerRegister = () => {
                                 />
                             </div>
 
-                            <div className="mb-6">
+                            <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">
                                     Alamat
                                 </label>
@@ -149,15 +149,17 @@ const CustomerRegister = () => {
                                 />
                             </div>
                         </Fade>
-                        <div className="mt-6 mb-6 text-green-500 text-center">
+                        <div className='flex flex-row  items-center justify-between'>
+                        <div className=" text-green-500 text-center">
                             <Link href="/customer/login" className="hover:underline">Sudah punya akun? kembali ke login</Link>
                         </div>
                         <button
                             type="submit"
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full"
+                            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-[40%]"
                         >
                             Registrasi
                         </button>
+                        </div>
                     </form>
                     <div className='my-5'>
                         <Link href="/">

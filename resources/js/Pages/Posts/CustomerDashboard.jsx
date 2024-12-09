@@ -49,7 +49,6 @@ export default function CustomerDashboard() {
     const entryTransactionRef = useRef(null);
     const notificationRef = useRef(null);
 
-
     const handleClickStart = () => {
         setRun(true);
     };

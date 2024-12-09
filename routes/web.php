@@ -114,7 +114,6 @@ Route::middleware(['guest:customer'])->group(function () {
 Route::get('/', [PagesController::class, 'home'])->name('home-page');
 Route::get('/customer/register', [PagesController::class, 'customerRegister'])->name('customer-register-page');
 Route::get('/customer/login', [PagesController::class, 'customerLogin'])->name('customer-login-page');
-Route::get('/', [PagesController::class, 'home'])->name('home-page');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

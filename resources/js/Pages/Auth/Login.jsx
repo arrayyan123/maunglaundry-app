@@ -22,7 +22,13 @@ export default function Login({ status, canResetPassword }) {
     };
 
     return (
-        <GuestLayout>
+        <GuestLayout
+            header={
+                <div>
+                    <h1 className='text-4xl font-semibold mb-4'>Login</h1>
+                </div>
+            }
+        >
             <Head title="Log in" />
 
             {status && (
