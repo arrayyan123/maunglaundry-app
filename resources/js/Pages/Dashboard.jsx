@@ -289,7 +289,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                 >
                     <SwiperSlide>
                         <Link href={route('admin.report')}>
-                            <div className="bg-blue-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <div className="bg-blue-400 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                                 <IonIcon className='text-xl' name="person"></IonIcon>
                                 <h3 className="text-xl font-bold">Total Customers</h3>
                                 <p className="text-3xl"><SlotCounter value={customers.length} /></p>
@@ -298,7 +298,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                     </SwiperSlide>
                     <SwiperSlide>
                         <Link href={route('admin.report')}>
-                            <div className="bg-green-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <div className="bg-green-400 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                                 <IonIcon className='text-xl' name="stats-chart"></IonIcon>
                                 <h3 className="text-xl font-bold">Total Transactions</h3>
                                 <p className="text-3xl"><SlotCounter value={reports.length} /></p>
@@ -307,7 +307,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                     </SwiperSlide>
                     <SwiperSlide>
                         <Link href={route('admin.report')}>
-                            <div className="bg-yellow-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <div className="bg-yellow-400 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                                 <IonIcon className='text-xl' name="warning"></IonIcon>
                                 <h3 className="text-xl font-bold">Pending Requests</h3>
                                 <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'pending').length} /></p>
@@ -316,7 +316,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                     </SwiperSlide>
                     <SwiperSlide>
                         <Link href={route('admin.report')}>
-                            <div className="bg-green-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <div className="bg-green-400 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                                 <IonIcon className='text-xl font-bold' name="checkmark"></IonIcon>
                                 <h3 className="text-xl font-bold">Done Requests</h3>
                                 <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'done').length} /></p>
@@ -325,7 +325,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                     </SwiperSlide>
                     <SwiperSlide>
                         <Link href={route('admin.report')}>
-                            <div className="bg-red-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <div className="bg-red-400 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                                 <IonIcon className='text-xl' name="ban"></IonIcon>
                                 <h3 className="text-xl font-bold">Cancel Requests</h3>
                                 <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'cancel').length} /></p>
@@ -334,7 +334,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                     </SwiperSlide>
                     <SwiperSlide>
                         <Link href={route('admin.report')}>
-                            <div className="bg-blue-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <div className="bg-blue-400 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                                 <IonIcon className='text-xl' name="calendar"></IonIcon>
                                 <h3 className="text-xl font-bold">Ongoing Requests</h3>
                                 <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'ongoing').length} /></p>
@@ -346,42 +346,42 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
             <div className="instruksi-kedua md:grid hidden grid-cols-1 md:grid-cols-3 gap-4 my-6">
                 <Fade>
                     <Link href={route('admin.report')}>
-                        <div className="bg-blue-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                        <div className="bg-blue-400 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                             <IonIcon className='text-xl' name="person"></IonIcon>
                             <h3 className="text-xl font-bold">Total Customers</h3>
                             <p className="text-3xl"><SlotCounter value={customers.length} /></p>
                         </div>
                     </Link>
                     <Link href={route('admin.report')}>
-                        <div className="bg-green-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                        <div className="bg-green-400 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                             <IonIcon className='text-xl' name="stats-chart"></IonIcon>
                             <h3 className="text-xl font-bold">Total Transactions</h3>
                             <p className="text-3xl"><SlotCounter value={reports.length} /></p>
                         </div>
                     </Link>
                     <Link href={route('admin.report')}>
-                        <div className="bg-yellow-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                        <div className="bg-yellow-400 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                             <IonIcon className='text-xl' name="warning"></IonIcon>
                             <h3 className="text-xl font-bold">Pending Requests</h3>
                             <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'pending').length} /></p>
                         </div>
                     </Link>
                     <Link href={route('admin.report')}>
-                        <div className="bg-green-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                        <div className="bg-green-400 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                             <IonIcon className='text-xl font-bold' name="checkmark"></IonIcon>
                             <h3 className="text-xl font-bold">Done Requests</h3>
                             <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'done').length} /></p>
                         </div>
                     </Link>
                     <Link href={route('admin.report')}>
-                        <div className="bg-red-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                        <div className="bg-red-400 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                             <IonIcon className='text-xl' name="ban"></IonIcon>
                             <h3 className="text-xl font-bold">Cancel Requests</h3>
                             <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'cancel').length} /></p>
                         </div>
                     </Link>
                     <Link href={route('admin.report')}>
-                        <div className="bg-blue-500 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                        <div className="bg-blue-400 text-white p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
                             <IonIcon className='text-xl' name="calendar"></IonIcon>
                             <h3 className="text-xl font-bold">Ongoing Requests</h3>
                             <p className="text-3xl"><SlotCounter value={reports.filter(report => report.status_job === 'ongoing').length} /></p>

@@ -144,15 +144,19 @@ function CustomerDashboardLayoutInbox({ header, children }) {
                             )}
                         </li>
                         <li>
-                            <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-gray-600 hover:bg-blue-gray-800'>
-                                <IonIcon className='text-[20px]' name="stats-chart"></IonIcon>
-                                <span
-                                    className={`${isSidebarExpanded ? "block" : "hidden"
-                                        } text-sm`}
-                                >
-                                    Perkembangan Anda
-                                </span>
-                            </div>
+                            {customerData && (
+                                <Link href={`/customer/graph/${customerData.id}`}>
+                                    <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-gray-600 hover:bg-blue-gray-800'>
+                                        <IonIcon className='text-[20px]' name="stats-chart"></IonIcon>
+                                        <span
+                                            className={`${isSidebarExpanded ? "block" : "hidden"
+                                                } text-sm`}
+                                        >
+                                            Perkembangan Anda
+                                        </span>
+                                    </div>
+                                </Link>
+                            )}
                         </li>
                         <li>
                             {customerData && (
@@ -214,7 +218,7 @@ function CustomerDashboardLayoutInbox({ header, children }) {
                                 <button onClick={() => setIsSidebarSmaller(!isSidebarSmaller)}>
                                     <span>
                                         <IonIcon className={`text-2xl transform transition-transform duration-500 text-white ${isSidebarSmaller ? "rotate-90" : "rotate-0"
-                            }`} name={ isSidebarSmaller ? "arrow-up-circle" : "arrow-back-circle"}></IonIcon>
+                                            }`} name={isSidebarSmaller ? "arrow-up-circle" : "arrow-back-circle"}></IonIcon>
                                     </span>
                                 </button>
                             </div>

@@ -21,14 +21,14 @@ function Home() {
       console.warn("Ref not found:", ref);
     }
   };
-  
+
   return (
     <div>
       <Head title="Home" />
       <Navbar
         homeRef={homeRef}
         aboutRef={aboutRef}
-        servicesRef={servicesRef} 
+        servicesRef={servicesRef}
         scrollToSection={scrollToSection}
       />
       <Hero homeRef={homeRef} />
@@ -36,7 +36,12 @@ function Home() {
       <Carousel />
       <AboutSection aboutRef={aboutRef} />
       <ContentSection servicesRef={servicesRef} />
-      <Footer />
+      <Footer
+        homeRef={homeRef}
+        aboutRef={aboutRef}
+        servicesRef={servicesRef}
+        scrollToSection={scrollToSection}
+      />
     </div>
   )
 }

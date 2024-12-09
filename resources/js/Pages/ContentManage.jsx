@@ -8,7 +8,7 @@ import 'react-quill/dist/quill.snow.css';
 import IonIcon from '@reacticons/ionicons';
 
 function ContentManage({ auth }) {
-    //const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -104,7 +104,7 @@ function ContentManage({ auth }) {
         axios.post('/api/contents', data, {
             headers: {
                 'Accept': 'application/json',
-                //'X-CSRF-TOKEN': csrfToken
+                'X-CSRF-TOKEN': csrfToken
             },
         })
             .then(() => {
@@ -128,6 +128,7 @@ function ContentManage({ auth }) {
                 }
             >
                 <Head title='Content Management' />
+                <h1 className='ml-3 md:text-[30px] text-[20px] font-bold'>Berita Terkini</h1>
                 {/* form untuk submit content baru */}
                 {!editingContentId && (
                     <form onSubmit={handleSubmit} className="p-4">
@@ -182,7 +183,7 @@ function ContentManage({ auth }) {
                     </form>
                 )}
                 <div className="p-4">
-                    <h1 className="text-2xl font-bold mb-4">Content Dashboard</h1>
+                    <h1 className="text-2xl font-bold mb-4">Berita Terkini</h1>
                     <div className="overflow-x-auto">
                         <table className="table-auto w-full border-collapse border border-gray-300">
                             <thead className="bg-gray-200">

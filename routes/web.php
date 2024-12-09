@@ -107,6 +107,8 @@ Route::middleware(['guest:customer'])->group(function () {
         ->name('customer.report');
     Route::get('/customer/inbox/{id}', [PagesController::class, 'CustomerInbox'])
         ->name('customer.inbox');
+    Route::get('/customer/graph/{id}', [PagesController::class, 'customerGraph'])
+        ->name('customer.graph');
 });
 
 Route::get('/', [PagesController::class, 'home'])->name('home-page');

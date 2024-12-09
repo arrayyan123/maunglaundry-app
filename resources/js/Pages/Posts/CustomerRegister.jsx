@@ -5,6 +5,19 @@ import { Head, Link } from '@inertiajs/react';
 import IonIcon from '@reacticons/ionicons';
 import { Fade, Slide } from 'react-awesome-reveal';
 
+const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
+const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
+const laundryImages = import.meta.glob("/public/assets/Images/laundry_pics/*.jpg", { eager: true });
+const images = { ...pngImages, ...webpImages, ...laundryImages };
+
+const getImageByName = (name) => {
+    const matchingImage = Object.keys(images).find((path) => path.includes(`${name}`));
+    return matchingImage ? images[matchingImage].default || images[matchingImage] : null;
+};
+
+const bigPics = getImageByName('laundry_05');
+const logoMaung = getImageByName('Logo_maung');
+
 
 const CustomerRegister = () => {
     const [formData, setFormData] = useState({
@@ -52,20 +65,23 @@ const CustomerRegister = () => {
             <Head title='Customer Register' />
             <div className="bg-blue-100 flex justify-center items-center h-screen">
                 <div className="w-1/2 h-screen hidden lg:block">
-                    <img src="https://img.freepik.com/fotos-premium/imagen-fondo_910766-187.jpg?w=826" alt="Placeholder Image" className="object-cover w-full h-full" />
+                    <img src={bigPics} alt="Placeholder Image" className="object-cover w-full h-full" />
                 </div>
-                <div className="lg:p-40 lg:-mt-40 mt-0 md:p-32 sm:26 p-10 w-full lg:w-1/2 h-screen">
+                <div className="lg:p-30 lg:-mt-40 mt-0 md:p-32 sm:26 p-10 w-full lg:w-1/2 h-screen">
                     {message && (
                         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
                             {message}
                         </div>
                     )}
-                    <h2 className="text-4xl font-semibold mb-6">Customer Registration</h2>
+                    <div className='flex flex-col items-center text-center'>
+                        <img src={logoMaung} alt="logo laundry" className='w-[30%]' />
+                        <h1 className="text-2xl font-semibold mb-4">Registrasi</h1>
+                    </div>
                     <form onSubmit={handleSubmit}>
                         <Fade cascade>
                             <div className="mb-4 bg-blue-100">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                                    Name
+                                    Nama
                                 </label>
                                 <input
                                     type="text"
@@ -112,7 +128,7 @@ const CustomerRegister = () => {
 
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                                    Phone
+                                    Nomor Telepon
                                 </label>
                                 <input
                                     type="text"
@@ -124,7 +140,7 @@ const CustomerRegister = () => {
 
                             <div className="mb-6">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                                    Address
+                                    Alamat
                                 </label>
                                 <textarea
                                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -134,20 +150,20 @@ const CustomerRegister = () => {
                             </div>
                         </Fade>
                         <div className="mt-6 mb-6 text-green-500 text-center">
-                            <Link href="/customer/login" className="hover:underline">Already have account? login here</Link>
+                            <Link href="/customer/login" className="hover:underline">Sudah punya akun? kembali ke login</Link>
                         </div>
                         <button
                             type="submit"
                             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full"
                         >
-                            Register
+                            Registrasi
                         </button>
                     </form>
                     <div className='my-5'>
                         <Link href="/">
                             <button className="px-4 py-2 bg-blue-500 text-white rounded-lg w-full flex justify-center items-center">
                                 <span className="flex flex-row space-x-3 items-center scale-100 hover:scale-110 transition-all ease-in-out">
-                                    <p>Back to home</p>
+                                    <p>Kembali ke home</p>
                                     <IonIcon name="home-outline"></IonIcon>
                                 </span>
                             </button>

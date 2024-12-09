@@ -4,6 +4,19 @@ import axios from 'axios';
 import { Fade, Slide } from 'react-awesome-reveal';
 import IonIcon from '@reacticons/ionicons';
 
+const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
+const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
+const laundryImages = import.meta.glob("/public/assets/Images/laundry_pics/*.jpg", { eager: true });
+const images = { ...pngImages, ...webpImages, ...laundryImages };
+
+const getImageByName = (name) => {
+  const matchingImage = Object.keys(images).find((path) => path.includes(`${name}`));
+  return matchingImage ? images[matchingImage].default || images[matchingImage] : null;
+};
+
+const bigPics = getImageByName('laundry_05');
+const logoMaung = getImageByName('Logo_maung');
+
 export default function CustomerLogin() {
   const [formData, setFormData] = useState({
     phone: '',
@@ -50,11 +63,11 @@ export default function CustomerLogin() {
       <Head title="Customer Login" />
       <div className='bg-blue-100 flex justify-center items-center h-screen'>
         <div className="w-1/2 h-screen hidden lg:block">
-          <img src="https://img.freepik.com/fotos-premium/imagen-fondo_910766-187.jpg?w=826" alt="Placeholder Image" className="object-cover w-full h-full" />
+          <img src={bigPics} alt="Placeholder Image" className="object-cover w-full h-full" />
         </div>
-        <div className="lg:p-36 md:p-52 sm:20 p-8 w-full lg:w-1/2">
+        <div className="lg:p-36 md:p-52 object-contain sm:20 p-8 w-full lg:w-1/2">
           {message && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <div className="bg-red-100 border mb-4 border-red-400 text-red-700 px-4 py-3 rounded">
               {message}
             </div>
           )}
@@ -63,7 +76,10 @@ export default function CustomerLogin() {
               {warning}
             </div>
           )}
-          <h1 className="text-4xl font-semibold mb-4">Login</h1>
+          <div className='flex flex-col items-center text-center'>
+            <img src={logoMaung} alt="logo laundry" className='w-[30%]' />
+            <h1 className="text-4xl font-semibold mb-4">Login</h1>
+          </div>
           <form action="#" method="POST" onSubmit={handleSubmit}>
             <Fade direction='right' cascade>
               <div className="mb-4 bg-blue-100">

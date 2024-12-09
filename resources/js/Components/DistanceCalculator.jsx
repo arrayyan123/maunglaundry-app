@@ -22,7 +22,7 @@ const DistanceCalculator = ({ customerAddress }) => {
             });
             setDistance(response.data.distance);
         } catch (err) {
-            setError("Failed to calculate distance. Please try again.");
+            setError("Tidak dapat mengkalkulasi jarak.");
         }
     };
     const getDistanceClass = () => {

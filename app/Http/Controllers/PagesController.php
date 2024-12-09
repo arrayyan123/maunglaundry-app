@@ -84,4 +84,11 @@ class PagesController extends Controller
             'customer' => $customer
         ]);
     }
+    public function customerGraph($customerId)
+    {
+        $customer = CustomerUser::findOrFail($customerId);
+        return Inertia::render('Posts/CustomerGraph',[
+            'customer' => $customer
+        ]);
+    }
 }

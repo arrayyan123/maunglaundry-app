@@ -51,7 +51,6 @@ class CustomerAuthController extends Controller
     //sisi admin
     public function register_customer_admin(Request $request)
     {
-        Log::debug('Received request in register_customer_admin function');
         Log::debug('Request data:', $request->all());
         try {
             $validated = $request->validate([
@@ -124,7 +123,7 @@ class CustomerAuthController extends Controller
         if (!$customer || !Hash::check($request->password, $customer->password)) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'The provided credentials are incorrect.'
+                'message' => 'Info yang anda masukkan tidak tepat. Coba kembali.'
             ], 401);
         }
         $token = $customer->createToken('customer-token')->plainTextToken;

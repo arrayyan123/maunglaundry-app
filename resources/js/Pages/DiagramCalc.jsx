@@ -161,37 +161,46 @@ export default function DiagramCalc({ auth, customers }) {
             <Head title="Diagram Penjualan" />
             <div className="container mx-auto p-6  bg-white rounded-lg shadow-lg space-y-8">
                 {/* Total Pemasukan dan Grafik */}
-                <div className='flex-1 bg-gradient-to-r from-blue-400 to-indigo-400 text-white rounded-lg p-6 shadow-md'>
+                <div className='flex-1 bg-gray-300 text-gray-700 rounded-lg p-6 shadow-md'>
                     <h2 className="text-lg font-semibold mb-4">Total Pemasukan: Rp.{formatNumber(totalPrice)}</h2>
                     <div className="p-4 bg-white w-full h-auto shadow rounded">
                         <canvas ref={chartRef01} />
                     </div>
                 </div>
                 <div className="flex flex-col lg:flex-row lg:space-x-6 space-y-6 lg:space-y-0">
-                    <div className="flex-1 bg-gradient-to-r from-blue-400 to-indigo-400 text-white rounded-lg p-6 shadow-md">
+                    <div className="flex-1 bg-gradient-to-r bg-gray-300 text-gray-700 rounded-lg p-6 shadow-md">
                         <h2 className="text-lg font-semibold mb-4">Total Pemasukan: Rp.{formatNumber(totalPrice)}</h2>
                         <div className="p-4 bg-white w-full h-auto shadow rounded">
                             <canvas ref={chartRef02} />
                         </div>
                     </div>
-                    <div className="flex-1 bg-gray-100 p-6 rounded-lg shadow-md">
-                        <div className='border-t-2 border-black pt-4 pb-4'>
-                            <h3 className="text-xl font-semibold text-gray-800 mb-4">Pelanggan Paling Aktif</h3>
+                    <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
+                        {/* Pelanggan Paling Aktif */}
+                        <div className="border-t-4 border-blue-500 pt-4 pb-4">
+                            <h3 className="text-2xl font-bold text-gray-800 mb-4">Pelanggan Paling Aktif</h3>
                             <ul className="space-y-2">
                                 {customers.slice(0, 5).map((customer) => (
-                                    <li key={customer.id} className="text-lg text-gray-800 font-medium">
+                                    <li
+                                        key={customer.id}
+                                        className="text-lg text-gray-700 font-medium p-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                    >
                                         {customer.name}
                                     </li>
                                 ))}
                             </ul>
                         </div>
-                        <div className='border-t-2 border-black pt-4 pb-4'>
-                            <h1 className='text-xl font-semibold text-gray-800 mb-4'>List Status Count:</h1>
-                            <ul>
+
+                        {/* List Status Count */}
+                        <div className="border-t-4 border-green-500 pt-4 pb-4 mt-6">
+                            <h1 className="text-2xl font-bold text-gray-800 mb-4">List Status Count</h1>
+                            <ul className="space-y-2">
                                 {['done', 'pending', 'cancel', 'ongoing'].map((status) => {
                                     const count = reports.filter((report) => report.status_job === status).length;
                                     return (
-                                        <li key={status} className='text-lg text-gray-800 font-medium'>
+                                        <li
+                                            key={status}
+                                            className="text-lg text-gray-700 font-medium p-2 rounded-md hover:bg-green-50 hover:text-green-600 transition-colors"
+                                        >
                                             {status.charAt(0).toUpperCase() + status.slice(1)}: {count}
                                         </li>
                                     );
@@ -258,25 +267,31 @@ export default function DiagramCalc({ auth, customers }) {
                 </div>
 
                 {/* Tabel Transaksi Terbaru */}
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                    <h3 className="text-xl font-semibold mb-4">Transaksi Terbaru</h3>
+                <div className="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 className="text-2xl font-bold mb-6 text-gray-800">Transaksi Terbaru</h3>
                     <div className="overflow-x-auto">
-                        <table className="table-auto w-full border-collapse border border-gray-300">
+                        <table className="table-auto w-full border-collapse">
                             <thead>
-                                <tr className="bg-gray-100">
-                                    <th className="border border-gray-300 px-4 py-2">ID Transaksi</th>
-                                    <th className="border border-gray-300 px-4 py-2">Pelanggan</th>
-                                    <th className="border border-gray-300 px-4 py-2">Total</th>
-                                    <th className="border border-gray-300 px-4 py-2">Tanggal</th>
+                                <tr className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+                                    <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">ID Pelanggan</th>
+                                    <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Pelanggan</th>
+                                    <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Total</th>
+                                    <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Tanggal</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {reports.slice(0, 5).map((report) => (
-                                    <tr key={report.transaction_id}>
-                                        <td className="border border-gray-300 px-4 py-2">{report.customer_id}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{report.customer_name}</td>
-                                        <td className="border border-gray-300 px-4 py-2">Rp.{formatNumber(report.total_price)}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{report.start_date}</td>
+                                {reports.slice(0, 5).map((report, index) => (
+                                    <tr
+                                        key={report.transaction_id}
+                                        className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                                            } hover:bg-blue-50`}
+                                    >
+                                        <td className="px-6 py-4 text-sm text-gray-700">{report.customer_id}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-700">{report.customer_name}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-700 font-medium">
+                                            Rp.{formatNumber(report.total_price)}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-700">{report.start_date}</td>
                                     </tr>
                                 ))}
                             </tbody>

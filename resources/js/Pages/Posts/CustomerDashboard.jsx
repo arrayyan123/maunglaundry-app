@@ -181,6 +181,24 @@ export default function CustomerDashboard() {
         }, 100);
     }
 
+    const handleCloseEntryTransaction = () => {
+        setShowEntryTransaction(false);
+        setShowEntryInstructionModal(false);
+    };
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") {
+                setShowEntryInstructionModal(false);
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
+
     return (
         <>
             <CustomerDashboardLayout
@@ -227,7 +245,7 @@ export default function CustomerDashboard() {
                 {customerData && (
                     <div className="grid instruksi-kedua md:grid-cols-2 grid-flow-row md:space-x-2 space-x-0 md:space-y-0 space-y-2">
                         <div className="bg-blue-400 px-5 py-4 rounded-lg flex items-center">
-                            <h1 className="text-white text-xl font-semibold mx-auto">Email: {customerData.email}</h1>
+                            <h1 className="text-white lg:text-xl md:text-lg text-sm font-semibold mx-auto">Email: {customerData.email}</h1>
                         </div>
                         <div className="bg-blue-400 px-5 py-4 rounded-lg text-white">
                             <h1 className="text-white font-semibold">Alamat: {customerData.address}</h1>
@@ -271,42 +289,42 @@ export default function CustomerDashboard() {
                         className="mySwiper"
                     >
                         <SwiperSlide>
-                            <div className="bg-green-500 text-white p-6 rounded-lg shadow">
+                            <div className="bg-green-400 text-white p-6 rounded-lg shadow">
                                 <IonIcon className='text-xl' name="stats-chart"></IonIcon>
                                 <h3 className="text-xl font-bold">Total Transaksi</h3>
                                 <p className="text-3xl"><SlotCounter value={transactions.length} /></p>
                             </div>
                         </SwiperSlide>
                         <SwiperSlide>
-                            <div className="bg-yellow-500 text-white p-6 rounded-lg shadow">
+                            <div className="bg-yellow-400 text-white p-6 rounded-lg shadow">
                                 <IonIcon className='text-xl' name="warning"></IonIcon>
                                 <h3 className="text-xl font-bold">Pending Requests</h3>
                                 <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'pending').length} /></p>
                             </div>
                         </SwiperSlide>
                         <SwiperSlide>
-                            <div className="bg-green-500 text-white p-6 rounded-lg shadow">
+                            <div className="bg-green-400 text-white p-6 rounded-lg shadow">
                                 <IonIcon className='text-xl font-bold' name="checkmark"></IonIcon>
                                 <h3 className="text-xl font-bold">Done Requests</h3>
                                 <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'done').length} /></p>
                             </div>
                         </SwiperSlide>
                         <SwiperSlide>
-                            <div className="bg-red-500 text-white p-6 rounded-lg shadow">
+                            <div className="bg-red-400 text-white p-6 rounded-lg shadow">
                                 <IonIcon className='text-xl' name="ban"></IonIcon>
                                 <h3 className="text-xl font-bold">Canceled Requests</h3>
                                 <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'cancel').length} /></p>
                             </div>
                         </SwiperSlide>
                         <SwiperSlide>
-                            <div className="bg-blue-500 text-white p-6 rounded-lg shadow">
+                            <div className="bg-blue-400 text-white p-6 rounded-lg shadow">
                                 <IonIcon className='text-xl' name="calendar"></IonIcon>
                                 <h3 className="text-xl font-bold">Ongoing Requests</h3>
                                 <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'ongoing').length} /></p>
                             </div>
                         </SwiperSlide>
                         <SwiperSlide>
-                            <div className="bg-red-500 text-white p-6 rounded-lg shadow">
+                            <div className="bg-red-400 text-white p-6 rounded-lg shadow">
                                 <IonIcon className='text-xl' name="cash"></IonIcon>
                                 <h3 className="text-xl font-bold">Unpaid Requests</h3>
                                 <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_payment === 'unpaid').length} /></p>
@@ -316,32 +334,32 @@ export default function CustomerDashboard() {
                 </div>
                 <div className="instruksi-ketiga md:grid hidden grid-cols-1 md:grid-cols-3 gap-4 my-6">
                     <Fade>
-                        <div className="bg-green-500 text-white p-6 rounded-lg shadow">
+                        <div className="bg-green-400 text-white p-6 rounded-lg shadow">
                             <IonIcon className='text-xl' name="stats-chart"></IonIcon>
                             <h3 className="text-xl font-bold">Total Transaksi</h3>
                             <p className="text-3xl"><SlotCounter value={transactions.length} /></p>
                         </div>
-                        <div className="bg-yellow-500 text-white p-6 rounded-lg shadow">
+                        <div className="bg-yellow-400 text-white p-6 rounded-lg shadow">
                             <IonIcon className='text-xl' name="warning"></IonIcon>
                             <h3 className="text-xl font-bold">Pending Requests</h3>
                             <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'pending').length} /></p>
                         </div>
-                        <div className="bg-green-500 text-white p-6 rounded-lg shadow">
+                        <div className="bg-green-400 text-white p-6 rounded-lg shadow">
                             <IonIcon className='text-xl font-bold' name="checkmark"></IonIcon>
                             <h3 className="text-xl font-bold">Done Requests</h3>
                             <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'done').length} /></p>
                         </div>
-                        <div className="bg-red-500 text-white p-6 rounded-lg shadow">
+                        <div className="bg-red-400 text-white p-6 rounded-lg shadow">
                             <IonIcon className='text-xl' name="ban"></IonIcon>
                             <h3 className="text-xl font-bold">Canceled Requests</h3>
                             <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'cancel').length} /></p>
                         </div>
-                        <div className="bg-blue-500 text-white p-6 rounded-lg shadow">
+                        <div className="bg-blue-400 text-white p-6 rounded-lg shadow">
                             <IonIcon className='text-xl' name="calendar"></IonIcon>
                             <h3 className="text-xl font-bold">Ongoing Requests</h3>
                             <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'ongoing').length} /></p>
                         </div>
-                        <div className="bg-red-500 text-white p-6 rounded-lg shadow">
+                        <div className="bg-red-400 text-white p-6 rounded-lg shadow">
                             <IonIcon className='text-xl' name="cash"></IonIcon>
                             <h3 className="text-xl font-bold">Unpaid Requests</h3>
                             <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_payment === 'unpaid').length} /></p>
@@ -381,7 +399,7 @@ export default function CustomerDashboard() {
                                                     <h3 className="text-xl text-center font-semibold">Masukkan Info Transaksi Anda</h3>
                                                     <button
                                                         className="text-red-500 hover:text-red-600 font-bold"
-                                                        onClick={handleToggleEntryTransaction}
+                                                        onClick={handleCloseEntryTransaction}
                                                     >
                                                         Close
                                                     </button>
@@ -457,40 +475,64 @@ export default function CustomerDashboard() {
                                         ))}
                                     </ul>
                                     {showEntryInstructionModal && (
-                                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                                             {console.log("Modal rendered")}
                                             <Slide direction="down">
-                                                <div className="bg-white p-6 h-auto md:w-[48%] mx-auto flex flex-col items-center justify-center rounded-md shadow-md z-50">
-                                                    <img src={logo} className='w-36 h-auto' alt="sad log out" />
-                                                    <h3 className="text-lg font-semibold mb-4">Gunakan Fitur ini dengan bijaksana</h3>
+                                                <div className="bg-white w-full max-w-2xl lg:max-w-3xl mx-auto p-6 sm:p-4 md:p-8 rounded-md shadow-md flex flex-col items-center justify-center overflow-y-auto max-h-[calc(100vh-1rem)]">
+                                                    <div className="flex flex-col items-center">
+                                                        <img
+                                                            src={logo}
+                                                            className="w-36 h-auto object-contain mb-4"
+                                                            alt="Logo tidak terlihat"
+                                                        />
+                                                        <h3 className="text-base sm:text-lg font-semibold mb-4 text-center">
+                                                            Gunakan Fitur ini dengan Bijaksana
+                                                        </h3>
+                                                    </div>
                                                     <Fade cascade>
-                                                        <ul className="list-decimal">
+                                                        <ul className="list-decimal text-sm sm:text-base">
                                                             <li>Kejujuran dalam Penginputan Kuantitas:</li>
-                                                            <ul className="list-disc ml-3">
-                                                                <li>Customer wajib memastikan jumlah pakaian yang dimasukkan sudah ditimbang atau dihitung dengan akurat.</li>
-                                                                <li>Data yang dimasukkan harus mencerminkan jumlah pakaian yang sebenarnya, tanpa ada pengurangan atau penambahan yang tidak sesuai.</li>
+                                                            <ul className="list-disc ml-4">
+                                                                <li>
+                                                                    Customer wajib memastikan jumlah pakaian yang dimasukkan sudah ditimbang atau dihitung dengan akurat.
+                                                                </li>
+                                                                <li>
+                                                                    Data yang dimasukkan harus mencerminkan jumlah pakaian yang sebenarnya, tanpa ada pengurangan atau penambahan yang tidak sesuai.
+                                                                </li>
                                                             </ul>
                                                             <li>Pencegahan Penyalahgunaan Fitur:</li>
-                                                            <ul className="list-disc ml-3">
-                                                                <li>Fitur input transaksi hanya boleh digunakan untuk transaksi yang valid dan nyata.</li>
-                                                                <li>Penggunaan fitur untuk sekadar bersenang-senang, coba-coba, atau iseng tidak diperbolehkan. Hal ini bertujuan untuk menjaga integritas dan keakuratan data transaksi.</li>
+                                                            <ul className="list-disc ml-4">
+                                                                <li>
+                                                                    Fitur input transaksi hanya boleh digunakan untuk transaksi yang valid dan nyata.
+                                                                </li>
+                                                                <li>
+                                                                    Penggunaan fitur untuk sekadar bersenang-senang, coba-coba, atau iseng tidak diperbolehkan. Hal ini bertujuan untuk menjaga integritas dan keakuratan data transaksi.
+                                                                </li>
                                                             </ul>
                                                             <li>Verifikasi Data oleh Petugas Laundry:</li>
-                                                            <ul className="list-disc ml-3">
-                                                                <li>Petugas laundry berhak untuk memverifikasi jumlah dan jenis pakaian yang terdaftar dalam transaksi.</li>
-                                                                <li>Jika ditemukan ketidaksesuaian antara jumlah yang dilaporkan dengan hasil timbangan aktual, transaksi dapat dibatalkan atau dilakukan koreksi.</li>
+                                                            <ul className="list-disc ml-4">
+                                                                <li>
+                                                                    Petugas laundry berhak untuk memverifikasi jumlah dan jenis pakaian yang terdaftar dalam transaksi.
+                                                                </li>
+                                                                <li>
+                                                                    Jika ditemukan ketidaksesuaian antara jumlah yang dilaporkan dengan hasil timbangan aktual, transaksi dapat dibatalkan atau dilakukan koreksi.
+                                                                </li>
                                                             </ul>
                                                             <li>Tanggung Jawab Customer:</li>
-                                                            <ul className="list-disc ml-3">
-                                                                <li>Customer bertanggung jawab penuh atas keakuratan data transaksi yang diinput. Kesalahan akibat penginputan yang disengaja atau tidak teliti dapat mengakibatkan sanksi atau pembatasan penggunaan fitur.</li>
-                                                                <li>Customer harus melaporkan jika ada perubahan jumlah atau jenis pakaian sebelum transaksi diproses.</li>
+                                                            <ul className="list-disc ml-4">
+                                                                <li>
+                                                                    Customer bertanggung jawab penuh atas keakuratan data transaksi yang diinput. Kesalahan akibat penginputan yang disengaja atau tidak teliti dapat mengakibatkan sanksi atau pembatasan penggunaan fitur.
+                                                                </li>
+                                                                <li>
+                                                                    Customer harus melaporkan jika ada perubahan jumlah atau jenis pakaian sebelum transaksi diproses.
+                                                                </li>
                                                             </ul>
                                                         </ul>
                                                     </Fade>
-                                                    <div className="flex gap-4">
+                                                    <div className="flex gap-3 mt-4">
                                                         <button
                                                             onClick={() => setShowEntryInstructionModal(false)}
-                                                            className="bg-blue-500 text-white px-4 py-2 rounded"
+                                                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
                                                         >
                                                             Ya saya telah membaca.
                                                         </button>
@@ -499,7 +541,6 @@ export default function CustomerDashboard() {
                                             </Slide>
                                         </div>
                                     )}
-
                                     {/* Pagination Controls */}
                                     <div className="flex justify-between items-center mt-6">
                                         <button

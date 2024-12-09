@@ -88,10 +88,6 @@ function CustomerInbox({ customer }) {
 
     const displayedNotifications = filteredNotifications.slice(0, visibleCount);
 
-    useEffect(() => {
-        console.log("CustomerInbox Notifications:", notifications);
-        console.log("CustomerInbox Filtered Notifications:", filteredNotifications);
-    }, [notifications, filteredNotifications]);
     const deleteSelectedMessages = async () => {
         try {
             await Promise.all(
@@ -199,7 +195,7 @@ function CustomerInbox({ customer }) {
                                         className={`${isSidebarExpanded ? "block" : "hidden"
                                             } text-sm`}
                                     >
-                                        Message
+                                        Message (Catatan Pelanggan)
                                     </span>
                                 </li>
                                 <li
@@ -212,7 +208,7 @@ function CustomerInbox({ customer }) {
                                         className={`${isSidebarExpanded ? "block" : "hidden"
                                             } text-sm`}
                                     >
-                                        Notification
+                                        Notifikasi
                                     </span>
                                 </li>
                             </ul>
