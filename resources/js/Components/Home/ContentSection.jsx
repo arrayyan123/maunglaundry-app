@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import moment from 'moment';
+import { Fade } from 'react-awesome-reveal';
+
 
 function ContentItem({ title, description, image, created_at, isImageLeft }) {
-  const formattedDate = moment(created_at).format('MMMM Do, YYYY, h:mm A'); 
+  const formattedDate = moment(created_at).format('MMMM Do, YYYY, h:mm A');
 
   return (
     <div className="gap-16 items-center py-8 px-4 mx-auto max-w-screen-xl lg:grid lg:grid-cols-2 lg:py-16 lg:px-6">
@@ -42,6 +44,7 @@ function ContentItem({ title, description, image, created_at, isImageLeft }) {
 
 function ContentSection({ servicesRef }) {
   const [contents, setContents] = useState([]);
+  const [visibleCount, setVisibleCount] = useState(2); // Default showing 2 items
 
   useEffect(() => {
     const fetchContents = () => {
@@ -53,26 +56,56 @@ function ContentSection({ servicesRef }) {
           console.error('Error fetching contents:', error);
         });
     };
-    const interval = setInterval(fetchContents, 5000);
+    const interval = setInterval(fetchContents, 10000);
     fetchContents();
     return () => clearInterval(interval);
   }, []);
 
+  const handleSeeMore = () => {
+    setVisibleCount(contents.length); // Show all items
+  };
+
+  const handleSeeLess = () => {
+    setVisibleCount(2); // Collapse back to 2 items
+  };
+
   return (
-    <section ref={servicesRef} className="bg-white dark:bg-gray-900 p-20">
+    <section ref={servicesRef} className="bg-white dark:bg-gray-900 md:p-20 p-6">
       <div>
         <h1 className='text-black text-[30px] font-bold text-center'>Berita Terkini</h1>
       </div>
-      {contents.map((content, index) => (
-        <ContentItem
-          key={content.id}
-          title={content.title}
-          description={content.description}
-          created_at={content.created_at}
-          image={content.image}
-          isImageLeft={index % 2 === 0} 
-        />
+      {contents.slice(0, visibleCount).map((content, index) => (
+        <Fade>
+          <ContentItem
+            key={content.id}
+            title={content.title}
+            description={content.description}
+            created_at={content.created_at}
+            image={content.image}
+            isImageLeft={index % 2 === 0}
+          />
+        </Fade>
       ))}
+
+      <div className="text-center mt-8">
+        {visibleCount < contents.length ? (
+          <button
+            onClick={handleSeeMore}
+            className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700"
+          >
+            See More
+          </button>
+        ) : (
+          contents.length > 2 && (
+            <button
+              onClick={handleSeeLess}
+              className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-700"
+            >
+              See Less
+            </button>
+          )
+        )}
+      </div>
     </section>
   );
 }

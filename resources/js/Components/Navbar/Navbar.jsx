@@ -20,9 +20,18 @@ const Navbar = ({ homeRef, aboutRef, servicesRef, scrollToSection }) => {
   };
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setIsMenuOpen(false);
+    const handleResizeAndScroll = () => {
+      if (window.innerWidth < 1024) {
+        setNavbarBackground('bg-white');
+        setNavbarText('text-black');
+      } else {
+        if (window.scrollY > 50) {
+          setNavbarBackground('bg-white');
+          setNavbarText('text-black');
+        } else {
+          setNavbarBackground('bg-transparent');
+          setNavbarText('text-white');
+        }
       }
     };
 
@@ -36,12 +45,14 @@ const Navbar = ({ homeRef, aboutRef, servicesRef, scrollToSection }) => {
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleResizeAndScroll);
+    window.addEventListener('scroll', handleResizeAndScroll);
+
+    handleResizeAndScroll();
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResizeAndScroll);
+      window.removeEventListener('scroll', handleResizeAndScroll);
     };
   }, []);
 
@@ -63,25 +74,25 @@ const Navbar = ({ homeRef, aboutRef, servicesRef, scrollToSection }) => {
       <div className="flex lg:flex-row flex-col lg:justify-between space-x-10">
         <ul className={`${isMenuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
           } lg:opacity-100 lg:max-h-full lg:flex lg:mx-auto lg:flex-row flex-col lg:items-center lg:w-auto lg:space-x-6 overflow-hidden transition-all duration-300 ease-in-out`}>
-          <li><a className={`text-sm ${navbarText} hover:text-gray-500`} onClick={(e) => scrollToSection(homeRef, e)} href="#">Home</a></li>
+          <li><a className={`text-sm ${navbarText} `} onClick={(e) => scrollToSection(homeRef, e)} href="#">Home</a></li>
           <li className="text-gray-300">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" className="w-4 h-4 current-fill" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v0m0 7v0m0 7v0m0-13a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
             </svg>
           </li>
-          <li><a className={`text-sm ${navbarText} hover:text-gray-500`} onClick={(e) => scrollToSection(aboutRef, e)} href="#">About Us</a></li>
+          <li><a className={`text-sm ${navbarText} `} onClick={(e) => scrollToSection(aboutRef, e, -80)} href="#">About Us</a></li>
           <li className="text-gray-300">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" className="w-4 h-4 current-fill" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v0m0 7v0m0 7v0m0-13a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
             </svg>
           </li>
-          <li><a className={`text-sm ${navbarText} hover:text-gray-500`} onClick={(e) => scrollToSection(servicesRef, e)} href="#">News</a></li>
+          <li><a className={`text-sm ${navbarText} `} onClick={(e) => scrollToSection(servicesRef, e, -80)} href="#">News</a></li>
           <li className="text-gray-300">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" className="w-4 h-4 current-fill" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v0m0 7v0m0 7v0m0-13a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
             </svg>
           </li>
-          <Link href={'/customer/login'}>
+          <Link href={'/customer/register'}>
             <button className="bg-gray-200 text-black hover:bg-gray-white py-2 px-6 rounded-full text-lg font-semibold transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg lg:mt-0 mt-6">
               Daftar Sekarang
             </button>

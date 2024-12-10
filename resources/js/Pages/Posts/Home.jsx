@@ -13,10 +13,16 @@ function Home() {
   const aboutRef = useRef(null);
   const servicesRef = useRef(null);
 
-  const scrollToSection = (ref, event) => {
+  const scrollToSection = (ref, event, offset = 0) => {
     event.preventDefault();
     if (ref && ref.current) {
-      ref.current.scrollIntoView({ behavior: "smooth" });
+      const elementPosition = ref.current.offsetTop; 
+      const offsetPosition = elementPosition + offset;
+  
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
     } else {
       console.warn("Ref not found:", ref);
     }

@@ -18,7 +18,6 @@ const getImageByName = (name) => {
 const bigPics = getImageByName('laundry_05');
 const logoMaung = getImageByName('Logo_maung');
 
-
 const CustomerRegister = () => {
     const [formData, setFormData] = useState({
         name: '',
@@ -29,45 +28,110 @@ const CustomerRegister = () => {
     });
     const [errors, setErrors] = useState({});
     const [message, setMessage] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setShowPassword((prevState) => !prevState);
+    };
+
+    const validateForm = () => {
+        const errors = {};
+
+        // Validate Name
+        if (!formData.name.trim()) {
+            errors.name = "Nama tidak boleh kosong.";
+        }
+
+        // Validate Email
+        if (!formData.email.trim()) {
+            errors.email = "Email tidak boleh kosong.";
+        } else if (!formData.email.endsWith("@gmail.com")) {
+            errors.email = "Email harus menggunakan domain @gmail.com.";
+        }
+
+        // Validate Password
+        if (!formData.password) {
+            errors.password = "Password tidak boleh kosong.";
+        } else if (formData.password.length < 8) {
+            errors.password = "Password harus minimal 8 karakter.";
+        } else if (!/[a-zA-Z]/.test(formData.password)) {
+            errors.password = "Password harus mengandung huruf.";
+        } else if (!/[@_.]/.test(formData.password)) {
+            errors.password = "Password harus mengandung setidaknya satu simbol (@, _, .).";
+        }
+
+        // Validate Phone
+        if (!formData.phone.trim()) {
+            errors.phone = "Nomor telepon tidak boleh kosong.";
+        } else if (formData.phone.length > 12) {
+            errors.phone = "Nomor telepon tidak boleh lebih dari 12 karakter.";
+        }
+
+        // Validate Address
+        if (!formData.address.trim()) {
+            errors.address = "Alamat tidak boleh kosong.";
+        }
+
+        return errors;
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrors({});
-        setMessage('');
+        setMessage("");
+
+        // Ensure that phone number always starts with +62
+        const phoneWithCountryCode = formData.phone.startsWith('+62')
+            ? formData.phone
+            : `+62${formData.phone.replace(/\D/g, '')}`;
+
+        const updatedFormData = {
+            ...formData,
+            phone: phoneWithCountryCode,
+        };
+
+        const validationErrors = validateForm(updatedFormData);
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
 
         try {
-            const response = await axios.post('/api/customer/register', formData, {
+            const response = await axios.post("/api/customer/register", updatedFormData, {
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    "X-CSRF-TOKEN": document
+                        .querySelector("meta[name='csrf-token']")
+                        .getAttribute("content"),
+                },
             });
 
-            if (response.data.status === 'success') {
-                setMessage('Registration successful! Redirecting to login...');
+            if (response.data.status === "success") {
+                setMessage("Registrasi berhasil! Mengarahkan ke login...");
                 setTimeout(() => {
-                    window.location.href = '/customer/login';
+                    window.location.href = "/customer/login";
                 }, 2000);
             }
         } catch (error) {
             if (error.response && error.response.status === 422) {
                 setErrors(error.response.data.errors);
             } else {
-                setMessage('An error occurred during registration.');
+                setMessage("Terjadi kesalahan saat registrasi.");
                 console.error(error);
             }
         }
     };
 
+
     return (
         <>
             <Head title='Customer Register' />
-            <div className="bg-blue-100 flex justify-center items-center h-screen">
+            <div className="bg-blue-100 flex justify-center items-center h-screen overflow-hidden">
                 <div className="w-1/2 h-screen hidden lg:block">
                     <img src={bigPics} alt="Placeholder Image" className="object-cover w-full h-full" />
                 </div>
-                <div className="lg:p-30 lg:-mt-40 mt-0 md:p-32 sm:26 p-10 w-full lg:w-1/2 h-screen">
+                <div className="lg:p-30 md:-mt-40 mt-0 md:p-32 sm:26 p-10 w-full lg:w-1/2 h-screen">
                     {message && (
                         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
                             {message}
@@ -81,7 +145,7 @@ const CustomerRegister = () => {
                         <Fade cascade>
                             <div className="mb-4 bg-blue-100">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                                    Nama
+                                    Nama <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -91,12 +155,12 @@ const CustomerRegister = () => {
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                 />
                                 {errors.name && (
-                                    <p className="text-red-500 text-xs mt-1">{errors.name[0]}</p>
+                                    <p className="text-red-500 text-xs mt-1">{errors.name}</p>
                                 )}
                             </div>
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                                    Email
+                                    Email <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="email"
@@ -106,59 +170,79 @@ const CustomerRegister = () => {
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 />
                                 {errors.email && (
-                                    <p className="text-red-500 text-xs mt-1">{errors.email[0]}</p>
+                                    <p className="text-red-500 text-xs mt-1">{errors.email}</p>
                                 )}
                             </div>
 
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                                    Password
+                                    Password <span className="text-red-500">*</span>
                                 </label>
-                                <input
-                                    type="password"
-                                    className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.password ? 'border-red-500' : ''
-                                        }`}
-                                    value={formData.password}
-                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                />
+                                <div className='relative'>
+                                    <input
+                                        type={showPassword ? 'text' : 'password'}
+                                        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.password ? 'border-red-500' : ''
+                                            }`}
+                                        value={formData.password}
+                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={togglePasswordVisibility}
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600 focus:outline-none"
+                                    >
+                                        {showPassword ? <IonIcon name='eye' size={20} /> : <IonIcon name='eye-off' size={20} />}
+                                    </button>
+                                </div>
                                 {errors.password && (
-                                    <p className="text-red-500 text-xs mt-1">{errors.password[0]}</p>
+                                    <p className="text-red-500 text-xs mt-1">{errors.password}</p>
                                 )}
                             </div>
 
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                                    Nomor Telepon
+                                    Nomor Telepon <span className="text-red-500">*</span>
                                 </label>
-                                <input
-                                    type="text"
-                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                    value={formData.phone}
-                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                />
+                                <div className='flex items-center'>
+                                    <span className="bg-gray-200 text-gray-700 px-3 py-2 rounded-l-md border border-r-0 border-gray-300">
+                                        +62
+                                    </span>
+                                    <input
+                                        type="text"
+                                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                        value={formData.phone}
+                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                        placeholder="81234567890"
+                                    />
+                                </div>
+                                {errors.phone && (
+                                    <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
+                                )}
                             </div>
-
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                                    Alamat
+                                    Alamat <span className="text-red-500">*</span>
                                 </label>
                                 <textarea
                                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                     value={formData.address}
                                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                                 />
+                                {errors.address && (
+                                    <p className="text-red-500 text-xs mt-1">{errors.address}</p>
+                                )}
                             </div>
                         </Fade>
                         <div className='flex flex-row  items-center justify-between'>
-                        <div className=" text-green-500 text-center">
-                            <Link href="/customer/login" className="hover:underline">Sudah punya akun? kembali ke login</Link>
-                        </div>
-                        <button
-                            type="submit"
-                            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-[40%]"
-                        >
-                            Registrasi
-                        </button>
+                            <div className=" text-green-500 text-center">
+                                <Link href="/customer/login" className="hover:underline">Sudah punya akun? kembali ke login</Link>
+                            </div>
+                            <button
+                                type="submit"
+                                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-[40%]"
+                            >
+                                Registrasi
+                            </button>
                         </div>
                     </form>
                     <div className='my-5'>

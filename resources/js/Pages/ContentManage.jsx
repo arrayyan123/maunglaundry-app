@@ -19,10 +19,6 @@ function ContentManage({ auth }) {
     const [editingContentId, setEditingContentId] = useState(null);
     const editContentRef = useRef(null);
 
-    useEffect(() => {
-        fetchContents();
-    }, []);
-
     const fetchContents = () => {
         axios.get('/api/contents')
             .then((response) => {
@@ -32,6 +28,10 @@ function ContentManage({ auth }) {
                 console.error('Error fetching contents:', error);
             });
     };
+
+    useEffect(() => {
+        fetchContents();
+    }, []);
 
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this content?')) {
@@ -90,12 +90,20 @@ function ContentManage({ auth }) {
         fetchContents();
     };
 
-    const handleRefresh = () => {
-
-    }
-
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (formData.title.length < 20) {
+            alert('Judul harus memiliki minimal 30 karakter.');
+            return;
+        }
+    
+        const descriptionWordCount = formData.description.trim().split(/\s+/).length;
+        if (descriptionWordCount < 100) {
+            alert('Deskripsi harus memiliki minimal 100 kata.');
+            return;
+        }
+
         const data = new FormData();
         data.append('title', formData.title);
         data.append('description', formData.description);

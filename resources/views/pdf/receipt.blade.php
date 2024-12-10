@@ -9,7 +9,7 @@
         margin: 0; /* Hapus margin di seluruh halaman PDF */
     }
     body {
-        margin: 10px;
+        margin: 40px;
         padding: 0;
       font-family: Arial, sans-serif;
     }
@@ -29,13 +29,14 @@
     }
     .header {
       text-align: center;
+      margin-top: 40px;
       margin-bottom: 20px;
     }
     .header h1 {
       margin: 0;
     }
     .header img {
-      max-width: 550px;
+      max-width: 450px;
       height: auto;
       margin-bottom: 50px;
     }

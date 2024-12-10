@@ -88,17 +88,37 @@ class CustomerAuthController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $customer = CustomerUser::findOrFail($id);
-
+            $customer = CustomerUser::findOrFail($id);    
             $validated = $request->validate([
                 'name' => 'sometimes|string|max:255',
                 'email' => 'sometimes|email|unique:customer_users,email,' . $customer->id,
                 'phone' => 'sometimes|string',
                 'address' => 'sometimes|string',
+                'old_password' => 'required_with:new_password|string',
+                'new_password' => 'nullable|string|min:8|confirmed',
             ]);
-
-            $customer->update($validated);
-
+    
+            if (!empty($validated['old_password']) && !empty($validated['new_password'])) {
+                if (!Hash::check($validated['old_password'], $customer->password)) {
+                    Log::debug('Password lama tidak cocok.');
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Password lama salah.',
+                    ], 400);
+                }    
+                $customer->password = Hash::make($validated['new_password']);
+            }    
+            $customer->update(array_filter($validated, function ($key) {
+                return !in_array($key, ['old_password', 'new_password', 'new_password_confirmation']);
+            }, ARRAY_FILTER_USE_KEY));    
+            $customer->save();
+            if (!$customer->save()) {
+                Log::error('Gagal menyimpan perubahan password.');
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Gagal menyimpan perubahan password.',
+                ], 500);
+            }            
             return response()->json([
                 'status' => 'success',
                 'message' => 'Profile updated successfully',
@@ -107,7 +127,7 @@ class CustomerAuthController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to update profile',
+                'message' => 'Isi password lama jika anda melakukan perubahan.',
                 'error' => $e->getMessage(),
             ], 500);
         }
