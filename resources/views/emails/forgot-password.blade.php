@@ -72,7 +72,7 @@
             <p>Halo,</p>
             <p>Anda telah meminta untuk mereset password Anda. Klik tombol di bawah ini untuk melanjutkan:</p>
             <p style="text-align: center; color:#f4f4f7 ;">
-                <a href="{{ url('/customer/reset-password/' . $token) }}" class="email-button">Reset Password</a>
+                <a href="{{url('/customer/reset-password/'.$token)}}" class="email-button">Reset Password</a>
             </p>
             <p>Jika Anda tidak meminta ini, abaikan email ini.</p>
             <p>Terima kasih,</p>
