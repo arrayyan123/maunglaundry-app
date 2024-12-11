@@ -6,7 +6,7 @@
   <title>Receipt</title>
   <style>
     @page {
-        margin: 0; /* Hapus margin di seluruh halaman PDF */
+        margin: 0;
     }
     body {
         margin: 40px;
@@ -71,7 +71,7 @@
 </head>
 <body>
   <div class="header">
-    <img src="{{ public_path('assets/images/Picture1.png') }}" alt="Logo Maung Laundry">
+    <img src="http://localhost:8000/assets/images/Picture1.png" alt="Logo Maung Laundry">
     <div class="no-telp">
       <p>CALL/WA: 0815 7942 086</p>
     </div>

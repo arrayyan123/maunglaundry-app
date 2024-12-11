@@ -14,8 +14,7 @@ use App\Http\Controllers\ServicePricesController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\WhatsAppController;
 use App\Http\Controllers\ContentController;
-
-
+use App\Http\Controllers\Auth\ForgotPasswordController;
 
 Route::post('/send-whatsapp', [WhatsAppController::class, 'sendMessage']);
 Route::get('/', function () {
@@ -25,6 +24,10 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
+});
+
+Route::get('/forgot-password-email', function () {
+    return view('emails.forgot-password');
 });
 
 Route::get('/dashboard', [PagesController::class, 'dashboard'])
@@ -44,6 +47,8 @@ Route::get('/contentmanage', [PagesController::class, 'contentManage'])
     ->name('content.manage');
 
 Route::prefix('api')->group(function () {
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
+    Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword']);
     Route::post('/customer/register', [CustomerAuthController::class, 'register_customer']);
     Route::post('/customer/login', [CustomerAuthController::class, 'login']);
     Route::post('/customer/logout', [CustomerAuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -85,11 +90,10 @@ Route::prefix('api')->group(function () {
 
     Route::get('/contents', [ContentController::class, 'index']);
     Route::post('/contents', [ContentController::class, 'store']);
-    Route::get('/contents/{id}', [ContentController::class, 'show']); 
-    Route::put('/contents/{id}', [ContentController::class, 'update']); 
+    Route::get('/contents/{id}', [ContentController::class, 'show']);
+    Route::put('/contents/{id}', [ContentController::class, 'update']);
     Route::get('/contents/{id}/edit', [ContentController::class, 'edit']);
     Route::delete('/contents/{id}', [ContentController::class, 'destroy']);
-
 });
 
 Route::get('/customer/login', [PagesController::class, 'customerLogin'])
@@ -109,6 +113,10 @@ Route::middleware(['guest:customer'])->group(function () {
         ->name('customer.inbox');
     Route::get('/customer/graph', [PagesController::class, 'customerGraph'])
         ->name('customer.graph');
+    Route::get('/customer/forgot-password', [PagesController::class, 'ForgotPassPage'])
+        ->name('customer.forgotpass');
+    Route::get('/customer/reset-password/{token}', [PagesController::class, 'ResetPassword'])
+        ->name('customer.resetpass');
 });
 
 Route::get('/', [PagesController::class, 'home'])->name('home-page');

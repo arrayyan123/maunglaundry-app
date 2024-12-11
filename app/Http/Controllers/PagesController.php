@@ -79,4 +79,14 @@ class PagesController extends Controller
     {
         return Inertia::render('Posts/CustomerGraph');
     }
+    public function ForgotPassPage()
+    {
+        return Inertia::render('Posts/ForgotPassword');
+    }
+    public function ResetPassword($token)
+    {
+        return Inertia::render('Posts/ResetPassword', [
+            'token' => $token,
+        ]);
+    }
 }

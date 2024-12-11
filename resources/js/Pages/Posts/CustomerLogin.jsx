@@ -83,7 +83,7 @@ export default function CustomerLogin() {
           <form action="#" method="POST" onSubmit={handleSubmit}>
             <Fade direction='right' cascade>
               <div className="mb-4 bg-blue-100">
-                <label for="phone" class="block text-gray-600">Nomor Telepon</label>
+                <label for="phone" class="block text-gray-600">Nomor Telepon <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   id="phone"
@@ -91,13 +91,13 @@ export default function CustomerLogin() {
                   className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
                   required
                   autocomplete="on"
-                  placeholder="Phone number"
+                  placeholder="+6281234567890 / 081234567890"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 />
               </div>
               <div className="mb-4">
-                <label for="password" className="block text-gray-800">Password</label>
+                <label for="password" className="block text-gray-800">Password <span className="text-red-500">*</span></label>
                 <input
                   type="password"
                   id="password"
@@ -115,7 +115,7 @@ export default function CustomerLogin() {
                 <label for="remember" className="text-green-900 ml-2">Remember Me</label>
               </div>
               <div className="mb-6 text-blue-500">
-                <Link href="#" className="hover:underline">Forgot Password?</Link>
+                <Link href="/customer/forgot-password" className="hover:underline">Forgot Password?</Link>
               </div>
               <button type="submit" className="bg-red-500 hover:bg-blue-600 text-white font-semibold rounded-md py-2 px-4 w-full">Login</button>
             </Fade>

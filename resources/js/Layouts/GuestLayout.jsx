@@ -16,7 +16,7 @@ const logoMaung = getImageByName('Logo_maung');
 
 export default function GuestLayout({ header, children }) {
     return (
-        <div className="bg-blue-100 flex justify-center items-center h-screen">
+        <div className="bg-blue-100 flex justify-center items-center h-screen overflow-hidden">
             <div className="w-1/2 h-screen hidden lg:block">
                 <img src={bigPics} alt="Placeholder Image" className="object-cover w-full h-full" />
             </div>
