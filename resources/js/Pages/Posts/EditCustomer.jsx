@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios"; // Ensure axios is imported
 import { Head, Link } from "@inertiajs/react";
 import CustomerDashboardLayout from "@/Layouts/CustomerDashboardLayout";
+import Joyride from 'react-joyride';
+
 
 const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
 const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
@@ -17,6 +19,7 @@ const logo = getImageByName("Logo_maung");
 
 export default function EditCustomer() {
     const [customerData, setCustomerData] = useState(null);
+    const [run, setRun] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -25,14 +28,35 @@ export default function EditCustomer() {
         password: "",
     });
     const [passwordData, setPasswordData] = useState({
-        old_password: "", 
-        new_password: "", 
-        new_password_confirmation: "", 
+        old_password: "",
+        new_password: "",
+        new_password_confirmation: "",
     });
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const handleClickStart = () => {
+        setRun(true);
+    };
+    const steps = [
+        {
+            target: '.start-instruksi',
+            content: 'Ini adalah page Edit Profile customer maung laundry',
+        },
+        {
+            target: '.instruksi-pertama',
+            content: 'Disini anda bisa melihat informasi mengenai akun anda, anda bisa merubahnya',
+        },
+        {
+            target: '.instruksi-kedua',
+            content: 'Ketika anda melakukan perubahan info profile anda, anda harus mengisi passwordnya terlebih dahulu',
+        },
+        {
+            target: '.instruksi-ketiga',
+            content: 'Lalu anda baru bisa menyimpan info profil yang telah dirubah',
+        },
+    ];
 
     const loadCustomerData = () => {
         const storedToken = localStorage.getItem("customer-token");
@@ -155,15 +179,31 @@ export default function EditCustomer() {
         <>
             <Head title="Edit Profile" />
             <CustomerDashboardLayout
+                handleClickStart={handleClickStart}
                 header={
                     <div>
-                        <h2 className="text-xl font-semibold leading-tight text-white">
+                        <h2 className="text-xl font-semibold leading-tight text-white start-instruksi">
                             Edit Profile
                         </h2>
                     </div>
                 }
             >
-                <div className="max-w-7xl mx-auto pt-10 md:pb-0 pb-10 md:pt-0 p-0 md:p-6">
+                <Joyride
+                    run={run}
+                    steps={steps}
+                    styles={{
+                        options: {
+                            arrowColor: '#57c2ff',
+                            backgroundColor: '#57c2ff',
+                            overlayColor: 'rgba(79, 26, 0, 0.4)',
+                            primaryColor: '#000',
+                            textColor: '#004a14',
+                            width: 400,
+                            zIndex: 1000,
+                        },
+                    }}
+                />
+                <div className="max-w-7xl mx-auto pt-10 md:pb-0 pb-10 md:pt-0 p-0 md:p-6 instruksi-pertama">
                     <Link href="/customer/dashboard">
                         <button className="text-blue-500 my-6">
                             Kembali Ke Halaman
@@ -229,13 +269,13 @@ export default function EditCustomer() {
                         <div className="bg-white p-4 space-y-6 shadow sm:rounded-lg sm:p-8">
                             <h1 className="font-bold text-xl">Ubah Password</h1>
                             {[
-                                { label: "Password Lama", name: "old_password", placeholder: "Masukkan password lama Anda" },
+                                { label: "Password", name: "old_password", placeholder: "Masukkan password Anda" },
                                 { label: "Password Baru", name: "new_password", placeholder: "Masukkan password baru Anda" },
                                 { label: "Konfirmasi Password Baru", name: "new_password_confirmation", placeholder: "Konfirmasi password baru Anda" },
                             ].map((item, index) => (
                                 <div key={index}>
                                     <label className="block text-gray-700">{item.label}</label>
-                                    <div className="relative">
+                                    <div className="relative instruksi-kedua">
                                         <input
                                             type={passwordVisible ? "text" : "password"}
                                             name={item.name}
@@ -290,7 +330,7 @@ export default function EditCustomer() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className={`w-full bg-blue-600 text-white px-4 py-2 rounded ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
+                                className={`w-full instruksi-ketiga bg-blue-600 text-white px-4 py-2 rounded ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
                                     }`}
                             >
                                 {loading ? "Updating..." : "Save Changes"}

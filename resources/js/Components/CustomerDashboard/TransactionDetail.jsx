@@ -112,7 +112,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg border border-gray-200">
+        <div className="max-w-8xl mx-auto p-6 bg-white shadow-lg rounded-lg border border-gray-200">
             <div className="mb-6">
                 <div className="flex flex-row justify-between space-x-4 items-center border-b py-2 mb-3">
                     <h3 className="text-2xl font-bold text-gray-800">Transaction Details</h3>
@@ -225,7 +225,14 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                     </div>
                 )}
                 {showPaymentModal && selectedPaymentComponent && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div 
+                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                        onClick={(e) => {
+                            if (e.target === e.currentTarget) {
+                                setShowEntryInstructionModal(false);
+                            }
+                        }}
+                    >
                         <div className="bg-white p-6 rounded-md shadow-md mx-7">
                             <button
                                 className="absolute top-12 right-12 text-[30px] hover:font-bold text-white"

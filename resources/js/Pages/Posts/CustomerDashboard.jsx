@@ -16,6 +16,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { Keyboard, Pagination, Navigation } from 'swiper/modules';
+import EntryInstructionModal from "./EntryInstructionModal";
 
 const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
 const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
@@ -184,7 +185,9 @@ export default function CustomerDashboard() {
         setShowEntryTransaction(false);
         setShowEntryInstructionModal(false);
     };
-
+    const handleCloseEntryModal = () => {
+        setShowEntryInstructionModal(false);
+    }
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === "Escape") {
@@ -366,7 +369,7 @@ export default function CustomerDashboard() {
                     </Fade>
                 </div>
                 <main className="instruksi-keempat">
-                    <div className="bg-white shadow sm:rounded-lg p-6">
+                    <div className="bg-white shadow sm:rounded-lg md:p-6 p-0">
                         {customerData && (
                             <div className="mb-6">
 
@@ -393,8 +396,8 @@ export default function CustomerDashboard() {
                                 <div id="transactions" className="mx-auto max-w-7xl lg:p-3 p-0 mb-10 bg-white rounded-lg">
                                     <div className="mb-6">
                                         {showEntryTransaction && (
-                                            <div className="bg-gray-100 p-2 mb-5 rounded-lg shadow-lg">
-                                                <div ref={entryTransactionRef} className="flex justify-between items-center mb-4">
+                                            <div className="bg-gray-100 p-0 mb-5 rounded-lg shadow-lg">
+                                                <div ref={entryTransactionRef} className="flex p-4 justify-between items-center mb-4">
                                                     <h3 className="text-xl text-center font-semibold">Masukkan Info Transaksi Anda</h3>
                                                     <button
                                                         className="text-red-500 hover:text-red-600 font-bold"
@@ -409,7 +412,7 @@ export default function CustomerDashboard() {
                                                 />
                                             </div>
                                         )}
-                                        <div className="flex flex-col lg:space-y-0 space-y-4 lg:flex-row lg:space-x-4">
+                                        <div className="flex flex-col lg:space-y-0 space-y-4 p-3 lg:flex-row lg:space-x-4">
                                             <div className="flex flex-col">
                                                 <label htmlFor="">Penelusuri</label>
                                                 <input
@@ -456,7 +459,7 @@ export default function CustomerDashboard() {
 
                                     <ul>
                                         {currentTransactions.map((transaction) => (
-                                            <li key={transaction.id} className="border-b py-2">
+                                            <li key={transaction.id} className="border-b py-2 px-3">
                                                 <button
                                                     className="text-blue-600 hover:text-blue-800"
                                                     onClick={() => handleViewDetails(transaction.id)}
@@ -473,73 +476,11 @@ export default function CustomerDashboard() {
                                             </li>
                                         ))}
                                     </ul>
-                                    {showEntryInstructionModal && (
-                                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                                            {console.log("Modal rendered")}
-                                            <Slide direction="down">
-                                                <div className="bg-white w-full max-w-2xl lg:max-w-3xl mx-auto p-6 sm:p-4 md:p-8 rounded-md shadow-md flex flex-col items-center justify-center overflow-y-auto max-h-[calc(100vh-1rem)]">
-                                                    <div className="flex flex-col items-center">
-                                                        <img
-                                                            src={logo}
-                                                            className="w-36 h-auto object-contain mb-4"
-                                                            alt="Logo tidak terlihat"
-                                                        />
-                                                        <h3 className="text-base sm:text-lg font-semibold mb-4 text-center">
-                                                            Gunakan Fitur ini dengan Bijaksana
-                                                        </h3>
-                                                    </div>
-                                                    <Fade cascade>
-                                                        <ul className="list-decimal text-sm sm:text-base">
-                                                            <li>Kejujuran dalam Penginputan Kuantitas:</li>
-                                                            <ul className="list-disc ml-4">
-                                                                <li>
-                                                                    Customer wajib memastikan jumlah pakaian yang dimasukkan sudah ditimbang atau dihitung dengan akurat.
-                                                                </li>
-                                                                <li>
-                                                                    Data yang dimasukkan harus mencerminkan jumlah pakaian yang sebenarnya, tanpa ada pengurangan atau penambahan yang tidak sesuai.
-                                                                </li>
-                                                            </ul>
-                                                            <li>Pencegahan Penyalahgunaan Fitur:</li>
-                                                            <ul className="list-disc ml-4">
-                                                                <li>
-                                                                    Fitur input transaksi hanya boleh digunakan untuk transaksi yang valid dan nyata.
-                                                                </li>
-                                                                <li>
-                                                                    Penggunaan fitur untuk sekadar bersenang-senang, coba-coba, atau iseng tidak diperbolehkan. Hal ini bertujuan untuk menjaga integritas dan keakuratan data transaksi.
-                                                                </li>
-                                                            </ul>
-                                                            <li>Verifikasi Data oleh Petugas Laundry:</li>
-                                                            <ul className="list-disc ml-4">
-                                                                <li>
-                                                                    Petugas laundry berhak untuk memverifikasi jumlah dan jenis pakaian yang terdaftar dalam transaksi.
-                                                                </li>
-                                                                <li>
-                                                                    Jika ditemukan ketidaksesuaian antara jumlah yang dilaporkan dengan hasil timbangan aktual, transaksi dapat dibatalkan atau dilakukan koreksi.
-                                                                </li>
-                                                            </ul>
-                                                            <li>Tanggung Jawab Customer:</li>
-                                                            <ul className="list-disc ml-4">
-                                                                <li>
-                                                                    Customer bertanggung jawab penuh atas keakuratan data transaksi yang diinput. Kesalahan akibat penginputan yang disengaja atau tidak teliti dapat mengakibatkan sanksi atau pembatasan penggunaan fitur.
-                                                                </li>
-                                                                <li>
-                                                                    Customer harus melaporkan jika ada perubahan jumlah atau jenis pakaian sebelum transaksi diproses.
-                                                                </li>
-                                                            </ul>
-                                                        </ul>
-                                                    </Fade>
-                                                    <div className="flex gap-3 mt-4">
-                                                        <button
-                                                            onClick={() => setShowEntryInstructionModal(false)}
-                                                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-                                                        >
-                                                            Ya saya telah membaca.
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </Slide>
-                                        </div>
-                                    )}
+                                    <EntryInstructionModal
+                                        isOpen={showEntryInstructionModal}
+                                        onClose={handleCloseEntryModal}
+                                        logo={logo}
+                                    />
                                     {/* Pagination Controls */}
                                     <div className="flex justify-between items-center mt-6">
                                         <button
