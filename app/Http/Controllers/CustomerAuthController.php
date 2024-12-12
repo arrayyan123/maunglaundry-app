@@ -127,7 +127,7 @@ class CustomerAuthController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Isi password lama jika anda melakukan perubahan.',
+                'message' => 'Isi password jika anda melakukan perubahan.',
                 'error' => $e->getMessage(),
             ], 500);
         }

@@ -14,7 +14,7 @@ const EntryInstructionModal = memo(({ isOpen, onClose, logo }) => {
       }}
     >
       <Slide direction="down">
-        <div className="bg-white w-full max-w-2xl lg:max-w-3xl mx-auto xl:pt-6 lg:pt-[20%] md:pt-[50%] sm:pt-[30%] pt-[180%] pt p-6 sm:p-8 md:p-8 rounded-md shadow-md flex flex-col items-center justify-center overflow-y-scroll max-h-[calc(100vh-1rem)]">
+        <div className="bg-white w-full max-w-2xl lg:max-w-3xl mx-auto rounded-md shadow-md overflow-y-auto max-h-[calc(100vh-2rem)] p-6 sm:p-8 md:p-8">
           <div className="flex flex-col items-center">
             <img
               src={logo}

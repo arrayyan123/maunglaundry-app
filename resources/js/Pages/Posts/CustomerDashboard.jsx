@@ -396,7 +396,7 @@ export default function CustomerDashboard() {
                                 <div id="transactions" className="mx-auto max-w-7xl lg:p-3 p-0 mb-10 bg-white rounded-lg">
                                     <div className="mb-6">
                                         {showEntryTransaction && (
-                                            <div className="bg-gray-100 p-0 mb-5 rounded-lg shadow-lg">
+                                            <div className="bg-gray-100 p-0 pb-4 mb-5 rounded-lg shadow-lg">
                                                 <div ref={entryTransactionRef} className="flex p-4 justify-between items-center mb-4">
                                                     <h3 className="text-xl text-center font-semibold">Masukkan Info Transaksi Anda</h3>
                                                     <button

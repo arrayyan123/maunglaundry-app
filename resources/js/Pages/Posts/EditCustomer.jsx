@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios"; // Ensure axios is imported
 import { Head, Link } from "@inertiajs/react";
 import CustomerDashboardLayout from "@/Layouts/CustomerDashboardLayout";
 import Joyride from 'react-joyride';
+import { Tooltip } from "flowbite-react";
+import IonIcon from "@reacticons/ionicons";
 
 
 const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
@@ -36,6 +38,9 @@ export default function EditCustomer() {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const scrollTopRef=useRef(null);
+
+    
     const handleClickStart = () => {
         setRun(true);
     };
@@ -163,14 +168,27 @@ export default function EditCustomer() {
                 new_password_confirmation: "",
             });
             setMessage({ type: "success", text: "Profile updated successfully!" });
-            window.scrollTo({ top: 0, behavior: "smooth" });
-
+            setTimeout(() => {
+                if (scrollTopRef.current) {
+                    scrollTopRef.current.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                    });
+                }
+            }, 100);
         } catch (error) {
             console.error("Error updating profile:", error);
             const errorMessage =
                 error.response?.data?.message || "Harap Isi Password lama untuk menyimpan perubahan";
             setMessage({ type: "error", text: errorMessage });
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            setTimeout(() => {
+                if (scrollTopRef.current) {
+                    scrollTopRef.current.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                    });
+                }
+            }, 100);
         } finally {
             setLoading(false);
         }
@@ -203,13 +221,22 @@ export default function EditCustomer() {
                         },
                     }}
                 />
-                <div className="max-w-7xl mx-auto pt-10 md:pb-0 pb-10 md:pt-0 p-0 md:p-6 instruksi-pertama">
+                <div ref={scrollTopRef} className="max-w-7xl mx-auto pt-10 md:pb-0 pb-10 md:pt-0 p-0 md:p-6 instruksi-pertama">
                     <Link href="/customer/dashboard">
                         <button className="text-blue-500 my-6">
                             Kembali Ke Halaman
                         </button>
                     </Link>
-                    <h1 className="text-2xl font-semibold mb-4">Edit Profile</h1>
+                    <span className="flex flex-row items-center space-x-3 mb-4">
+                        <h1 className="text-2xl font-semibold">Edit Profile</h1>
+                        <Tooltip content={
+                            <div>
+                                <h1>setiap kali melakukan perubahan, harus mengisi passwordnya.</h1>
+                            </div>
+                        }>
+                            <IonIcon name="alert-circle" />
+                        </Tooltip>
+                    </span>
                     {message && (
                         <div
                             className={`p-4 mb-4 text-white rounded ${message.type === "success" ? "bg-green-500" : "bg-red-500"
