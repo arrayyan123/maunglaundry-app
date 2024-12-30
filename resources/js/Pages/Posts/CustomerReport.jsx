@@ -99,7 +99,7 @@ function CustomerReport() {
                     </div>
                 }
             >
-                <div className="p-4">
+                <div className="p-4 text-black">
                     <div className="flex flex-col lg:flex-row lg:space-x-6 mb-6 items-start lg:items-center">
                         {/* Select Month */}
                         <div className="flex flex-col w-full lg:w-auto">

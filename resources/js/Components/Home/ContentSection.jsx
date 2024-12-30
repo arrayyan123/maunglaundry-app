@@ -44,7 +44,7 @@ function ContentSection({ contentRef, servicesRef, isContentSelected, selectedCo
 
   return (
     <section ref={servicesRef} className="bg-white dark:bg-gray-900 md:p-20 p-6">
-      <div className='mb-5'>
+      <div ref={contentRef} className='mb-5'>
         <h1 className='text-black text-[30px] font-bold text-center'>Berita Terkini</h1>
       </div>
       {!isContentSelected && (
@@ -53,7 +53,7 @@ function ContentSection({ contentRef, servicesRef, isContentSelected, selectedCo
             {currentContents.map((item) => (
               <article
                 key={item.id}
-                className="flex flex-col dark:bg-gray-50 cursor-pointer"
+                className="flex flex-col motion-preset-shrink dark:bg-gray-50 cursor-pointer"
                 onClick={(e) => {
                   onContentSelect(item);
                   scrollToSection(contentRef, e);
@@ -61,12 +61,13 @@ function ContentSection({ contentRef, servicesRef, isContentSelected, selectedCo
               >
                 <a
                   rel="noopener noreferrer"
+                  className='relative'
                   href="#"
                   aria-label={`Buka blog ${item.title}`}
                 >
                   <img
                     alt={item.title}
-                    className="object-cover w-full h-52 dark:bg-gray-500"
+                    className="object-cover w-full h-52 dark:bg-gray-500 transition duration-200 hover:scale-110"
                     src={`/storage/${item.images?.[0]?.path}`}
                   />
                 </a>
@@ -103,13 +104,20 @@ function ContentSection({ contentRef, servicesRef, isContentSelected, selectedCo
       )}
       {isContentSelected && selectedContent && (
         <div
-          ref={contentRef}
           className="lg:p-6 p-2 bg-white shadow-md dark:bg-gray-50">
           <button
-            onClick={onContentDeselect}
-            className="mb-4 text-sm text-gray-600 underline"
+            onClick={(e) => {
+              onContentDeselect();
+              scrollToSection(servicesRef, e, -80);
+            }}
+            className="mb-4 px-3 py-4 bg-red-500 text-sm text-white rounded-xl"
           >
-            Kembali ke daftar blog
+            <div 
+              className='relative text-white hover:font-bold cursor-pointer transition-all ease-in-out before:transition-[width] before:ease-in-out before:duration-700 before:absolute before:bg-white before:origin-center before:h-[1px] before:w-0 hover:before:w-[50%] before:bottom-0 before:left-[50%] after:transition-[width] after:ease-in-out after:duration-700 after:absolute after:bg-white after:origin-center after:h-[1px] after:w-0 hover:after:w-[50%] after:bottom-0 after:right-[50%]'>
+              <span>
+                Kembali ke daftar blog
+              </span>
+            </div>
           </button>
           <h2 className="text-2xl text-black font-bold mb-4">{selectedContent.title}</h2>
           <p className="my-4 text-sm text-gray-600">
@@ -157,12 +165,12 @@ function ContentSection({ contentRef, servicesRef, isContentSelected, selectedCo
                         openModal(`/storage/${image.path}`);
                       }}
                       className={`group relative flex items-end overflow-hidden rounded-lg bg-gray-100 shadow-lg ${isFirstInRow
-                          ? isLeftImage
-                            ? 'h-80'
-                            : 'md:col-span-2 col-span-1 h-80'
-                          : isLeftImage
-                            ? 'md:col-span-2 col-span-1 h-80'
-                            : 'h-80'
+                        ? isLeftImage
+                          ? 'h-80'
+                          : 'md:col-span-2 col-span-1 h-80'
+                        : isLeftImage
+                          ? 'md:col-span-2 col-span-1 h-80'
+                          : 'h-80'
                         }`}
                     >
                       <img

@@ -122,7 +122,7 @@ function ReportTable() {
   }, [month, year, startDate, endDate, status, statuspayment, customerName]);
 
   return (
-    <div className="p-4">
+    <div className="p-4 text-black">
       {/* Filter Section */}
       <div className="flex flex-col lg:flex-row lg:space-x-6 mb-6 items-start lg:items-center">
         <div className="flex flex-col w-full lg:w-auto">

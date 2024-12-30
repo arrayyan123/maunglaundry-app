@@ -15,7 +15,7 @@ const InboxMessage = () => {
     const [removedIds, setRemovedIds] = useState(new Set());
     const [lastChecked, setLastChecked] = useState(Date.now());
     const [isFetching, setIsFetching] = useState(false);
-    const [visibleCount, setVisibleCount] = useState(5);
+    const [visibleCount, setVisibleCount] = useState(6);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     const fetchReports = async () => {

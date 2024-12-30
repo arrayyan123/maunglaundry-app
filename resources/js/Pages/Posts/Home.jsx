@@ -45,7 +45,7 @@ function Home() {
 
   useEffect(() => {
     if (isContentSelected && contentRef.current) {
-      contentRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      scrollToSection(contentRef, null, -80);
     }
   }, [isContentSelected]);
 

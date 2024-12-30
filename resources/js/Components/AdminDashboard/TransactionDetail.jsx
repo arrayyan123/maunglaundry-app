@@ -89,7 +89,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
 
       const response = await axios.get(endpoint, {
         params: {
-          start_date: startDate || undefined, 
+          start_date: startDate || undefined,
           end_date: endDate || undefined,
         },
       });
@@ -239,8 +239,8 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
 
   return (
     <div className="max-w-full mx-auto p-6 mb-10 bg-white shadow-md rounded-lg">
-      <div className="flex max-w-full md:flex-row flex-col md:space-y-0 space-y-3 space-x-0 md:space-x-4 mb-6">
-        <div>
+      <div className="flex w-full md:flex-row flex-col md:space-y-0 space-y-3 space-x-0 md:space-x-4 mb-6">
+        <div className='w-full text-black'>
           <label htmlFor="search" className="block text-sm font-medium text-gray-700">
             Search
           </label>
@@ -252,7 +252,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
             className="w-full p-2 border border-gray-300 rounded"
           />
         </div>
-        <div>
+        <div className='w-full text-black'>
           <label htmlFor="start-date" className="block text-sm font-medium text-gray-700">
             Start Date
           </label>
@@ -260,11 +260,11 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
             type="date"
             id="start-date"
             value={startDate}
-            onChange={(e) => setStartDate(e.target.value)} // Update state saat tanggal dipilih
+            onChange={(e) => setStartDate(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded"
           />
         </div>
-        <div>
+        <div className='w-full text-black'>
           <label htmlFor="end-date" className="block text-sm font-medium text-gray-700">
             End Date
           </label>
@@ -272,11 +272,11 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
             type="date"
             id="end-date"
             value={endDate}
-            onChange={(e) => setEndDate(e.target.value)} // Update state saat tanggal dipilih
+            onChange={(e) => setEndDate(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded"
           />
         </div>
-        <div>
+        <div className='w-full text-black'>
           <label htmlFor="payment-filter" className="block text-sm font-medium text-gray-700">
             Payment Status
           </label>
@@ -319,7 +319,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
             <p className='font-bold md:block hidden text-black'>
               |
             </p>
-            <div className='flex md:flex-row flex-col md:items-center items-start space-x-0 md:space-x-2'>
+            <div className='flex md:flex-row flex-col md:items-center items-start gap-2'>
               <p className='text-black'>
                 {transaction?.start_date
                   ? new Date(transaction.start_date).toLocaleString()
@@ -328,10 +328,24 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
               <p className='font-bold md:block hidden'>
                 |
               </p>
-              <p className={`mr-2 p-2 text-white rounded-lg ${transaction.status_payment === 'unpaid' ?
+              <span className={` p-2 text-white rounded-lg ${transaction.status_payment === 'unpaid' ?
                 'bg-red-500' : transaction.status_payment === 'paid' ?
                   'bg-green-500' : 'bg-transparent'
-                }`}> {transaction.status_payment}</p>
+                }`}> <p>{transaction.status_payment}</p></span>
+              <span className={` p-2 text-white rounded-lg 
+                ${transaction.status_job === 'cancel'
+                  ? 'bg-red-500'
+                  : transaction.status_job === 'pending'
+                    ? 'bg-yellow-500'
+                    : transaction.status_job === 'ongoing'
+                      ? 'bg-blue-500'
+                      : transaction.status_job === 'done'
+                        ? 'bg-green-500'
+                        : 'bg-gray-500'
+                }`}
+              >
+                <p>{transaction.status_job}</p>
+              </span>
             </div>
           </div>
           <div className='flex md:flex-row flex-col space-x-0 md:space-x-2'>
@@ -377,7 +391,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                 {transaction?.status_payment === "unpaid" ? "Mark as Paid" : "Mark as Unpaid"}
               </button>
             </div>
-            <div className="flex-1 flex flex-col w-full">
+            <div className="flex-1 flex flex-col w-full text-black">
               <p className='text-black'><strong>Status Job:</strong> {transaction.status_job}</p>
               <select
                 value={transaction?.status_job || "ongoing"}

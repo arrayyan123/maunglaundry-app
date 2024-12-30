@@ -30,18 +30,7 @@ function Footer({ homeRef, aboutRef, servicesRef, scrollToSection }) {
                         <ul class=" flex justify-center gap-6 md:gap-8">
                             <li>
                                 <a
-                                    href="#"
-                                    rel="noreferrer"
-                                    target="_blank"
-                                    class="text-gray-700 transition hover:text-gray-700/75 dark:text-white dark:hover:text-white/75"
-                                >
-                                    <span class="sr-only">Facebook</span>
-                                    <IonIcon className='text-[30px]' name='logo-facebook' />
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="#"
+                                    href="https://www.instagram.com/rayyanalaundry/"
                                     rel="noreferrer"
                                     target="_blank"
                                     class="text-gray-700 transition hover:text-gray-700/75 dark:text-white dark:hover:text-white/75"
@@ -52,13 +41,13 @@ function Footer({ homeRef, aboutRef, servicesRef, scrollToSection }) {
                             </li>
                             <li>
                                 <a
-                                    href="#"
+                                    href="https://wa.link/0efse0"
                                     rel="noreferrer"
                                     target="_blank"
                                     class="text-gray-700 transition hover:text-gray-700/75 dark:text-white dark:hover:text-white/75"
                                 >
-                                    <span class="sr-only">Twitter</span>
-                                    <IonIcon className='text-[30px]' name='logo-twitter' />
+                                    <span class="sr-only">WhatsApp</span>
+                                    <IonIcon className='text-[30px]' name='logo-whatsapp' />
                                 </a>
                             </li>
                         </ul>

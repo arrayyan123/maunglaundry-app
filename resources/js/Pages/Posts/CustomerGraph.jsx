@@ -61,7 +61,7 @@ function CustomerGraph() {
         }
     };
     const updateCharts = () => {
-        // Prepare data for laundry_type (Bar Chart)
+       
         const laundryTypeCounts = { 'Dry Cleaning': 0, 'Wet Laundry': 0, 'Tanpa Kategori': 0 };
         reports.forEach((report) => {
             if (report.laundry_type === 'Dry Cleaning') {
@@ -73,7 +73,6 @@ function CustomerGraph() {
             }
         });
 
-        // Prepare data for status_payment (Line Chart)
         const paymentStatusCounts = { paid: 0, unpaid: 0 };
         reports.forEach((report) => {
             if (report.status_payment === 'paid') {
@@ -83,12 +82,11 @@ function CustomerGraph() {
             }
         });
 
-        // Update Bar Chart
         const barChartData = {
             labels: ['Dry Cleaning', 'Wet Laundry', 'Tanpa Kategori'],
             datasets: [
                 {
-                    label: 'Laundry Type',
+                    label: 'Jumlah Laundry per Kategori',
                     data: Object.values(laundryTypeCounts),
                     backgroundColor: ['#4CAF50', '#FFC107', '#F44336'],
                     borderRadius: 10,
@@ -186,7 +184,7 @@ function CustomerGraph() {
                 }
             >
                 <Head title='Perkembangan Customer' />
-                <div className='p-4'>
+                <div className='p-4 text-black'>
                     {/*FITUR FILTER*/}
                     <div className="flex flex-col lg:flex-row lg:space-x-6 mb-6 items-start lg:items-center">
                         {/* Select Month */}

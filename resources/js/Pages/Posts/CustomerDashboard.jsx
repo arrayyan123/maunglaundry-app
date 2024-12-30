@@ -11,6 +11,7 @@ import CustomerDashboardLayout from "@/Layouts/CustomerDashboardLayout";
 import IonIcon from "@reacticons/ionicons";
 import SlotCounter from 'react-slot-counter';
 import Joyride from 'react-joyride';
+import { Tooltip } from "flowbite-react";
 
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -42,6 +43,7 @@ export default function CustomerDashboard() {
     const [showNotificationTwilio, setShowNotificationTwilio] = useState(false);
     const [filterProductName, setFilterProductName] = useState('');
     const [filterPaymentStatus, setFilterPaymentStatus] = useState('');
+    const [filterStatusJob, setFilterStatusJob] = useState('');
     const [filterStartDate, setFilterStartDate] = useState('');
     const [filterEndDate, setFilterEndDate] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -98,13 +100,15 @@ export default function CustomerDashboard() {
         const matchesPaymentStatus = filterPaymentStatus
             ? transaction.status_payment === filterPaymentStatus
             : true;
-
+        const matchesStatusJob = filterStatusJob
+            ? transaction.status_job === filterStatusJob
+            : true;
         const transactionStartDate = new Date(transaction.start_date);
         const isDateInRange =
             (!filterStartDate || transactionStartDate >= new Date(filterStartDate)) &&
             (!filterEndDate || transactionStartDate <= new Date(filterEndDate));
 
-        return matchesProductName && matchesPaymentStatus && isDateInRange;
+        return matchesProductName && matchesPaymentStatus && matchesStatusJob && isDateInRange;
     });
 
     const itemsPerPage = 5;
@@ -414,7 +418,23 @@ export default function CustomerDashboard() {
                                                 />
                                             </div>
                                         )}
-                                        <div className="flex flex-col lg:space-y-0 space-y-4 p-3 lg:flex-row lg:space-x-4">
+                                        <div className="flex flex-col text-black lg:space-y-0 space-y-4 p-3 xl:flex-row lg:space-x-4">
+                                            <Tooltip content={
+                                                <div className="p-4">
+                                                    <h1>Warna Status</h1>
+                                                    <ul className="list-disc">
+                                                        <li>status job: cancel - <strong className="text-red-500">merah</strong></li>
+                                                        <li>status job: ongoing - <strong className="text-blue-500">biru</strong></li>
+                                                        <li>status job: pending - <strong className="text-yellow-500">kuning</strong></li>
+                                                        <li>status job: done - <strong className="text-green-500">hijau</strong></li>
+                                                    </ul>
+                                                </div>
+                                            }>
+                                                <div className="flex flex-row gap-1">
+                                                    <p>Hint:</p> 
+                                                    <IonIcon className="text-black animate-bounce text-[20px]" name="alert-circle" />
+                                                </div>
+                                            </Tooltip>
                                             <div className="flex flex-col">
                                                 <label htmlFor="">Penelusuri</label>
                                                 <input
@@ -435,6 +455,20 @@ export default function CustomerDashboard() {
                                                     <option value="">All Payment Status</option>
                                                     <option value="paid">Paid</option>
                                                     <option value="unpaid">Unpaid</option>
+                                                </select>
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <label htmlFor="">Status Job</label>
+                                                <select
+                                                    className="border px-4 py-2 rounded-md focus:outline-none focus:ring"
+                                                    value={filterStatusJob}
+                                                    onChange={(e) => setFilterStatusJob(e.target.value)}
+                                                >
+                                                    <option value="">All Status Job</option>
+                                                    <option value="ongoing">Ongoing</option>
+                                                    <option value="pending">Pending</option>
+                                                    <option value="cancel">Canceled</option>
+                                                    <option value="done">Done</option>
                                                 </select>
                                             </div>
                                             {/* Date Range Inputs */}
@@ -463,17 +497,29 @@ export default function CustomerDashboard() {
                                         {currentTransactions.map((transaction) => (
                                             <li key={transaction.id} className="border-b py-2 px-3">
                                                 <button
-                                                    className="text-blue-600 hover:text-blue-800"
+                                                    className={`${transaction.status_job === 'cancel'
+                                                        ? 'bg-red-500'
+                                                        : transaction.status_job === 'pending'
+                                                            ? 'bg-yellow-500'
+                                                            : transaction.status_job === 'ongoing'
+                                                                ? 'bg-blue-500'
+                                                                : transaction.status_job === 'done'
+                                                                    ? 'bg-green-500'
+                                                                    : 'bg-gray-500'
+                                                        } text-white w-full px-3 py-2 rounded-xl`}
                                                     onClick={() => handleViewDetails(transaction.id)}
                                                 >
-                                                    <span className="flex flex-row items-center space-x-5 justify-between">
-                                                        <p>
-                                                            View Transaction {transaction.nama_produk} status (
-                                                            {transaction.status_payment})
-                                                        </p>
-                                                        <p>Tanggal Mulai: {transaction.start_date}</p>
-                                                        <p>Tanggal Selesai: {transaction.start_date}</p>
-                                                    </span>
+                                                    <div className="relative text-white hover:font-bold cursor-pointer transition-all ease-in-out before:transition-[width] before:ease-in-out before:duration-700 before:absolute before:bg-white before:origin-center before:h-[1px] before:w-0 hover:before:w-[50%] before:bottom-0 before:left-[50%] after:transition-[width] after:ease-in-out after:duration-700 after:absolute after:bg-white after:origin-center after:h-[1px] after:w-0 hover:after:w-[50%] after:bottom-0 after:right-[50%]">
+                                                        <span className="flex sm:flex-row flex-col items-center sm:space-x-5 space-x-0 justify-between">
+                                                            <p>
+                                                                View Transaction {transaction.nama_produk} status (
+                                                                {transaction.status_payment})
+                                                            </p>
+                                                            <p>Status Job: {transaction.status_job}</p>
+                                                            <p>Tanggal Mulai: {transaction.start_date}</p>
+                                                            <p>Tanggal Selesai: {transaction.start_date}</p>
+                                                        </span>
+                                                    </div>
                                                 </button>
                                             </li>
                                         ))}

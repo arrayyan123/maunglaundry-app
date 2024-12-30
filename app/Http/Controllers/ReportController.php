@@ -133,6 +133,7 @@ class ReportController extends Controller
             'newTransactions' => $newTransactions,
         ]);
     }
+    
     public function getReportByCustomerId(Request $request, $customerId)
     {
         $month = $request->input('month');
