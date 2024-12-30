@@ -347,13 +347,6 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             </div>
             <div className="mb-6">
                 <h4 className="text-lg font-semibold">Catatan</h4>
-                {/* <div className="mb-4">
-                    {notes.map((note) => (
-                        <div key={note.id} className="bg-gray-100 p-2 rounded mb-2">
-                            {note.content}
-                        </div>
-                    ))}
-                </div> */}
                 <textarea
                     className="w-full border border-gray-300 px-4 py-2 rounded-md"
                     placeholder="Add a note for this transaction"
@@ -373,7 +366,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white  p-6 rounded-md shadow-md mx-7">
                         <button
-                            className="absolute top-12 right-12 text-[30px] hover:font-bold text-white"
+                            className="lg:text-[30px] text-sm hover:font-bold text-black"
                             onClick={() => setShowModal(false)}
                         >
                             ✕

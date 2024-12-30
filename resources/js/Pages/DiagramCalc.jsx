@@ -13,6 +13,7 @@ export default function DiagramCalc({ auth, customers }) {
     const [endDate, setEndDate] = useState('');
     const [month, setMonth] = useState('');
     const [year, setYear] = useState('');
+    const [customer, setCustomer] = useState([]);
     const [barChart, setBarChart] = useState(null);
     const [doughnutChart, setDoughnutChart] = useState(null);
     const chartRef01 = useRef(null);
@@ -43,6 +44,15 @@ export default function DiagramCalc({ auth, customers }) {
             updateDoughnutChart(response.data.data);
         } catch (error) {
             console.error('Error fetching reports:', error);
+        }
+    };
+
+    const fetchCustomer = async () => {
+        try {
+            const response = await axios.get('/api/admin/customers');
+            setCustomer(response.data);
+        } catch (error) {
+            console.error('Error fetching customer:', error);
         }
     };
 
@@ -143,9 +153,14 @@ export default function DiagramCalc({ auth, customers }) {
     };
 
     useEffect(() => {
+        fetchCustomer();
         fetchTotalPrice();
         fetchReport();
     }, [month, year, startDate, endDate, status]);
+
+    useEffect(() => {
+        fetchCustomer();
+    }, []);
 
     return (
         <AuthenticatedLayout
@@ -172,7 +187,7 @@ export default function DiagramCalc({ auth, customers }) {
                     </div>
                     <div className='bg-red-500 flex flex-row space-x-3 items-center border w-full p-10 h-full rounded-xl'>
                         <IonIcon className='text-white text-[30px]' name='man' />
-                        <h2 className="text-lg text-white font-semibold">Pelanggan Baru Bulan Ini:<br /> {reports.slice(0, 5).length}</h2>
+                        <h2 className="text-lg text-white font-semibold">Pelanggan Baru Bulan Ini:<br /> {customer.length}</h2>
                     </div>
                 </div>
                 <div className='flex-1 bg-gray-300 text-gray-700 rounded-lg p-6 shadow-md'>

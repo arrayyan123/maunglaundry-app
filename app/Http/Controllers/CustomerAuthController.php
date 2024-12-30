@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Log;
 
 class CustomerAuthController extends Controller
 {
+    public function index()
+    {
+        $customers = CustomerUser::orderBy('created_at', 'desc')->get();
+        return response()->json($customers);
+    }
     public function register_customer(Request $request)
     {
         try {
@@ -19,7 +24,7 @@ class CustomerAuthController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|unique:customer_users,email',
                 'password' => 'required|string|min:8',
-                'phone' => 'nullable|string',
+                'phone' => 'nullable|string|unique:customer_users,phone',
                 'address' => 'nullable|string'
             ]);
             $customer = CustomerUser::create([
@@ -35,6 +40,16 @@ class CustomerAuthController extends Controller
                 'customer' => $customer
             ], 201);
         } catch (ValidationException $e) {
+            $errors = $e->errors();
+            $customErrors = [];
+    
+            if (isset($errors['email'])) {
+                $customErrors['email'] = 'Email sudah terdaftar';
+            }
+            if (isset($errors['phone'])) {
+                $customErrors['phone'] = 'Nomor telepon sudah terdaftar';
+            }
+            
             return response()->json([
                 'status' => 'error',
                 'message' => 'Validation failed',
@@ -51,29 +66,39 @@ class CustomerAuthController extends Controller
     //sisi admin
     public function register_customer_admin(Request $request)
     {
-        Log::debug('Request data:', $request->all());
         try {
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
-                'phone' => 'required|string',
+                'phone' => 'required|string|unique:customer_users,phone',
                 'email' => 'nullable|string',
                 'address' => 'required|string',
                 'password' => 'required|string|min:6',
             ]);
-            Log::debug('Validated data:', $validated);
-
             $customer = CustomerUser::create([
                 'name' => $validated['name'],
                 'phone' => $validated['phone'],
                 'password' => Hash::make($validated['phone']),
                 'address' => $validated['address'],
             ]);
-            Log::debug('Customer created successfully:', $customer->toArray());
             return response()->json([
                 'status' => 'success',
                 'message' => 'Registration successful',
                 'customer' => $customer
             ], 201);
+        } catch (ValidationException $e) {
+            $errors = $e->errors();
+            $customErrors = [];
+
+            if (isset($errors['phone'])) {
+                $customErrors['phone'] = 'Nomor telepon sudah terdaftar';
+            }
+    
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $customErrors
+            ], 422);
+
         } catch (\Exception $e) {
             Log::error('Error during registration: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),

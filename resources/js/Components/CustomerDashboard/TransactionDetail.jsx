@@ -103,6 +103,10 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
         }
     };
 
+    const handleShowNoteArea = () => {
+        setShowNoteArea(!showNoteArea)
+    }
+
     if (loading) {
         return <p>Loading...</p>;
     }
@@ -183,14 +187,14 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                         </button>
                     )}
                     {transaction?.status_payment === 'unpaid' && (
-                        <Link href={linkNo} target="_blank" rel="noopener noreferrer">
+                        <a href={linkNo} target="_blank" rel="noopener noreferrer">
                             <button className="px-4 py-2 rounded text-white bg-blue-500 w-full md:w-auto">
                                 Belum Membayar? hubungi Admin
                             </button>
-                        </Link>
+                        </a>
                     )}
                     <button 
-                        onClick={()=>setShowNoteArea(true)}
+                        onClick={handleShowNoteArea}
                         className="py-2 px-4 bg-blue-500 text-white rounded w-full md:w-auto">
                         <span>
                             <p>Berikan Catatan</p>
@@ -235,7 +239,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
                     >
                         <div className="bg-white p-6 rounded-md shadow-md mx-7">
                             <button
-                                className="absolute top-12 right-12 text-[30px] hover:font-bold text-white"
+                                className="text-[30px] hover:font-bold text-black"
                                 onClick={() => setShowPaymentModal(false)}
                             >
                                 ✕

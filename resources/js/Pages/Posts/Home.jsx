@@ -6,27 +6,48 @@ import Hero from '@/Components/Home/Hero'
 import MarqueeWrapper from '@/Components/Home/MarqueeWrapper'
 import Navbar from '@/Components/Navbar/Navbar'
 import { Head } from '@inertiajs/react'
-import React, { useRef } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 
 function Home() {
   const homeRef = useRef(null);
   const aboutRef = useRef(null);
   const servicesRef = useRef(null);
+  const contentRef = useRef(null);
+
+  const [isContentSelected, setIsContentSelected] = useState(false);
+  const [selectedContent, setSelectedContent] = useState(null);
+
+  const handleContentSelect = (contents) => {
+    setIsContentSelected(true);
+    setSelectedContent(contents);
+  };
+
+  const handleContentDeselect = () => {
+    setIsContentSelected(false);
+    setSelectedContent(null);
+  };
+
 
   const scrollToSection = (ref, event, offset = 0) => {
-    event.preventDefault();
+    event?.preventDefault();
     if (ref && ref.current) {
-      const elementPosition = ref.current.offsetTop; 
+      const elementPosition = ref.current.offsetTop;
       const offsetPosition = elementPosition + offset;
-  
+
       window.scrollTo({
         top: offsetPosition,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
     } else {
-      console.warn("Ref not found:", ref);
+      console.warn('Ref not found:', ref);
     }
   };
+
+  useEffect(() => {
+    if (isContentSelected && contentRef.current) {
+      contentRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [isContentSelected]);
 
   return (
     <div>
@@ -41,7 +62,15 @@ function Home() {
       <MarqueeWrapper />
       <Carousel />
       <AboutSection aboutRef={aboutRef} />
-      <ContentSection servicesRef={servicesRef} />
+      <ContentSection
+        contentRef={contentRef}
+        servicesRef={servicesRef}
+        scrollToSection={scrollToSection}
+        isContentSelected={isContentSelected}
+        selectedContent={selectedContent}
+        onContentSelect={handleContentSelect}
+        onContentDeselect={handleContentDeselect}
+      />
       <Footer
         homeRef={homeRef}
         aboutRef={aboutRef}

@@ -71,7 +71,7 @@
 </head>
 <body>
   <div class="header">
-    <img src="http://localhost:8000/assets/images/Picture1.png" alt="Logo Maung Laundry">
+    <img src="{{ asset('assets/images/Picture1.png') }}" alt="Logo Maung Laundry">
     <div class="no-telp">
       <p>CALL/WA: 0815 7942 086</p>
     </div>

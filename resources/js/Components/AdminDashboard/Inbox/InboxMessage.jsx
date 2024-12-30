@@ -159,7 +159,7 @@ const InboxMessage = () => {
     };
 
     return (
-        <div className="flex flex-row lg:h-full h-screen bg-gray-100">
+        <div className="flex flex-row lg:h-full h-auto bg-gray-100">
             {/* Sidebar */}
             <aside
                 className={`${isSidebarExpanded ? "w-64" : "w-16"
@@ -195,7 +195,7 @@ const InboxMessage = () => {
                                 className={`${isSidebarExpanded ? "block" : "hidden"
                                     } text-sm`}
                             >
-                                Message
+                                Message (Catatan Pelanggan)
                             </span>
                         </li>
                         <li
@@ -221,7 +221,7 @@ const InboxMessage = () => {
                         {/* Header */}
                         <header className="flex flex-col md:flex-row items-center justify-between p-4 bg-white shadow">
                             <h1 className="text-lg font-semibold text-gray-700 mb-2 md:mb-0">
-                                Inbox
+                                Catatan Pelanggan
                             </h1>
                             <div className="flex items-center space-x-2">
                                 <button
@@ -244,7 +244,7 @@ const InboxMessage = () => {
                         {/* Body */}
                         <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
                             {/* Message List */}
-                            <section className="w-full md:w-1/3 border-r bg-white overflow-y-auto lg:max-h-[76vh] md:max-h-[77vh] sm:max-h-[28vh] max-h-[26vh]">
+                            <section className="w-full md:w-1/3 border-r bg-white overflow-y-auto lg:max-h-[76vh] md:max-h-[77vh] sm:max-h-[28vh] max-h-[26vh">
                                 <div>
                                     {messages.map((message) => (
                                         <div
@@ -265,7 +265,7 @@ const InboxMessage = () => {
                                                     onClick={() => setSelectedMessage(message)}
                                                     className="flex justify-between items-center w-full"
                                                 >
-                                                    <div>
+                                                    <div className="w-full max-w-[140px]">
                                                         <h3 className="text-sm font-semibold text-gray-700">
                                                             {message.customer_name}
                                                         </h3>
@@ -310,9 +310,11 @@ const InboxMessage = () => {
                                                     className="border-b border-gray-200 p-4 mb-2 flex justify-between items-center"
                                                 >
                                                     <div>
-                                                        <p className="text-lg text-gray-600">
-                                                            <strong>{notification.nama_produk}</strong>
-                                                        </p>
+                                                        <div className="relative text-black hover:font-bold cursor-pointer transition-all ease-in-out before:transition-[width] before:ease-in-out before:duration-700 before:absolute before:bg-black before:origin-center before:h-[1px] before:w-0 hover:before:w-[50%] before:bottom-0 before:left-[50%] after:transition-[width] after:ease-in-out after:duration-700 after:absolute after:bg-black after:origin-center after:h-[1px] after:w-0 hover:after:w-[50%] after:bottom-0 after:right-[50%] mb-2">
+                                                            <span className="text-lg text-gray-600">
+                                                                <strong>{notification.nama_produk}</strong>
+                                                            </span>
+                                                        </div>
                                                         <p className="text-[15px] text-gray-600">
                                                             {notification.customer_name} - {notification.start_date} - {notification.status_job} - {notification.status_payment}
                                                         </p>
@@ -353,7 +355,7 @@ const InboxMessage = () => {
                             <p className="text-lg">Anda yakin ingin menghapus catatan ini?</p>
                             <div className="mt-4 flex justify-end space-x-4">
                                 <button onClick={deleteSelectedMessages} className="bg-red-500 text-white px-4 py-2 rounded">
-                                    Yes, Hapus!!!
+                                    Yes, Hapus
                                 </button>
                                 <button onClick={() => setShowDeleteModal(false)} className="bg-gray-300 text-black px-4 py-2 rounded">
                                     Tidak

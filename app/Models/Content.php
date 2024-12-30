@@ -13,19 +13,12 @@ class Content extends Model
     protected $fillable = [
         'title',
         'description',
-        'image',
         'created_at',
         'updated_at',
     ];
 
-    public static function boot()
+    public function images()
     {
-        parent::boot();
-
-        static::deleting(function ($content) {
-            if ($content->image && Storage::exists($content->image)) {
-                Storage::delete($content->image);
-            }
-        });
+        return $this->hasMany(ContentImage::class);
     }
 }

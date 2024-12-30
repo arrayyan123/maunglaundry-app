@@ -27,13 +27,6 @@ function CustomerDashboardLayoutInbox({ header, children }) {
     const [customerData, setCustomerData] = useState(null);
     const [selectedTransactionId, setSelectedTransactionId] = useState(null);
     const [transactions, setTransactions] = useState([]);
-    // const [transactionDetails, setTransactionDetails] = useState(null);
-    // const [loading, setLoading] = useState(false);
-    // const [sidebarOpen, setSidebarOpen] = useState(false);
-    // const [showEntryTransaction, setShowEntryTransaction] = useState(false);
-    // const [showNotificationTwilio, setShowNotificationTwilio] = useState(false);
-    // const [filterProductName, setFilterProductName] = useState('');
-    // const [filterPaymentStatus, setFilterPaymentStatus] = useState('');
 
     const fetchTransactions = async (customerId) => {
         try {
@@ -249,7 +242,7 @@ function CustomerDashboardLayoutInbox({ header, children }) {
                     </div>
                 </header>
                 {/* Main Content */}
-                <main className="flex-1 lg:h-svh h-0 overflow-y-hidden ">
+                <main className="flex-1 lg:h-svh h-0 overflow-y-auto ">
                     {children}
                 </main>
             </div>

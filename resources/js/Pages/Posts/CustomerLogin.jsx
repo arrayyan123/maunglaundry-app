@@ -25,6 +25,11 @@ export default function CustomerLogin() {
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState('');
   const [warning, setWarning] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevState) => !prevState);
+  };
 
   const suspiciousPatterns = /[-';"]/;
 
@@ -39,8 +44,15 @@ export default function CustomerLogin() {
       return;
     }
 
+    const formattedPhone = formData.phone.startsWith('+62')
+      ? formData.phone
+      : `+62${formData.phone.replace(/^0+/, '')}`;
+
     try {
-      const response = await axios.post('/api/customer/login', formData);
+      const response = await axios.post('/api/customer/login', {
+        ...formData,
+        phone: formattedPhone,
+      });
 
       if (response.data.status === 'success') {
         localStorage.setItem('customer-token', response.data.token);
@@ -61,11 +73,11 @@ export default function CustomerLogin() {
   return (
     <>
       <Head title="Customer Login" />
-      <div className='bg-blue-100 flex justify-center items-center h-screen'>
+      <div className='bg-blue-100 flex justify-center items-center overflow-y-hidden h-screen'>
         <div className="w-1/2 h-screen hidden lg:block">
           <img src={bigPics} alt="Placeholder Image" className="object-cover w-full h-full" />
         </div>
-        <div className="lg:p-36 md:p-52 object-contain sm:20 p-8 w-full lg:w-1/2">
+        <div className="lg:p-16 md:p-52 object-contain sm:20 p-8 w-full lg:w-1/2">
           {message && (
             <div className="bg-red-100 border mb-4 border-red-400 text-red-700 px-4 py-3 rounded">
               {message}
@@ -84,31 +96,45 @@ export default function CustomerLogin() {
             <Fade direction='right' cascade>
               <div className="mb-4 bg-blue-100">
                 <label for="phone" class="block text-gray-600">Nomor Telepon <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  id="phone"
-                  name="phone"
-                  className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
-                  required
-                  autocomplete="on"
-                  placeholder="+6281234567890 / 081234567890"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                />
+                <div className='flex items-center'>
+                  <span className="bg-gray-200 text-gray-700 px-3 py-2 rounded-l-md border border-r-0 border-gray-300">
+                    +62
+                  </span>
+                  <input
+                    type="text"
+                    id="phone"
+                    name="phone"
+                    className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
+                    required
+                    autocomplete="on"
+                    placeholder="81234567890 (tanpa +62 / awali dengan 0)"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  />
+                </div>
               </div>
               <div className="mb-4">
                 <label for="password" className="block text-gray-800">Password <span className="text-red-500">*</span></label>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
-                  required
-                  autocomplete="on"
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                />
+                <div className='relative'>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    id="password"
+                    name="password"
+                    className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
+                    required
+                    autocomplete="on"
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600 focus:outline-none"
+                  >
+                    {showPassword ? <IonIcon className='text-[22px]' name='eye' /> : <IonIcon className='text-[22px]' name='eye-off' />}
+                  </button>
+                </div>
               </div>
               <div className="mb-4 flex items-center">
                 <input type="checkbox" id="remember" name="remember" className="text-red-500" />

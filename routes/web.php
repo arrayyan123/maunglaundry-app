@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -14,7 +15,6 @@ use App\Http\Controllers\ServicePricesController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\WhatsAppController;
 use App\Http\Controllers\ContentController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
 
 Route::post('/send-whatsapp', [WhatsAppController::class, 'sendMessage']);
 Route::get('/', function () {
@@ -57,7 +57,7 @@ Route::prefix('api')->group(function () {
 
     Route::delete('/admin/customer/{id}', [CustomerAuthController::class, 'destroy'])->middleware('auth:sanctum');
     Route::post('/admin/register_customer', [CustomerAuthController::class, 'register_customer_admin'])->middleware('auth:sanctum');
-    Route::get('/admin/customers', [PagesController::class, 'adminCustomerList'])->middleware('auth:sanctum');
+    Route::get('/admin/customers', [CustomerAuthController::class, 'index'])->middleware('auth:sanctum');
     Route::get('/admin/transaction-details/{transactionId}', [TransactionsController::class, 'getTransactionByUuid']);
 
     Route::post('/customer/transactions', [TransactionsController::class, 'store']);
@@ -130,20 +130,3 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/auth.php';
-
-// Route::middleware(['auth:customer'])->group(function () {
-//     Route::post('/request-laundry', [LaundryController::class, 'request']);
-//     Route::post('/make-payment', [PaymentController::class, 'pay']);
-// });
-
-// Route::get('/email-test', function(){
-//     $name = "Arrayyan";
-//     $from = "Testing Email";
-
-//     Mail::to("arrayyan.aprilyanto@gmail.com")->send(new MyTestMail(compact("name", "from")));
-//     dd("Email send successfully");
-// });
-
-// Route::get('/dashboard', function () {
-//     return Inertia::render('Dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');

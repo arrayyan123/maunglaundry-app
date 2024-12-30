@@ -97,7 +97,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
         setSelectedTransactionId(null);
         setTransactionDetails(null);
         fetchTransactions(customer.id);
-    
+
         const refsToScroll = [entryTransactionRef, detailTransactionRef];
         refsToScroll.forEach((ref, index) => {
             setTimeout(() => {
@@ -107,7 +107,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                         block: "start",
                     });
                 }
-            }, index * 100); 
+            }, index * 100);
         });
     };
     useEffect(() => {
@@ -118,7 +118,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
             });
         }
     }, [selectedTransactionId, selectedCustomer]);
-    
+
     const fetchTransactions = async (customerId) => {
         try {
             const response = await axios.get(`/api/admin/transactions/${customerId}`);
@@ -128,14 +128,26 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
         }
     };
 
-    const handleViewDetails = (transactionId) => {
-        console.log("Setting transaction ID:", transactionId);
-        setSelectedTransactionId(transactionId);
+    const handleViewDetails = async (transactionId) => {
+        try {
+            setLoading(true);
+            const details = await fetchTransactionDetails(transactionId);
+            if (details) {
+                setTransactionDetails(details);
+                setSelectedTransactionId(transactionId);
+                setSelectedCustomer(details.customer);
+            }
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching transaction details:", error);
+            setLoading(false);
+        }
     };
+
     const fetchTransactionDetails = async (id) => {
         try {
             setLoading(true);
-            const response = await axios.get(`/api/admin/transaction-details/${id}`);
+            const response = await axios.get(`/api/admin/transactions/${id}`);
             console.log("Transaction details fetched:", response.data);
             setLoading(false);
             return response.data;
@@ -143,19 +155,6 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
             setLoading(false);
             console.error("Error fetching transaction details:", error);
             return null;
-        }
-    };
-    const handleViewDetailsOn = async (transactionId) => {
-        try {
-            setLoading(true);
-            const details = await fetchTransactionDetails(transactionId);
-            if (details) {
-                setTransactionDetails(details);
-                setSelectedTransactionId(transactionId);
-            }
-        } catch (error) {
-            console.error("Error fetching transaction details:", error);
-            setLoading(false);
         }
     };
 
@@ -399,7 +398,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                 </ul>
             </div>
 
-            <AddCustButton className="instruksi-keempat instruksi-keenam" onClick={handleAddCustomer} />
+            <AddCustButton className="instruksi-keempat instruksi-keenam mb-4" onClick={handleAddCustomer} />
             {isAddingCustomer && (
                 <div ref={addCustomerRef} className="mx-auto max-w-7xl p-6 my-10 bg-white rounded-lg instruksi-ketujuh">
                     <h3 className="text-lg font-semibold text-center">Add Customer</h3>
@@ -412,8 +411,16 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                     </button>
                 </div>
             )}
-            {selectedCustomer && !selectedTransactionId && (
-                <div ref={entryTransactionRef} className='mx-auto max-w-7xl p-3 my-10 bg-white rounded-lg'>
+            {selectedTransactionId ? (
+                <div ref={detailTransactionRef}>
+                    <TransactionDetail
+                        customerId={selectedCustomer?.id}
+                        transactionId={selectedTransactionId}
+                        onClose={handleCloseTransactionDetail}
+                    />
+                </div>
+            ) : selectedCustomer ? (
+                <div ref={entryTransactionRef} className="mx-auto max-w-7xl p-3 my-10 bg-white rounded-lg">
                     <Fade>
                         <EntryTransaction
                             customerId={selectedCustomer.id}
@@ -428,17 +435,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                         </button>
                     </Fade>
                 </div>
-            )}
-
-            {selectedTransactionId && selectedCustomer && (
-                <div ref={detailTransactionRef}>
-                    <TransactionDetail
-                        customerId={selectedCustomer.id}
-                        transactionId={selectedTransactionId}
-                        onClose={handleCloseTransactionDetail}
-                    />
-                </div>
-            )}
+            ) : null}
             {selectedCustomer && !selectedTransactionId && transactions.length > 0 && (
                 <Fade>
                     <div className="mx-auto max-w-7xl p-6 mb-10 bg-white rounded-lg">
@@ -448,7 +445,7 @@ export default function Dashboard({ auth, customers: initialCustomers }) {
                                 <li key={transaction.id} className="border-b py-2">
                                     <button
                                         className="text-blue-600 hover:text-blue-800"
-                                        // onClick={() => handleViewDetails(transaction.id)}
+                                    // onClick={() => handleViewDetails(transaction.id)}
                                     >
                                         Lihat Transaksi {transaction.nama_produk} status ({transaction.status_payment})
                                     </button>

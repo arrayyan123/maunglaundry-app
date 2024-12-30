@@ -174,7 +174,7 @@ function CustomerInbox() {
                 }
             >
                 <Head title='Inbox Customer' />
-                <div className="flex flex-row lg:h-full h-screen bg-gray-100">
+                <div className="flex flex-row lg:h-full h-auto bg-gray-100">
                     {/* Sidebar */}
                     <aside
                         className={`${isSidebarExpanded ? "w-64" : "w-16"
@@ -236,7 +236,7 @@ function CustomerInbox() {
                                 {/* Header */}
                                 <header className="flex flex-col md:flex-row items-center justify-between p-4 bg-white shadow">
                                     <h1 className="text-lg font-semibold text-gray-700 mb-2 md:mb-0">
-                                        Inbox
+                                        Catatan Pelanggan
                                     </h1>
                                     <div className="flex items-center space-x-2">
                                         <button

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Content;
+use App\Models\ContentImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -15,7 +16,7 @@ class ContentController extends Controller
      */
     public function index()
     {
-        $contents = Content::orderBy('created_at', 'desc')->get();
+        $contents = Content::with('images')->orderBy('created_at', 'desc')->get();
         return response()->json($contents);
     }
 
@@ -35,21 +36,21 @@ class ContentController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'image' => 'required|image|mimes:jpg,jpeg,png|max:100000000',
+            'images.*' => 'nullable|image',
         ]);
-    
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('public/images');
-            $imageName = str_replace('public/', '', $path); 
 
-            Log::info('File size:', ['size' => $request->file('image')->getSize()]);
-        }
         $content = Content::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'image' => $imageName ?? null,
+            'title' => $validated['title'],
+            'description' => $validated['description'],
         ]);
-    
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('contents', 'public');
+                ContentImage::create(['content_id' => $content->id, 'path' => $path]);
+            }
+        }
+
         return response()->json($content, 201);
     }
 
@@ -58,12 +59,12 @@ class ContentController extends Controller
      */
     public function show($id)
     {
-        $content = Content::find($id);
-    
+        $content = Content::with('images')->find($id);
+
         if (!$content) {
             return response()->json(['message' => 'Content not found'], 404);
         }
-    
+
         return response()->json($content);
     }
 
@@ -72,7 +73,7 @@ class ContentController extends Controller
      */
     public function edit($id)
     {
-        $content = Content::find($id);
+        $content = Content::with('images')->find($id);
 
         if (!$content) {
             return response()->json(['message' => 'Content not found'], 404);
@@ -85,34 +86,42 @@ class ContentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Cari content berdasarkan ID
         $content = Content::find($id);
-    
+
         if (!$content) {
             return response()->json(['message' => 'Content not found'], 404);
         }
-    
+
         $validated = $request->validate([
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:100000000',
+            'images.*' => 'nullable|image',
+            'delete_images' => 'nullable|array',
+            'delete_images.*' => 'integer',
         ]);
-    
-        if ($request->hasFile('image')) {
-            if ($content->image && Storage::exists("public/{$content->image}")) {
-                Storage::delete("public/{$content->image}");
+
+        $content->update([
+            'title' => $validated['title'] ?? $content->title,
+            'description' => $validated['description'] ?? $content->description,
+        ]);
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('contents', 'public');
+                ContentImage::create([
+                    'content_id' => $content->id,
+                    'path' => $path,
+                ]);
             }
-    
-            $path = $request->file('image')->store('public/images');
-            $imageName = str_replace('public/', '', $path);
-            $content->image = $imageName;
         }
-        // Update data yang ada
-        $content->title = $request->input('title', $content->title);
-        $content->description = $request->input('description', $content->description);
-        $content->save();
-    
-        return response()->json($content);
+        if (!empty($validated['delete_images'])) {
+            $imagesToDelete = ContentImage::whereIn('id', $validated['delete_images'])->get();
+            foreach ($imagesToDelete as $image) {
+                Storage::disk('public')->delete($image->path);
+                $image->delete();
+            }
+        }
+
+        return response()->json($content->fresh());
     }
 
     /**
@@ -121,7 +130,11 @@ class ContentController extends Controller
     public function destroy($id)
     {
         $content = Content::find($id);
-    
+
+        foreach ($content->images as $image) {
+            Storage::disk('public')->delete($image->path);
+        }
+
         if (!$content) {
             return response()->json(['message' => 'Content not found'], 404);
         }

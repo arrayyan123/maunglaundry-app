@@ -20,12 +20,7 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        // Tambahkan URI yang tidak memerlukan verifikasi CSRF
-        'api/admin/register_customer',
-        'api/admin/transactions',
-        'api',
-        'api/*',
-        'send-whatsapp',
+        //
     ];
 
     /**

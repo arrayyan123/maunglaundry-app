@@ -210,7 +210,7 @@ export default function AuthenticatedLayoutInbox({ header, children }) {
                     </div>
                 </header>
                 {/* Main Content */}
-                <main className="flex-1 lg:h-svh h-0 overflow-y-hidden">
+                <main className="flex-1 lg:h-svh h-0 overflow-y-auto">
                     {children}
                 </main>
             </div>

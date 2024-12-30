@@ -16,7 +16,7 @@ function NotificationTwilio({ handleToggleNotificationTwilio }) {
     return (
         <div>
             <Fade>
-                <div className="bg-gray-100 p-6 mb-5 rounded-lg shadow-lg">
+                <div className="bg-gray-100 text-black p-6 mb-5 rounded-lg shadow-lg">
                     <div className="flex flex-col justify-between mb-4">
                         <div className='flex flex-row items-center space-x-6 mb-3'>
                             <h3 className="text-xl text-center font-semibold">Twilio Notifikasi untuk transaksi anda</h3>

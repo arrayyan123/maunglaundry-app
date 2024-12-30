@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import React from 'react';
+import React, {useState} from 'react';
 import { Fade } from 'react-awesome-reveal';
 
 const images = import.meta.glob('/public/assets/images/*.webp', { eager: true });
@@ -12,7 +12,17 @@ const getImageByName = (name) => {
 const qris = getImageByName('qrisPayment');
 
 function EwalletCard() {
+    const [modalImage, setModalImage] = useState(null);
+
+    const openModal = (image) => {
+        setModalImage(image);
+    };
+
+    const closeModal = () => {
+        setModalImage(null);
+    };
     const linkNo = 'https://wa.link/kn9lsq';
+
     return (
         <div className="flex flex-col items-center px-3 sm:px-4 md:px-6 lg:px-8">
             <Fade>
@@ -24,11 +34,11 @@ function EwalletCard() {
                         <h1 className="font-semibold mb-2 text-center">
                             Berikut langkah-langkah untuk melakukan pembayaran:
                         </h1>
-                        <div className="ml-3 sm:ml-4">
-                            <li>
+                        <div className="ml-3 sm:ml-4 text-black">
+                            <li className='text-black'>
                                 Scan terlebih dahulu untuk QRIS-nya.
                             </li>
-                            <li>
+                            <li className='text-black'>
                                 Klik{' '}
                                 <a
                                     className="text-blue-500 hover:underline"
@@ -40,11 +50,11 @@ function EwalletCard() {
                                 </a>{' '}
                                 untuk menuju WhatsApp untuk pengiriman bukti pembayaran.
                             </li>
-                            <li>
+                            <li className='text-black'>
                                 Jika sudah, tunggu konfirmasi dari pihak laundry. Perhatikan selalu halaman
                                 transaksi Anda untuk update mengenai pembayaran.
                             </li>
-                            <li>
+                            <li className='text-black'>
                                 Perlu diperhatikan bahwa nama penerima adalah{' '}
                                 <strong>MAUNG LAUNDRY</strong>.
                             </li>
@@ -55,13 +65,41 @@ function EwalletCard() {
                             Hubungi Admin
                         </button>
                     </a>
-                    <img
-                        src={qris}
-                        className="w-[200px] sm:w-[250px] md:w-[300px] lg:w-[500px] max-w-full mt-4"
-                        alt="QRIS Payment"
-                    />
+                    <a
+                        onClick={(e) => {
+                            e.preventDefault();
+                            openModal(qris);
+                        }}
+                        href="#"
+                    >
+                        <img
+                            src={qris}
+                            className="w-[200px] sm:w-[250px] mx-auto md:w-[300px] lg:w-[500px] max-w-full mt-4"
+                            alt="QRIS Payment"
+                        />
+                    </a>
                 </div>
             </Fade>
+            {modalImage && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50"
+                    onClick={closeModal}
+                >
+                    <div className="relative">
+                        <img
+                            src={modalImage}
+                            alt="Preview"
+                            className="max-w-[90vw] motion-preset-blur-up mx-auto max-h-[90vh] object-contain bg-white"
+                        />
+                        <button
+                            className="absolute top-0 md:block hidden right-0 p-4 text-white text-3xl"
+                            onClick={closeModal}
+                        >
+                            &times;
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

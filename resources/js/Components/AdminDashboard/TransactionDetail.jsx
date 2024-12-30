@@ -89,7 +89,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
 
       const response = await axios.get(endpoint, {
         params: {
-          start_date: startDate || undefined, // Kirim hanya jika tidak kosong
+          start_date: startDate || undefined, 
           end_date: endDate || undefined,
         },
       });
@@ -312,15 +312,15 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
           </div>
           <div className='flex md:flex-row flex-col md:space-x-2 space-x-0 md:items-center items-start'>
             {transaction?.customer_id && customerNames[transaction?.customer_id] ? (
-              <p> {customerNames[transaction?.customer_id]}</p>
+              <p className='text-black font-bold'> {customerNames[transaction?.customer_id]}</p>
             ) : (
               <p> Loading...</p>
             )}
-            <p className='font-bold md:block hidden'>
+            <p className='font-bold md:block hidden text-black'>
               |
             </p>
             <div className='flex md:flex-row flex-col md:items-center items-start space-x-0 md:space-x-2'>
-              <p>
+              <p className='text-black'>
                 {transaction?.start_date
                   ? new Date(transaction.start_date).toLocaleString()
                   : "N/A"}
@@ -335,27 +335,27 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
             </div>
           </div>
           <div className='flex md:flex-row flex-col space-x-0 md:space-x-2'>
-            <p> {transaction?.nama_produk}</p>
-            <p className='font-bold md:block hidden'>
+            <p className='text-black'> {transaction?.nama_produk}</p>
+            <p className='font-bold md:block hidden text-black'>
               -
             </p>
-            <p><strong>Laundry Type:</strong> {transaction?.laundry_type}</p>
+            <p className='text-black'><strong>Laundry Type:</strong> {transaction?.laundry_type}</p>
           </div>
-          <p>
+          <p className='text-black'>
             <strong>Estimasi Selesai:</strong>{" "}
             {transaction?.end_date
               ? new Date(transaction.end_date).toLocaleString()
               : "N/A"}
           </p>
-          <p><strong>Payment Method:</strong> {transaction?.payment_method?.name || "N/A"}</p>
-          <h3 className="text-lg font-medium mb-2">Services</h3>
+          <p className='text-black'><strong>Payment Method:</strong> {transaction?.payment_method?.name || "N/A"}</p>
+          <h3 className="text-lg text-black font-medium mb-2">Services</h3>
           <ul className=" list-inside">
             {Array.isArray(transaction?.details) && transaction.details.length > 0 ? (
               transaction.details.map((detail) => (
                 <li key={detail.id} className="mb-2">
-                  <p><strong>Service Type:</strong> {detail?.service_type?.jenis_pelayanan || "N/A"}</p>
-                  <p><strong>Service Price:</strong> Rp.{formatNumber(detail?.service_price?.harga || "N/A")}</p>
-                  <p><strong>Quantity:</strong> {detail?.quantity || "N/A"}</p>
+                  <p className='text-black'><strong>Service Type:</strong> {detail?.service_type?.jenis_pelayanan || "N/A"}</p>
+                  <p className='text-black'><strong>Service Price:</strong> Rp.{formatNumber(detail?.service_price?.harga || "N/A")}</p>
+                  <p className='text-black'><strong>Quantity:</strong> {detail?.quantity || "N/A"}</p>
                   <div className='py-2 px-4 bg-green-400 rounded-lg mt-3 w-48'>
                     <p className='font-bold text-[20px] text-white'><strong>Total Harga:</strong> Rp.{formatNumber(detail?.price || "N/A")}</p>
                   </div>
@@ -368,7 +368,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
 
           <div className="mt-6 flex lg:flex-row flex-col items-center md:space-y-0 space-y-4 w-full md:space-x-4 space-x-0">
             <div className="flex-1 flex flex-col w-full">
-              <p><strong>Mark As Paid</strong></p>
+              <p className='text-black'><strong>Mark As Paid</strong></p>
               <button
                 className={`px-4 py-2 mt-2 rounded w-full ${transaction?.status_payment === "paid" ? "bg-red-500" : "bg-green-500"
                   } text-white`}
@@ -378,7 +378,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
               </button>
             </div>
             <div className="flex-1 flex flex-col w-full">
-              <p><strong>Status Job:</strong> {transaction.status_job}</p>
+              <p className='text-black'><strong>Status Job:</strong> {transaction.status_job}</p>
               <select
                 value={transaction?.status_job || "ongoing"}
                 onChange={(e) => handleUpdateJobStatus(transaction.id, e.target.value)}
@@ -391,7 +391,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
               </select>
             </div>
             <div className="flex-1 flex flex-col w-full">
-              <p><strong>Hapus Transaksi</strong></p>
+              <p className='text-black'><strong>Hapus Transaksi</strong></p>
               <button
                 onClick={() => setShowDeleteModal(true)}
                 className="bg-red-500 text-white px-4 py-2 rounded mt-2 w-full"
@@ -403,7 +403,7 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
               </button>
             </div>
             <div className="flex-1 flex flex-col w-full">
-              <p><strong>Print Transaksi</strong></p>
+              <p className='text-black'><strong>Print Transaksi</strong></p>
               <button
                 onClick={() => handleClickPrint(transaction.id)}
                 className="bg-gray-300 text-black px-4 py-2 rounded mt-2 w-full"

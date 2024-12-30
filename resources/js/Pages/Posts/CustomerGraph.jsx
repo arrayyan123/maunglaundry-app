@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import SlotCounter from 'react-slot-counter';
 import Chart from 'chart.js/auto';
 import IonIcon from '@reacticons/ionicons';
+import { Head } from '@inertiajs/react';
 
 const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
 const jpgImages = import.meta.glob("/public/assets/Images/*.jpg", { eager: true });
@@ -184,6 +185,7 @@ function CustomerGraph() {
                     </div>
                 }
             >
+                <Head title='Perkembangan Customer' />
                 <div className='p-4'>
                     {/*FITUR FILTER*/}
                     <div className="flex flex-col lg:flex-row lg:space-x-6 mb-6 items-start lg:items-center">

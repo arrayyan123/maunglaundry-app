@@ -58,7 +58,6 @@ class TransactionsController extends Controller
                     'price' => $service['price'],
                 ]);
             }
-            // event(new TransactionStored($transaction));
             return response()->json([
                 'message' => 'Transaction saved successfully',
                 'transaction' => $transaction,
@@ -203,7 +202,6 @@ class TransactionsController extends Controller
         $sortBy = $request->input('sort_by', 'created_at');
         $sortOrder = $request->input('sort_order', 'desc');
     
-        // Validasi sort order (asc/desc)
         if (!in_array(strtolower($sortOrder), ['asc', 'desc'])) {
             $sortOrder = 'desc';
         }

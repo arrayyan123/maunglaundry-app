@@ -82,7 +82,7 @@ const ResetPassword = ({ token }) => {
                                 onClick={togglePasswordVisibility}
                                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600 focus:outline-none"
                             >
-                                {showPassword ? <IonIcon name='eye' size={20} /> : <IonIcon name='eye-off' size={20} />}
+                                {showPassword ? <IonIcon name='eye' className='text-[22px]' /> : <IonIcon name='eye-off' className='text-[22px]' />}
                             </button>
                         </div>
                     </div>
@@ -103,7 +103,7 @@ const ResetPassword = ({ token }) => {
                                 onClick={togglePasswordVisibility}
                                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600 focus:outline-none"
                             >
-                                {showPassword ? <IonIcon name='eye' size={20} /> : <IonIcon name='eye-off' size={20} />}
+                                {showPassword ? <IonIcon name='eye' className='text-[22px]' /> : <IonIcon name='eye-off' className='text-[22px]' />}
                             </button>
                         </div>
                     </div>

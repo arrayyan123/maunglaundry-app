@@ -12,12 +12,16 @@ function ContentManage({ auth }) {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
-        image: null,
-        preview: null,
+        images: [],
+        delete_images: [],
+        preview: [],
     });
     const [contents, setContents] = useState([]);
     const [editingContentId, setEditingContentId] = useState(null);
     const editContentRef = useRef(null);
+    const [currentPageContents, setCurrentPageContents] = useState(1);
+
+    const itemsPerPageContents = 3;
 
     const fetchContents = () => {
         axios.get('/api/contents')
@@ -61,16 +65,15 @@ function ContentManage({ auth }) {
         }));
     };
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const preview = URL.createObjectURL(file);
-            setFormData((prev) => ({
-                ...prev,
-                image: file,
-                preview: preview,
-            }));
-        }
+    const handleFileChange = (e) => {
+        const files = Array.from(e.target.files);
+        const filePreviews = files.map((file) => URL.createObjectURL(file));
+
+        setFormData((prev) => ({
+            ...prev,
+            images: [...prev.images, ...files],
+            preview: [...prev.preview, ...filePreviews],
+        }));
     };
 
     const handleEditClick = (id) => {
@@ -90,24 +93,45 @@ function ContentManage({ auth }) {
         fetchContents();
     };
 
+    const handleRemoveImage = (index) => {
+        setFormData((prev) => {
+            const updatedImages = prev.images.filter((_, i) => i !== index);
+            const updatedPreview = prev.preview.filter((_, i) => i !== index);
+            return {
+                ...prev,
+                images: updatedImages,
+                preview: updatedPreview,
+            };
+        });
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (formData.title.length < 20) {
-            alert('Judul harus memiliki minimal 30 karakter.');
+        if (formData.title.length < 15) {
+            alert('Judul harus memiliki minimal 15 karakter.');
             return;
         }
-    
+
         const descriptionWordCount = formData.description.trim().split(/\s+/).length;
-        if (descriptionWordCount < 100) {
-            alert('Deskripsi harus memiliki minimal 100 kata.');
+        if (descriptionWordCount < 30) {
+            alert('Deskripsi harus memiliki minimal 30 kata.');
             return;
         }
 
         const data = new FormData();
         data.append('title', formData.title);
         data.append('description', formData.description);
-        data.append('image', formData.image);
+
+        formData.images.forEach((image, index) => {
+            data.append(`images[${index}]`, image);
+        });
+
+        if (formData.delete_images.length > 0) {
+            formData.delete_images.forEach((id) => {
+                data.append('delete_images[]', id);
+            });
+        }
 
         axios.post('/api/contents', data, {
             headers: {
@@ -118,9 +142,18 @@ function ContentManage({ auth }) {
             .then(() => {
                 alert('Content uploaded successfully!');
                 fetchContents();
-                setFormData({ title: '', description: '', image: null }); 
+                setFormData({ title: '', description: '', images: [], preview: [] });
             })
             .catch((err) => console.error(err));
+    };
+
+    const indexOfLastContent = currentPageContents * itemsPerPageContents;
+    const indexOfFirstContent = indexOfLastContent - itemsPerPageContents;
+    const currentContents = contents.slice(indexOfFirstContent, indexOfLastContent);
+    const totalContentPages = Math.ceil(contents.length / itemsPerPageContents);
+
+    const handlePageChangeContents = (pageNumber) => {
+        setCurrentPageContents(pageNumber);
     };
 
     return (
@@ -136,12 +169,12 @@ function ContentManage({ auth }) {
                 }
             >
                 <Head title='Content Management' />
-                <h1 className='ml-3 md:text-[30px] text-[20px] font-bold'>Berita Terkini</h1>
+                <h1 className='ml-3 md:text-[30px] text-black text-[20px] font-bold'>Berita Terkini</h1>
                 {/* form untuk submit content baru */}
                 {!editingContentId && (
                     <form onSubmit={handleSubmit} className="p-4">
                         <div>
-                            <label>Title</label>
+                            <label className='text-black'>Title</label>
                             <input
                                 type="text"
                                 name="title"
@@ -151,8 +184,7 @@ function ContentManage({ auth }) {
                             />
                         </div>
                         <div className="mt-4">
-                            <label>Description</label>
-                            {/* Replace textarea with React-Quill */}
+                            <label className='text-black'>Description</label>
                             <ReactQuill
                                 theme="snow"
                                 value={formData.description}
@@ -161,23 +193,32 @@ function ContentManage({ auth }) {
                             />
                         </div>
                         <div className="mt-4">
-                            <label>Image</label>
+                            <label className='text-black'>Image</label>
                             <input
                                 type="file"
                                 accept="image/*"
-                                onChange={handleImageChange}
+                                multiple
+                                onChange={handleFileChange}
                                 className="border border-gray-300 p-2 w-full"
                             />
-                            {/* Display image preview if available */}
-                            {formData.preview && (
-                                <div className="mt-2">
-                                    <img
-                                        src={formData.preview}
-                                        alt="Preview"
-                                        className="w-32 h-32 object-cover"
-                                    />
-                                </div>
-                            )}
+                            <div className="flex flex-wrap mt-4">
+                                {formData.preview.map((src, index) => (
+                                    <div key={index} className="relative mr-4 mb-4">
+                                        <img
+                                            src={src}
+                                            alt={`Preview ${index}`}
+                                            className="w-32 h-32 object-cover"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveImage(index)}
+                                            className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full"
+                                        >
+                                            &times;
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                         <button
                             type="submit"
@@ -191,9 +232,9 @@ function ContentManage({ auth }) {
                     </form>
                 )}
                 <div className="p-4">
-                    <h1 className="text-2xl font-bold mb-4">Berita Terkini</h1>
+                    <h1 className="text-2xl font-bold mb-4 text-black">Berita Terkini</h1>
                     <div className="overflow-x-auto">
-                        <table className="table-auto w-full border-collapse border border-gray-300">
+                        <table className="table-auto w-full border-collapse border border-gray-300 text-black">
                             <thead className="bg-gray-200">
                                 <tr>
                                     <th className="border border-gray-300 px-4 py-2">No</th>
@@ -204,21 +245,26 @@ function ContentManage({ auth }) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {contents.map((content, index) => (
+                                {currentContents.map((content, index) => (
                                     <tr key={content.id}>
                                         <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
                                         <td className="border border-gray-300 px-4 py-2">{content.title}</td>
                                         <td className="border border-gray-300 px-4 py-2">
                                             <div
+                                                className="prose prose-sm max-w-none text-black"
                                                 dangerouslySetInnerHTML={{ __html: content.description }}
                                             />
                                         </td>
                                         <td className="border border-gray-300 px-4 py-2">
-                                            <img
-                                                src={`/storage/public/${content.image}`}
-                                                alt={content.title}
-                                                className="w-20 h-20 object-cover"
-                                            />
+                                            {content.images.map((image) => (
+                                                <img
+                                                    key={image.id}
+                                                    src={`/storage/${image.path}`}
+                                                    alt={`Image ${image.path}`}
+                                                    width="50"
+                                                    className="border rounded"
+                                                />
+                                            ))}
                                         </td>
                                         <td className="border space-y-1 border-gray-300 px-4 py-2">
                                             <button
@@ -242,6 +288,20 @@ function ContentManage({ auth }) {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                    <div className="flex justify-center mt-4">
+                        {Array.from({ length: totalContentPages }, (_, index) => (
+                            <button
+                                key={index + 1}
+                                onClick={() => handlePageChangeContents(index + 1)}
+                                className={`mx-1 px-3 py-1 rounded ${currentPageContents === index + 1
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-gray-700 text-gray-300'
+                                    }`}
+                            >
+                                {index + 1}
+                            </button>
+                        ))}
                     </div>
                     {editingContentId && (
                         <div ref={editContentRef}>

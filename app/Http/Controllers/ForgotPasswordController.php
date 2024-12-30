@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\CustomerUser;
@@ -17,22 +17,17 @@ class ForgotPasswordController extends Controller
     public function sendResetLink(Request $request)
     {
         $request->validate(['email' => 'required|email']);
-
         $user = CustomerUser::where('email', $request->email)->first();
 
         if (!$user) {
             return response()->json(['message' => 'Email not found'], 404);
         }
-
-        // Generate token
         $token = Str::random(60);
-
         PasswordReset::updateOrCreate(
             ['email' => $request->email],
             ['token' => Hash::make($token), 'created_at' => Carbon::now()]
         );
 
-        // Kirim email
         Mail::send('emails.forgot-password', ['token' => $token], function ($message) use ($request) {
             $message->to($request->email);
             $message->subject('Reset Password');
@@ -54,7 +49,6 @@ class ForgotPasswordController extends Controller
             return response()->json(['message' => 'Invalid token'], 400);
         }
     
-        // Update password
         $user = CustomerUser::where('email', $request->email)->first();
         $user->password = Hash::make($request->password);
         $user->save();

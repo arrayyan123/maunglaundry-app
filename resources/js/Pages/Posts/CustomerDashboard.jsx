@@ -158,6 +158,7 @@ export default function CustomerDashboard() {
     };
     const handleToggleEntryTransaction = () => {
         setShowEntryTransaction(!showEntryTransaction);
+        setShowNotificationTwilio(false);
         setShowEntryInstructionModal(true);
         setTimeout(() => {
             if (entryTransactionRef.current) {
@@ -171,6 +172,7 @@ export default function CustomerDashboard() {
     };
     const handleToggleNotificationTwilio = () => {
         setShowNotificationTwilio(!showNotificationTwilio);
+        setShowEntryTransaction(false);
         setTimeout(() => {
             if (notificationRef.current) {
                 notificationRef.current.scrollIntoView({

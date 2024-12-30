@@ -17,7 +17,6 @@ export default function InboxDashboard({ auth, customers }) {
             }
         >
             <Head title="Inbox" />
-            {/* inboxmessagecomponent nya */}
             <InboxMessage />
         </AuthenticatedLayoutInbox>
     );

@@ -80,7 +80,6 @@ const CustomerRegister = () => {
         setErrors({});
         setMessage("");
 
-        // Ensure that phone number always starts with +62
         const phoneWithCountryCode = formData.phone.startsWith('+62')
             ? formData.phone
             : `+62${formData.phone.replace(/\D/g, '')}`;
@@ -114,11 +113,24 @@ const CustomerRegister = () => {
                 }, 2000);
             }
         } catch (error) {
-            if (error.response && error.response.status === 422) {
-                setErrors(error.response.data.errors);
+            if (error.response && error.response.data.errors) {
+                const errors = error.response.data.errors;
+    
+                const updatedErrors = {};
+    
+                if (errors.email) {
+                    updatedErrors.email = 'Email sudah terdaftar';
+                }
+                if (errors.phone) {
+                    updatedErrors.phone = 'Nomor telepon sudah terdaftar';
+                }
+                if (!errors.email && !errors.phone) {
+                    updatedErrors.general = 'Terjadi kesalahan validasi.';
+                }
+    
+                setErrors(updatedErrors);
             } else {
-                setMessage("Terjadi kesalahan saat registrasi.");
-                console.error(error);
+                setErrors({ general: 'Terjadi kesalahan pada server.' });
             }
         }
     };
@@ -127,23 +139,29 @@ const CustomerRegister = () => {
     return (
         <>
             <Head title='Customer Register' />
-            <div className="bg-blue-100 flex justify-center items-center h-screen overflow-hidden">
+            <div className="bg-blue-100 flex justify-center items-center h-auto">
                 <div className="w-1/2 h-screen hidden lg:block">
                     <img src={bigPics} alt="Placeholder Image" className="object-cover w-full h-full" />
                 </div>
-                <div className="lg:p-30 md:-mt-40 mt-0 md:p-32 sm:26 p-10 w-full lg:w-1/2 h-screen">
+                <div className="lg:p-10 md:p-20 sm:26 p-10 w-full lg:w-1/2 lg:h-screen h-auto">
                     {message && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        <div
+                            className={`px-4 py-3 mb-4 rounded ${message.includes("berhasil")
+                                    ? "bg-green-100 border border-green-400 text-green-700"
+                                    : "bg-red-100 border border-red-400 text-red-700"
+                                }`}
+                        >
                             {message}
                         </div>
                     )}
+
                     <div className='flex flex-col items-center text-center'>
                         <img src={logoMaung} alt="logo laundry" className='w-[30%]' />
                         <h1 className="text-2xl font-semibold mb-4">Registrasi</h1>
                     </div>
                     <form onSubmit={handleSubmit}>
                         <Fade cascade>
-                            <div className="mb-4 bg-blue-100">
+                            <div className="mb-2 bg-blue-100">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">
                                     Nama <span className="text-red-500">*</span>
                                 </label>
@@ -158,7 +176,7 @@ const CustomerRegister = () => {
                                     <p className="text-red-500 text-xs mt-1">{errors.name}</p>
                                 )}
                             </div>
-                            <div className="mb-4">
+                            <div className="mb-2">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">
                                     Email <span className="text-red-500">*</span>
                                 </label>
@@ -174,7 +192,7 @@ const CustomerRegister = () => {
                                 )}
                             </div>
 
-                            <div className="mb-4">
+                            <div className="mb-2">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">
                                     Password <span className="text-red-500">*</span>
                                 </label>
@@ -191,7 +209,7 @@ const CustomerRegister = () => {
                                         onClick={togglePasswordVisibility}
                                         className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600 focus:outline-none"
                                     >
-                                        {showPassword ? <IonIcon name='eye' size={20} /> : <IonIcon name='eye-off' size={20} />}
+                                        {showPassword ? <IonIcon name='eye' className='text-[22px]' /> : <IonIcon name='eye-off' className='text-[22px]' />}
                                     </button>
                                 </div>
                                 {errors.password && (
@@ -199,7 +217,7 @@ const CustomerRegister = () => {
                                 )}
                             </div>
 
-                            <div className="mb-4">
+                            <div className="mb-2">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">
                                     Nomor Telepon <span className="text-red-500">*</span>
                                 </label>
@@ -219,7 +237,7 @@ const CustomerRegister = () => {
                                     <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
                                 )}
                             </div>
-                            <div className="mb-4">
+                            <div className="mb-2">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">
                                     Alamat <span className="text-red-500">*</span>
                                 </label>
@@ -233,13 +251,13 @@ const CustomerRegister = () => {
                                 )}
                             </div>
                         </Fade>
-                        <div className='flex flex-row  items-center justify-between'>
-                            <div className=" text-green-500 text-center">
+                        <div className='flex md:flex-row flex-col gap-4 items-center justify-between'>
+                            <div className=" text-green-500 text-center w-full">
                                 <Link href="/customer/login" className="hover:underline">Sudah punya akun? kembali ke login</Link>
                             </div>
                             <button
                                 type="submit"
-                                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-[40%]"
+                                className="bg-gray-500 hover:bg-gray-700 w-full text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline "
                             >
                                 Registrasi
                             </button>
@@ -253,7 +271,6 @@ const CustomerRegister = () => {
                                     <IonIcon name="home-outline"></IonIcon>
                                 </span>
                             </button>
-
                         </Link>
                     </div>
                 </div>

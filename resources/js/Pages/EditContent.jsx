@@ -1,89 +1,114 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; // Import CSS for Quill editor
+import "react-quill/dist/quill.snow.css";
 
 function EditContent({ contentId, onClose }) {
-  //const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  const csrfToken = document
+    .querySelector('meta[name="csrf-token"]')
+    .getAttribute("content");
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    image: null,
-    currentImage: "",
+    currentImages: [],
+    newImages: [],
+    previewNewImages: [],
+    deleteImages: [],
   });
 
-  // Fetch content data when the component mounts
   useEffect(() => {
     axios
       .get(`/api/contents/${contentId}`)
       .then((response) => {
-        const { title, description, image } = response.data;
+        const { title, description, images } = response.data;
         setFormData({
-          title,
-          description,
-          image: null,
-          currentImage: image,
+          title: title || "",
+          description: description || "",
+          currentImages: images,
+          newImages: [],
+          previewNewImages: [],
+          deleteImages: [],
         });
       })
       .catch((error) => alert("Failed to load content."));
   }, [contentId]);
 
-  // Handle changes in input fields
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle changes in the Quill editor for description
   const handleDescriptionChange = (value) => {
     setFormData((prev) => ({ ...prev, description: value }));
   };
 
-  // Handle file input for image
-  const handleImageChange = (e) => {
-    setFormData((prev) => ({ ...prev, image: e.target.files[0] }));
+  const handleNewImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    const filePreviews = files.map((file) => URL.createObjectURL(file));
+
+    setFormData((prev) => ({
+      ...prev,
+      newImages: [...prev.newImages, ...files],
+      previewNewImages: [...prev.previewNewImages, ...filePreviews],
+    }));
   };
 
-  // Submit data to the server
+  const handleRemoveCurrentImage = (imageId) => {
+    setFormData((prev) => ({
+      ...prev,
+      deleteImages: [...prev.deleteImages, imageId],
+      currentImages: prev.currentImages.filter((image) => image.id !== imageId),
+    }));
+  };
+
+  const handleRemoveNewImage = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      newImages: prev.newImages.filter((_, i) => i !== index),
+      previewNewImages: prev.previewNewImages.filter((_, i) => i !== index),
+    }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const data = new FormData();
     data.append("title", formData.title);
     data.append("description", formData.description);
-    if (formData.image) {
-      data.append("image", formData.image);
-    }
+
+    formData.newImages.forEach((image, index) => {
+      data.append(`images[]`, image);
+    });
+
+    formData.deleteImages.forEach((id) => {
+      data.append("delete_images[]", id);
+    });
 
     axios
       .post(`/api/contents/${contentId}?_method=PUT`, data, {
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          //'X-CSRF-TOKEN': csrfToken
+          Accept: "application/json",
+          "X-CSRF-TOKEN": csrfToken,
         },
       })
       .then(() => {
         alert("Content updated successfully!");
-        onClose(); // Close the edit form
+        onClose();
       })
       .catch((error) => {
-        console.error("Update failed:", error.response.data);
+        console.error("Update failed:", error.response?.data);
         alert("Failed to update content.");
       });
   };
 
   return (
     <div className="max-w-2xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-        Edit Content
-      </h2>
+      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Edit Content</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Title Input */}
+        {/* Title */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Title
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Title</label>
           <input
             type="text"
             name="title"
@@ -94,11 +119,9 @@ function EditContent({ contentId, onClose }) {
           />
         </div>
 
-        {/* Description Input */}
+        {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Description
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Description</label>
           <ReactQuill
             theme="snow"
             value={formData.description}
@@ -107,28 +130,60 @@ function EditContent({ contentId, onClose }) {
           />
         </div>
 
-        {/* Image Upload */}
+        {/* Current Images */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Image
-          </label>
-          {formData.currentImage && (
-            <div className="mt-2">
-              <img
-                src={`/storage/public/${formData.currentImage}`}
-                alt="Current"
-                className="w-32 h-32 object-cover rounded-md shadow-sm"
-              />
-            </div>
-          )}
-          <input
-            type="file"
-            onChange={handleImageChange}
-            className="mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-          />
+          <label className="block text-sm font-medium text-gray-700">Current Images</label>
+          <div className="flex flex-wrap mt-2">
+            {formData.currentImages.map((image) => (
+              <div key={image.id} className="relative mr-4 mb-4">
+                <img
+                  src={`/storage/${image.path}`}
+                  alt={image.file_name}
+                  className="w-32 h-32 object-cover rounded-md shadow-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveCurrentImage(image.id)}
+                  className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full"
+                >
+                  &times;
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Action Buttons */}
+        {/* Add New Images */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Add New Images</label>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleNewImageChange}
+            className="mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+          />
+          <div className="flex flex-wrap mt-4">
+            {formData.previewNewImages.map((src, index) => (
+              <div key={index} className="relative mr-4 mb-4">
+                <img
+                  src={src}
+                  alt={`New Preview ${index}`}
+                  className="w-32 h-32 object-cover rounded-md shadow-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveNewImage(index)}
+                  className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full"
+                >
+                  &times;
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Buttons */}
         <div className="flex justify-end space-x-4">
           <button
             type="button"

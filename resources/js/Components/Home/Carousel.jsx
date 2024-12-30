@@ -38,7 +38,7 @@ function Carousel() {
                     "--swiper-pagination-color": "#000",
                 }}
                 spaceBetween={10}
-                navigation={true}
+                //navigation={true}
                 loop={true}
                 autoplay={{
                     delay: 1500,
@@ -53,7 +53,7 @@ function Carousel() {
                     <SwiperSlide key={index}>
                         <img
                             className="block w-full h-full object-cover"
-                            src={`/storage/public/${content.image}`}
+                            src={`/storage/${content.images?.[0]?.path}`}
                             alt={`Slide ${index + 1}`}
                         />
                     </SwiperSlide>
@@ -80,7 +80,7 @@ function Carousel() {
                         <img
                             className={`w-full h-full object-cover transition-opacity duration-300 ${index === activeIndex ? "opacity-100" : "opacity-50"
                                 }`}
-                            src={`/storage/public/${content.image}`}
+                            src={`/storage/${content.images?.[0]?.path}`}
                             alt={`Thumbnail ${index + 1}`}
                         />
                     </SwiperSlide>

@@ -20,22 +20,36 @@ const AddCustomer = () => {
     }));
   };
 
+  const formatPhoneNumber = (phone) => {
+    if (phone.startsWith("0")) {
+      return `+62${phone.slice(1)}`;
+    } else if (!phone.startsWith("+62")) {
+      return `+62${phone}`;
+    }
+    return phone;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
 
+    const formattedPhone = formatPhoneNumber(formData.phone);
+
     try {
-      const response = await axios.post("/api/admin/register_customer", {
-        ...formData,
-        password: formData.phone,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-CSRF-TOKEN': csrfToken,
+      const response = await axios.post("/api/admin/register_customer",
+        {
+          ...formData,
+          phone: formattedPhone,
+          password: formattedPhone,
         },
-      });
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+          },
+        });
 
       if (response.data.status === "success") {
         setSuccess("Customer added successfully!");
@@ -94,6 +108,7 @@ const AddCustomer = () => {
             name="phone"
             value={formData.phone}
             onChange={handleChange}
+            placeholder="081234567890 atau +6281234567890"
             required
             className="w-full px-3 py-2 border rounded-md"
           />
