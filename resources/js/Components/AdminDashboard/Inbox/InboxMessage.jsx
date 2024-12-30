@@ -27,25 +27,27 @@ const InboxMessage = () => {
                 params: { lastChecked },
             });
 
-            const newReports = response.data.newTransactions || [];
+            const newReports = response.data.newTransactions;
             const filteredReports = newReports.filter(
                 (report) => !fetchedIds.has(report.transaction_id) && !removedIds.has(report.transaction_id)
             );
 
             if (filteredReports.length > 0) {
-                setNotifications((prev) => [...prev, ...filteredReports]);
+                setNotifications((prev) => {
+                    const newNotifications = filteredReports.filter(
+                        (report) => !prev.some((notification) => notification.transaction_id === report.transaction_id)
+                    );
+                    return [...newNotifications, ...prev];
+                });
                 setFetchedIds((prev) => {
                     const updatedIds = new Set(prev);
                     filteredReports.forEach((report) => updatedIds.add(report.transaction_id));
                     return updatedIds;
                 });
-                const latestTimestamp = Math.max(...filteredReports.map((r) => new Date(r.created_at).getTime()));
-                setLastChecked(latestTimestamp);
-            } else {
-                console.log("No new reports found.");
+                setLastChecked(newReports[0]?.start_date);
             }
         } catch (error) {
-            console.error("Error fetching reports:", error);
+            console.error('Error fetching reports:', error);
         } finally {
             setIsFetching(false);
         }
@@ -244,7 +246,7 @@ const InboxMessage = () => {
                         {/* Body */}
                         <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
                             {/* Message List */}
-                            <section className="w-full md:w-1/3 border-r bg-white overflow-y-auto lg:max-h-[76vh] md:max-h-[77vh] sm:max-h-[28vh] max-h-[26vh">
+                            <section className="w-full md:w-1/3 border-r bg-white overflow-y-auto lg:max-h-[76vh] md:max-h-[77vh] sm:max-h-[28vh] max-h-[26vh]">
                                 <div>
                                     {messages.map((message) => (
                                         <div

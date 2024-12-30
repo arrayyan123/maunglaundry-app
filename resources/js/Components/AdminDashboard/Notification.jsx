@@ -49,7 +49,6 @@ function Notification() {
 
     const removeNotification = (id) => {
         setNotifications((prev) => prev.filter((notification) => notification.transaction_id !== id));
-
         setRemovedIds((prev) => {
             const updatedIds = new Set(prev);
             updatedIds.add(id);
