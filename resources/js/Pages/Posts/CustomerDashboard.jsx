@@ -517,7 +517,7 @@ export default function CustomerDashboard() {
                                                             </p>
                                                             <p>Status Job: {transaction.status_job}</p>
                                                             <p>Tanggal Mulai: {transaction.start_date}</p>
-                                                            <p>Tanggal Selesai: {transaction.start_date}</p>
+                                                            <p>Tanggal Selesai: {transaction.end_date}</p>
                                                         </span>
                                                     </div>
                                                 </button>
