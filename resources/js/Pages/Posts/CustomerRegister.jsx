@@ -37,19 +37,16 @@ const CustomerRegister = () => {
     const validateForm = () => {
         const errors = {};
 
-        // Validate Name
         if (!formData.name.trim()) {
             errors.name = "Nama tidak boleh kosong.";
         }
 
-        // Validate Email
         if (!formData.email.trim()) {
             errors.email = "Email tidak boleh kosong.";
         } else if (!formData.email.endsWith("@gmail.com")) {
             errors.email = "Email harus menggunakan domain @gmail.com.";
         }
 
-        // Validate Password
         if (!formData.password) {
             errors.password = "Password tidak boleh kosong.";
         } else if (formData.password.length < 8) {
@@ -60,14 +57,12 @@ const CustomerRegister = () => {
             errors.password = "Password harus mengandung setidaknya satu simbol (@, _, .).";
         }
 
-        // Validate Phone
         if (!formData.phone.trim()) {
             errors.phone = "Nomor telepon tidak boleh kosong.";
         } else if (formData.phone.length > 12) {
             errors.phone = "Nomor telepon tidak boleh lebih dari 12 karakter.";
         }
 
-        // Validate Address
         if (!formData.address.trim()) {
             errors.address = "Alamat tidak boleh kosong.";
         }
@@ -229,7 +224,13 @@ const CustomerRegister = () => {
                                         type="text"
                                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                         value={formData.phone}
-                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                        onChange={(e) => {
+                                            let value = e.target.value.replace(/\D/g, ''); 
+                                            if (value.startsWith('0')) {
+                                                value = value.substring(1);
+                                            }
+                                            setFormData({ ...formData, phone: value });
+                                        }}
                                         placeholder="81234567890"
                                     />
                                 </div>
