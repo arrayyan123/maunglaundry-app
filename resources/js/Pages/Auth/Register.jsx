@@ -4,6 +4,8 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
+import ReCAPTCHA from 'react-google-recaptcha';
+import React, { useRef, useState } from 'react';
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -11,16 +13,36 @@ export default function Register() {
         email: '',
         password: '',
         password_confirmation: '',
+        g_recaptcha_response: '',
     });
+
+    const recaptchaRef = useRef(null);
 
     const submit = (e) => {
         e.preventDefault();
-
-        post(route('register'), {
-            onFinish: () => reset('password', 'password_confirmation'),
-        });
+    
+        const recaptchaValue = recaptchaRef.current.getValue();
+        if (!recaptchaValue) {
+            alert('Please complete the reCAPTCHA.');
+            return;
+        }
+        console.log('recaptcha_response', recaptchaValue);
+        console.log(data);
+        setData('g_recaptcha_response', recaptchaValue);
+        setTimeout(() => {
+            post(route('register'), {
+                data: data,
+                onFinish: () => {
+                    reset('password', 'password_confirmation');
+                    recaptchaRef.current.reset(); 
+                },
+                onError: (errors) => {
+                    console.log('Registration Errors:', errors);
+                },
+            });
+        }, 0);
     };
-
+    
     return (
         <GuestLayout
             header={
@@ -106,6 +128,15 @@ export default function Register() {
                         message={errors.password_confirmation}
                         className="mt-2"
                     />
+                </div>
+
+                <div className='mt-3'>
+                    <ReCAPTCHA
+                        ref={recaptchaRef}
+                        sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                        onChange={(token) => setData('g_recaptcha_response', token)}
+                    />
+                    {errors.g_recaptcha_response && <div>{errors.g_recaptcha_response}</div>}
                 </div>
 
                 <div className="mt-4 flex items-center justify-end">

@@ -13,10 +13,10 @@ class DistanceController extends Controller
     {
         $customerAddress = $request->input('address');
         
-        // Lokasi tetap Maung Laundry
+        // Lokasi tetap Laundry
         $start = [
-            'latitude' => -6.2022524,
-            'longitude' => 106.6954483
+            'latitude' => -6.2431378,
+            'longitude' => 106.7018693
         ];
 
         if (!$customerAddress) {

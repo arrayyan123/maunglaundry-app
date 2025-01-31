@@ -70,7 +70,9 @@ function Notification() {
     };
 
     const filteredNotifications = notifications.filter(
-        (notification) => notification.status_job !== 'done' || notification.status_payment !== 'paid'
+        (notification) =>
+            notification.status_job !== 'cancel' &&
+            !(notification.status_job === 'done' && notification.status_payment === 'paid')
     );
 
     const displayedNotifications = filteredNotifications.slice(0, visibleCount);
@@ -96,7 +98,7 @@ function Notification() {
             >
                 <Fade>
                     <div className="w-56 p-4 bg-white rounded-lg shadow-md">
-                        <h1 className="text-sm font-bold">Notifications</h1>
+                        <h1 className="text-sm font-bold">Pengingat Due</h1>
                         {displayedNotifications.length > 0 ? (
                             <>
                                 <div className='max-h-56 overflow-y-scroll'>

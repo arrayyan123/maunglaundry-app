@@ -1,8 +1,9 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import ReportTable from '@/Components/AdminDashboard/ReportTable';
+import { Breadcrumbs } from "@material-tailwind/react";
 
 
 export default function ReportPage({ auth, customers }) {
@@ -10,6 +11,9 @@ export default function ReportPage({ auth, customers }) {
     const [selectedTransactionId, setSelectedTransactionId] = useState(null);
     const [transactions, setTransactions] = useState([]);
     const [isAddingCustomer, setIsAddingCustomer] = useState(false);
+    const { query } = usePage().props;
+    const [status, setStatus] = useState('');
+    const [year, setYear] = useState('');
 
     const handleSelectCustomer = (customer) => {
         setSelectedCustomer(customer);
@@ -35,6 +39,18 @@ export default function ReportPage({ auth, customers }) {
         setSelectedTransactionId(null);
     };
 
+    useEffect(() => {
+        if (query && query.status_job) {
+            setStatus(query.status_job);
+        }
+    }, [query]);
+
+    useEffect(() => {
+        if (query && query.year) {
+            setYear(query.year);
+        }
+    }, [query]);
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -47,7 +63,18 @@ export default function ReportPage({ auth, customers }) {
             }
         >
             <Head title="Report" />
-            <ReportTable></ReportTable>
+            <Breadcrumbs>
+                <Link href={route('dashboard')} className="opacity-60">
+                    Dashboard
+                </Link>
+                <Link href={route('admin.report')} className="opacity-60">
+                    Laporan
+                </Link>
+            </Breadcrumbs>
+            <ReportTable 
+                initialStatus={status} 
+                initialYear={year}
+            />
         </AuthenticatedLayout>
     );
 }

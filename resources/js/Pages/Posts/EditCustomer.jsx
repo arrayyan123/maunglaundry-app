@@ -40,29 +40,6 @@ export default function EditCustomer() {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const scrollTopRef=useRef(null);
 
-    
-    const handleClickStart = () => {
-        setRun(true);
-    };
-    const steps = [
-        {
-            target: '.start-instruksi',
-            content: 'Ini adalah page Edit Profile customer maung laundry',
-        },
-        {
-            target: '.instruksi-pertama',
-            content: 'Disini anda bisa melihat informasi mengenai akun anda, anda bisa merubahnya',
-        },
-        {
-            target: '.instruksi-kedua',
-            content: 'Ketika anda melakukan perubahan info profile anda, anda harus mengisi passwordnya terlebih dahulu',
-        },
-        {
-            target: '.instruksi-ketiga',
-            content: 'Lalu anda baru bisa menyimpan info profil yang telah dirubah',
-        },
-    ];
-
     const loadCustomerData = () => {
         const storedToken = localStorage.getItem("customer-token");
         if (!storedToken) {
@@ -197,7 +174,6 @@ export default function EditCustomer() {
         <>
             <Head title="Edit Profile" />
             <CustomerDashboardLayout
-                handleClickStart={handleClickStart}
                 header={
                     <div>
                         <h2 className="text-xl font-semibold leading-tight text-white start-instruksi">
@@ -206,22 +182,7 @@ export default function EditCustomer() {
                     </div>
                 }
             >
-                <Joyride
-                    run={run}
-                    steps={steps}
-                    styles={{
-                        options: {
-                            arrowColor: '#57c2ff',
-                            backgroundColor: '#57c2ff',
-                            overlayColor: 'rgba(79, 26, 0, 0.4)',
-                            primaryColor: '#000',
-                            textColor: '#004a14',
-                            width: 400,
-                            zIndex: 1000,
-                        },
-                    }}
-                />
-                <div ref={scrollTopRef} className="max-w-7xl mx-auto pt-10 md:pb-0 pb-10 md:pt-0 p-0 md:p-6 instruksi-pertama">
+                <div ref={scrollTopRef} className="max-w-7xl text-black mx-auto pt-10 md:pb-0 pb-10 md:pt-0 p-0 md:p-6 instruksi-pertama">
                     <Link href="/customer/dashboard">
                         <button className="text-blue-500 my-6">
                             Kembali Ke Halaman

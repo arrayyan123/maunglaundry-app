@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const AddCustomer = () => {
+const AddCustomer = ({ onCustomerAdded }) => {
   const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
   const [formData, setFormData] = useState({
     name: "",
@@ -52,6 +52,7 @@ const AddCustomer = () => {
         });
 
       if (response.data.status === "success") {
+        onCustomerAdded(response.data.customer);
         setSuccess("Customer added successfully!");
         setFormData({
           name: "",
@@ -71,15 +72,17 @@ const AddCustomer = () => {
 
 
   return (
-    <div className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-md my-4">
+    <div className="max-w-lg mx-auto p-6 motion motion-preset-slide-up-sm text-black bg-white shadow-md rounded-md my-4">
       <h2 className="text-2xl font-semibold mb-4">Add Customer</h2>
-      {/* {error && (
+      {error && (
         <div className="text-red-500 mb-3">
           {Object.keys(error).map((key) => (
-            <p key={key}>{error[key].join(", ")}</p>
+            <p key={key}>
+              {Array.isArray(error[key]) ? error[key].join(", ") : error[key]}
+            </p>
           ))}
         </div>
-      )} */}
+      )}
       {success && <p className="text-green-500 mb-3">{success}</p>}
 
       <form onSubmit={handleSubmit}>

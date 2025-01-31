@@ -23,15 +23,23 @@ class PagesController extends Controller
     public function dashboard()
     {
         $customers = CustomerUser::orderBy('created_at', 'desc')->get();
+        
         return Inertia::render('Dashboard', [
             'customers' => $customers
         ]);
     }
-    public function report()
+    public function report(Request $request)
     {
+        $status_job = $request->input('status_job', '');
+        $year = $request->input('year', '');
+
         $customers = CustomerUser::all();
         return Inertia::render('ReportPage', [
-            'customers' => $customers
+            'customers' => $customers,
+            'query' => [
+                'status_job' => $status_job,
+                'year' => $year,
+            ]
         ]);
     }
     public function customerDashboard()
@@ -67,9 +75,18 @@ class PagesController extends Controller
     {
         return Inertia::render('Posts/EditCustomer');
     }
-    public function reportCustomer()
+    public function reportCustomer(Request $request)
     {
-        return Inertia::render('Posts/CustomerReport');
+        $status_job = $request->input('status_job', '');
+        $year = $request->input('year', '');
+        $status_payment = $request->input('status_payment');
+        return Inertia::render('Posts/CustomerReport', [
+            'query' => [
+                'status_job' => $status_job,
+                'year' => $year,
+                'status_payment' => $status_payment,
+            ]
+        ]);
     }
     public function CustomerInbox()
     {
@@ -78,6 +95,19 @@ class PagesController extends Controller
     public function customerGraph()
     {
         return Inertia::render('Posts/CustomerGraph');
+    }
+    public function customerTransationPage()
+    {
+        return Inertia::render('Posts/CustomerTransactionPage');
+    }
+    public function customerTransaction(Request $request)
+    {
+        $customers = CustomerUser::orderBy('created_at', 'desc')->get();
+        $openListCustomer = $request->input('openListCustomer', false);
+        return Inertia::render('CustomerTransactionPage', [
+            'customers' => $customers,
+            'openListCustomer' => $openListCustomer,
+        ]);
     }
     public function ForgotPassPage()
     {

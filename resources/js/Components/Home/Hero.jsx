@@ -12,9 +12,9 @@ function Hero({ homeRef }) {
   
         {/*Teks Rata Kiri Kanan Tengah*/}
         <div class="relative z-10 md:p-60 p-10 flex flex-col justify-center items-center h-full text-center">
-          <h1 class="md:text-5xl text-4xl font-bold leading-tight mb-4 motion-preset-shrink">Maung Laundry</h1>
-          <p className='text-lg text-gray-300 mb-3 motion-preset-shrink'>Pilih Maung Laundry dan rasakan perbedaan dalam kualitas dan kecepatan layanan laundry yang bisa Anda andalkan setiap waktu.</p>
-          <p class="text-lg text-gray-300 mb-8 md:block hidden motion-preset-shrink">Maung Laundry hadir sebagai layanan laundry unggulan yang berbeda dari yang lain. Kami mengutamakan kebersihan, ketepatan waktu, dan kenyamanan pelanggan. Dengan peralatan modern dan teknologi terkini, setiap pakaian Anda akan diproses dengan cermat dan aman. Tim profesional kami siap melayani kebutuhan Anda dengan ramah dan cekatan, memastikan setiap detail tertangani dengan sempurna.</p>
+          <h1 class="md:text-5xl text-4xl font-bold leading-tight mb-4 motion-preset-shrink">Rayyana Laundry</h1>
+          <p className='text-lg text-gray-300 mb-3 motion-preset-shrink'>Pilih Rayyana Laundry dan rasakan perbedaan dalam kualitas dan kecepatan layanan laundry yang bisa Anda andalkan setiap waktu.</p>
+          <p class="text-lg text-gray-300 mb-8 lg:block hidden motion-preset-shrink">Rayyana Laundry hadir sebagai layanan laundry unggulan yang berbeda dari yang lain. Kami mengutamakan kebersihan, ketepatan waktu, dan kenyamanan pelanggan. Dengan peralatan modern dan teknologi terkini, setiap pakaian Anda akan diproses dengan cermat dan aman. Tim profesional kami siap melayani kebutuhan Anda dengan ramah dan cekatan, memastikan setiap detail tertangani dengan sempurna.</p>
           <Link href={'/customer/login'}>
             <span class="bg-red-500 mt-4 text-white hover:bg-red-300 py-2 px-6 rounded-full text-lg font-semibold transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">Mulai Sekarang</span>
           </Link>

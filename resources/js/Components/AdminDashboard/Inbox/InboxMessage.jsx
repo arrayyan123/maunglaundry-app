@@ -13,7 +13,6 @@ const InboxMessage = () => {
     const [notifications, setNotifications] = useState([]);
     const [fetchedIds, setFetchedIds] = useState(new Set());
     const [removedIds, setRemovedIds] = useState(new Set());
-    const [lastChecked, setLastChecked] = useState(Date.now());
     const [isFetching, setIsFetching] = useState(false);
     const [visibleCount, setVisibleCount] = useState(6);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -21,17 +20,14 @@ const InboxMessage = () => {
     const fetchReports = async () => {
         if (isFetching) return;
         setIsFetching(true);
-
+    
         try {
-            const response = await axios.get('/api/admin/new-transactions', {
-                params: { lastChecked },
-            });
-
+            const response = await axios.get('/api/admin/new-transactions');
             const newReports = response.data.newTransactions;
             const filteredReports = newReports.filter(
                 (report) => !fetchedIds.has(report.transaction_id) && !removedIds.has(report.transaction_id)
             );
-
+    
             if (filteredReports.length > 0) {
                 setNotifications((prev) => {
                     const newNotifications = filteredReports.filter(
@@ -44,7 +40,6 @@ const InboxMessage = () => {
                     filteredReports.forEach((report) => updatedIds.add(report.transaction_id));
                     return updatedIds;
                 });
-                setLastChecked(newReports[0]?.start_date);
             }
         } catch (error) {
             console.error('Error fetching reports:', error);
@@ -52,6 +47,7 @@ const InboxMessage = () => {
             setIsFetching(false);
         }
     };
+    
 
     const removeNotification = (id) => {
         setNotifications((prev) => prev.filter((notification) => notification.transaction_id !== id));
@@ -67,7 +63,9 @@ const InboxMessage = () => {
     }, []);
 
     const filteredNotifications = notifications.filter(
-        (notification) => notification.status_job !== 'done' || notification.status_payment !== 'paid'
+        (notification) =>
+            notification.status_job !== 'cancel' &&
+            !(notification.status_job === 'done' && notification.status_payment === 'paid')
     );
 
     const displayedNotifications = filteredNotifications.slice(0, visibleCount);
@@ -210,7 +208,7 @@ const InboxMessage = () => {
                                 className={`${isSidebarExpanded ? "block" : "hidden"
                                     } text-sm`}
                             >
-                                Notification
+                                Pengingat
                             </span>
                         </li>
                     </ul>
@@ -297,7 +295,7 @@ const InboxMessage = () => {
                         {/* Header */}
                         <header className="flex flex-col md:flex-row items-center justify-between p-4 bg-white shadow">
                             <h1 className="text-lg font-semibold text-gray-700 mb-2 md:mb-0">
-                                Notification
+                                Pengingat
                             </h1>
                         </header>
                         {/* Body */}

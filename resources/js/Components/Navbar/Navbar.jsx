@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react';
 import React, { useState, useEffect } from 'react';
 
-const images = import.meta.glob('/public/assets/Images/*.png', { eager: true });
+const images = import.meta.glob('/public/assets/images/*.png', { eager: true });
 
 const getImageByName = (name) => {
   const matchingImage = Object.keys(images).find((path) => path.includes(`${name}.png`));

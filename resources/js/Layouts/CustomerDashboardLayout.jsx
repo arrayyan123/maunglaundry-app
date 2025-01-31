@@ -3,6 +3,9 @@ import IonIcon from '@reacticons/ionicons';
 import { useState, useEffect } from 'react';
 import { Fade, Zoom } from 'react-awesome-reveal';
 import { Dropdown } from "flowbite-react";
+import NavLink from '@/Components/NavLink';
+import ColorCustomizer from '@/Components/AdminDashboard/ColorCustomizer';
+
 
 const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
 const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
@@ -19,7 +22,7 @@ const tutorial = getImageByName('questioning_person')
 
 function CustomerDashboardLayout({ header, children, handleClickStart }) {
     const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
-    const [isSidebarSmaller, setIsSidebarSmaller] = useState(false);
+    const [isSidebarSmaller, setIsSidebarSmaller] = useState(true);
     const [activeSection, setActiveSection] = useState("notes");
     const [time, setTime] = useState(new Date());
     const [showLogOutModal, setShowLogOutModal] = useState(false);
@@ -27,13 +30,27 @@ function CustomerDashboardLayout({ header, children, handleClickStart }) {
     const [customerData, setCustomerData] = useState(null);
     const [selectedTransactionId, setSelectedTransactionId] = useState(null);
     const [transactions, setTransactions] = useState([]);
-    const [transactionDetails, setTransactionDetails] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [showEntryTransaction, setShowEntryTransaction] = useState(false);
-    const [showNotificationTwilio, setShowNotificationTwilio] = useState(false);
-    const [filterProductName, setFilterProductName] = useState('');
-    const [filterPaymentStatus, setFilterPaymentStatus] = useState('');
+    const [sidebarColor, setSidebarColor] = useState('#1a202c');
+    const [topBarColor, setTopBarColor] = useState('#1a202c');
+    const [showCustomizer, setShowCustomizer] = useState(false);
+
+    useEffect(() => {
+        const storedSidebarColor = localStorage.getItem('sidebarColor');
+        const storedTopBarColor = localStorage.getItem('topBarColor');
+
+        if (storedSidebarColor) setSidebarColor(storedSidebarColor);
+        if (storedTopBarColor) setTopBarColor(storedTopBarColor);
+    }, []);
+
+    const handleSidebarColorChange = (color) => {
+        setSidebarColor(color);
+        localStorage.setItem('sidebarColor', color);
+    };
+
+    const handleTopBarColorChange = (color) => {
+        setTopBarColor(color);
+        localStorage.setItem('topBarColor', color);
+    };
 
     const fetchTransactions = async (customerId) => {
         try {
@@ -93,6 +110,7 @@ function CustomerDashboardLayout({ header, children, handleClickStart }) {
             <aside
                 className={`${isSidebarExpanded ? "w-64" : "w-16"
                     } ${isSidebarSmaller ? "md:translate-x-0 translate-x-[-100%]" : "translate-x-0"} bg-gray-900 text-white flex flex-col block transition-all duration-300`}
+                style={{ backgroundColor: sidebarColor, maxHeight: '100vh', overflowY: 'auto' }}
             >
                 <div
                     className={`p-4 border-b border-blue-700 flex items-center justify-between ${isSidebarExpanded ? "space-x-8" : "space-x-1"
@@ -113,24 +131,41 @@ function CustomerDashboardLayout({ header, children, handleClickStart }) {
                             }`} />
                     </button>
                 </div>
-                <nav className="flex-1 p-2">
+                <nav className="flex-1 p-0">
                     <ul className="space-y-2">
-                        <li><Link href="/customer/dashboard">
-                            <div className='py-2 px-4 rounded cursor-pointer text-white flex bg-blue-gray-600 hover:bg-blue-gray-800 items-center gap-4'>
-                                <IonIcon className='text-[20px]' name="build"></IonIcon>
-                                <span
-                                    className={`${isSidebarExpanded ? "block" : "hidden"
-                                        } text-sm`}
-                                >
-                                    Dashboard
-                                </span>
-                            </div>
-                        </Link>
+                        <li>
+                            <NavLink href={route('customer.dashboard')} active={route().current('customer.dashboard')}>
+                                <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
+                                    <IonIcon className='text-[20px]' name="build"></IonIcon>
+                                    <span
+                                        className={`${isSidebarExpanded ? "block" : "hidden"
+                                            } text-sm`}
+                                    >
+                                        Dashboard
+                                    </span>
+                                </div>
+                            </NavLink>
                         </li>
                         <li>
                             {customerData && (
-                                <Link href={`/customer/report`}>
-                                    <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-gray-600 hover:bg-blue-gray-800'>
+                                <NavLink href={route('customer.transactionpage')} active={route().current('customer.transactionpage')}>
+                                    <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
+                                        <IonIcon className='text-[20px]' name="bag-add"></IonIcon>
+                                        <span
+                                            className={`${isSidebarExpanded ? "block" : "hidden"
+                                                } text-sm`}
+                                        >
+                                            Add Transaction
+                                        </span>
+
+                                    </div>
+                                </NavLink>
+                            )}
+                        </li>
+                        <li>
+                            {customerData && (
+                                <NavLink href={route('customer.report')} active={route().current('customer.report')}>
+                                    <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
                                         <IonIcon className='text-[20px]' name="cash"></IonIcon>
                                         <span
                                             className={`${isSidebarExpanded ? "block" : "hidden"
@@ -140,13 +175,13 @@ function CustomerDashboardLayout({ header, children, handleClickStart }) {
                                         </span>
 
                                     </div>
-                                </Link>
+                                </NavLink>
                             )}
                         </li>
                         <li>
                             {customerData && (
-                                <Link href={`/customer/graph`}>
-                                    <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-gray-600 hover:bg-blue-gray-800'>
+                                <NavLink href={route('customer.graph')} active={route().current('customer.graph')}>
+                                    <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
                                         <IonIcon className='text-[20px]' name="stats-chart"></IonIcon>
                                         <span
                                             className={`${isSidebarExpanded ? "block" : "hidden"
@@ -155,13 +190,13 @@ function CustomerDashboardLayout({ header, children, handleClickStart }) {
                                             Perkembangan Anda
                                         </span>
                                     </div>
-                                </Link>
+                                </NavLink>
                             )}
                         </li>
                         <li>
                             {customerData && (
-                                <Link href={`/customer/inbox`}>
-                                    <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4 bg-blue-gray-600 hover:bg-blue-gray-800'>
+                                <NavLink href={route('customer.inbox')} active={route().current('customer.inbox')}>
+                                    <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
                                         <IonIcon className='text-[20px]' name="chatbox"></IonIcon>
                                         <span
                                             className={`${isSidebarExpanded ? "block" : "hidden"
@@ -170,12 +205,28 @@ function CustomerDashboardLayout({ header, children, handleClickStart }) {
                                             Inbox
                                         </span>
                                     </div>
-                                </Link>
+                                </NavLink>
                             )}
                         </li>
+                        <div
+                            className={`${isSidebarExpanded ? "p-2" : "p-2"
+                                }`}
+                        >
+                            <button onClick={() => setShowCustomizer(true)} className="w-full bg-blue-500 hover:bg-blue-gray-800 py-2 rounded text-white flex items-center text-sm">
+                                <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
+                                    <IonIcon className='text-[20px]' name="color-fill"></IonIcon>
+                                    <span
+                                        className={`${isSidebarExpanded ? "block" : "hidden"
+                                            } text-sm`}
+                                    >
+                                        Customize Theme
+                                    </span>
+                                </div>
+                            </button>
+                        </div>
                     </ul>
                 </nav>
-                <div className={`bg-white mx-auto my-2 w-56 h-60 rounded-xl ${isSidebarExpanded ? "block" : "hidden"}`}>
+                {/* <div className={`bg-white mx-auto my-2 w-56 h-60 rounded-xl ${isSidebarExpanded ? "block" : "hidden"}`}>
                     <Fade>
                         <div className='flex flex-col items-center justify-center space-y-2'>
                             <img src={tutorial} className='w-24 h-24' alt="" />
@@ -190,7 +241,7 @@ function CustomerDashboardLayout({ header, children, handleClickStart }) {
                             </button>
                         </div>
                     </Fade>
-                </div>
+                </div> */}
                 <div
                     className={`${isSidebarExpanded ? "p-4" : "p-2"
                         } border-t border-blue-700`}
@@ -211,7 +262,10 @@ function CustomerDashboardLayout({ header, children, handleClickStart }) {
             {/* Page Content */}
             <div className={`${isSidebarSmaller ? "absolute md:relative left-0 top-0 w-full h-screen" : "relative"
                 } flex-1 flex flex-col overflow-hidden`}>
-                <header className="flex items-center justify-around bg-gray-900 shadow px-4 py-10 sm:px-6">
+                <header
+                    className="flex items-center justify-around bg-gray-900 shadow px-4 py-10 sm:px-6"
+                    style={{ backgroundColor: topBarColor }}
+                >
                     <div className='flex sm:flex-row items-center sm:space-x-9 flex-col sm:space-y-0 space-y-4 w-full'>
                         <div className='flex items-center space-x-4 sm:space-x-6 w-full'>
                             <div className='mt-1 md:hidden block'>
@@ -299,6 +353,23 @@ function CustomerDashboardLayout({ header, children, handleClickStart }) {
                             </div>
                         </div>
                     </Fade>
+                </div>
+            )}
+
+            {showCustomizer && (
+                <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded shadow-lg motion motion-preset-shrink">
+                        <ColorCustomizer
+                            setSidebarColor={handleSidebarColorChange}
+                            setTopBarColor={handleTopBarColorChange}
+                        />
+                        <button
+                            onClick={() => setShowCustomizer(false)}
+                            className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+                        >
+                            Tutup
+                        </button>
+                    </div>
                 </div>
             )}
         </div>

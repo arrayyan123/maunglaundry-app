@@ -2,7 +2,7 @@ import React from 'react';
 import Marquee from 'react-fast-marquee';
 
 const MarqueeWrapper = () => {
-  const marqueeText = "Maung Laundry";
+  const marqueeText = "Rayyana Laundry";
   const textArray = new Array(8).fill(marqueeText);
 
   return (

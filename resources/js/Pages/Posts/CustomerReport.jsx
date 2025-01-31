@@ -4,17 +4,17 @@ import IonIcon from '@reacticons/ionicons';
 import React, { useState, useEffect } from "react";
 import SlotCounter from 'react-slot-counter';
 
-function CustomerReport() {
+function CustomerReport({ query }) {
     const [customerData, setCustomerData] = useState(null);
     const [reports, setReports] = useState([]);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [month, setMonth] = useState('');
-    const [year, setYear] = useState('');
+    const [year, setYear] = useState(query?.year || '');
     const [totalPrice, setTotalPrice] = useState(0);
-    const [status, setStatus] = useState('');
+    const [status, setStatus] = useState(query?.status_job || '');
     const [currentPage, setCurrentPage] = useState(1);
-    const [statuspayment, setStatusPayment] = useState('');
+    const [statuspayment, setStatusPayment] = useState(query?.status_payment || '');
     const itemsPerPage = 15;
 
     useEffect(() => {
@@ -57,8 +57,8 @@ function CustomerReport() {
 
     const formatNumber = (value) => {
         return new Intl.NumberFormat('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
         }).format(value);
     };
 
@@ -85,7 +85,7 @@ function CustomerReport() {
             fetchTotalPrice(customerData.id);
         }
     }, [customerData, month, year, startDate, endDate, status, statuspayment]);
-    
+
 
     return (
         <div>
@@ -99,7 +99,7 @@ function CustomerReport() {
                     </div>
                 }
             >
-                <div className="p-4 text-black">
+                <div className="p-2 text-black">
                     <div className="flex flex-col lg:flex-row lg:space-x-6 mb-6 items-start lg:items-center">
                         {/* Select Month */}
                         <div className="flex flex-col w-full lg:w-auto">
@@ -181,6 +181,7 @@ function CustomerReport() {
                             >
                                 <option value="">All Status</option>
                                 <option value="paid">Paid</option>
+                                <option value="partial">Partial</option>
                                 <option value="unpaid">Unpaid</option>
                             </select>
                         </div>
@@ -199,56 +200,106 @@ function CustomerReport() {
                         </div>
                     </div>
                     <div className="my-4">
-                        <h2 className="text-lg font-semibold">Total Transaksi: Rp.<SlotCounter value={formatNumber(totalPrice)}/></h2>
+                        <h2 className="text-lg font-semibold">Total Transaksi: Rp.<SlotCounter value={formatNumber(totalPrice)} /></h2>
                     </div>
                     {/* Table Section */}
-                    <div className="overflow-x-auto">
-                        <table className="table-auto w-full border-collapse border text-sm">
+                    <div className="overflow-x-auto rounded-xl">
+                        <table className="min-w-full bg-gray-300 text-white shadow-md">
                             <thead>
-                                <tr>
-                                    <th className="border p-2">Customer ID</th>
-                                    <th className="border p-2">Customer Name</th>
-                                    <th className="border p-2">Product</th>
-                                    <th className="border p-2">Laundry Type</th>
-                                    <th className="border p-2">Status</th>
-                                    <th className="border p-2">Status Payment</th>
-                                    <th className="border p-2">Start Date</th>
-                                    <th className="border p-2">End Date</th>
-                                    <th className="border p-2">Total Price</th>
+                                <tr className='bg-gray-700 text-left'>
+                                    <th className="py-3 px-4">Nama Pelanggan</th>
+                                    <th className="py-3 px-4">Produk</th>
+                                    <th className="py-3 px-4">Tipe Laundry</th>
+                                    <th className="py-3 px-4">Status Pengerjaan</th>
+                                    <th className="py-3 px-4">Status Pembayaran</th>
+                                    <th className="py-3 px-4">Tanggal Mulai</th>
+                                    <th className="py-3 px-4">Tanggal Estimasi Selesai</th>
+                                    <th className="py-3 px-4">Total Harga</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {currentData.map((report) => (
-                                    <tr key={report.transaction_id}>
-                                        <td className="border p-2">{report.customer_id}</td>
-                                        <td className="border p-2">{report.customer_name}</td>
-                                        <td className="border p-2">{report.nama_produk}</td>
-                                        <td className="border p-2">{report.laundry_type}</td>
+                                    <tr key={report.transaction_id} className='border-t border-gray-700 hover:bg-gray-500 text-black hover:text-white'>
+                                        <td className="py-3 px-4">{report.customer_name}</td>
+                                        <td className="py-3 px-4">{report.nama_produk}</td>
+                                        <td className="py-3 px-4">{report.laundry_type}</td>
                                         <td
-                                            className={`border p-2 text-white ${report.status_job === 'ongoing'
-                                                ? 'bg-blue-500'
-                                                : report.status_job === 'pending'
-                                                    ? 'bg-yellow-500'
-                                                    : report.status_job === 'done'
-                                                        ? 'bg-green-500'
-                                                        : report.status_job === 'cancel'
-                                                            ? 'bg-red-500'
+                                            className="py-3 px-4 text-center text-white">
+                                            <div
+                                                className={`py-3 px-4 rounded-lg text-center text-white ${report.status_job === 'ongoing'
+                                                    ? 'bg-blue-200'
+                                                    : report.status_job === 'pending'
+                                                        ? 'bg-yellow-200'
+                                                        : report.status_job === 'done'
+                                                            ? 'bg-green-200'
+                                                            : report.status_job === 'cancel'
+                                                                ? 'bg-red-200'
+                                                                : 'bg-transparent'
+                                                    }`}
+                                            >
+                                                <p
+                                                    className={`font-bold ${report.status_job === 'ongoing'
+                                                        ? 'text-blue-500'
+                                                        : report.status_job === 'pending'
+                                                            ? 'text-yellow-500'
+                                                            : report.status_job === 'done'
+                                                                ? 'text-green-500'
+                                                                : report.status_job === 'cancel'
+                                                                    ? 'text-red-500'
+                                                                    : 'bg-transparent'
+                                                        }`}
+                                                >
+                                                    {report.status_job}
+                                                </p>
+                                            </div>
+                                        </td>
+                                        <td
+                                            className="py-3 px-4 text-center text-white">
+                                            <div
+                                                className={`py-3 px-4 rounded-lg text-center text-white ${report.status_payment === 'paid'
+                                                    ? 'bg-green-200'
+                                                    : report.status_payment === 'unpaid'
+                                                        ? 'bg-red-200'
+                                                        : report.status_payment === 'partial'
+                                                            ? 'bg-yellow-200'
                                                             : 'bg-transparent'
-                                                }`}>{report.status_job}</td>
-                                        <td
-                                            className={`border p-2 text-white ${report.status_payment === 'paid'
-                                                ? 'bg-green-500'
-                                                : report.status_payment === 'unpaid'
-                                                    ? 'bg-red-500'
-                                                    : 'bg-transparent'
-                                                }`}>{report.status_payment}</td>
-                                        <td className="border p-2">
-                                            {formatDateTime(report.start_date)}
+                                                    }`}
+                                            >
+                                                <p
+                                                    className={`font-bold ${report.status_payment === 'paid'
+                                                        ? 'text-green-500'
+                                                        : report.status_payment === 'unpaid'
+                                                            ? 'text-red-500'
+                                                            : report.status_payment === 'partial'
+                                                                ? 'text-yellow-500'
+                                                                : 'bg-transparent'
+                                                        }`}
+                                                >
+                                                    {report.status_payment}
+                                                </p>
+                                            </div>
                                         </td>
-                                        <td className="border p-2">
-                                            {formatDateTime(report.end_date)}
+                                        <td className="py-3 px-4">
+                                            {new Intl.DateTimeFormat('id-ID', {
+                                                day: '2-digit',
+                                                month: 'long',
+                                                year: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                hour12: false
+                                            }).format(new Date(report.start_date))}
                                         </td>
-                                        <td className="border px-4 py-2">Rp.<SlotCounter value={formatNumber(report.total_price)}/></td>
+                                        <td className="py-3 px-4">
+                                            {new Intl.DateTimeFormat('id-ID', {
+                                                day: '2-digit',
+                                                month: 'long',
+                                                year: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                hour12: false
+                                            }).format(new Date(report.end_date))}
+                                        </td>
+                                        <td className="py-3 px-4">Rp.<SlotCounter value={formatNumber(report.total_price)} /></td>
                                     </tr>
                                 ))}
                             </tbody>

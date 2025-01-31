@@ -109,7 +109,13 @@ export default function CustomerLogin() {
                     autocomplete="on"
                     placeholder="81234567890 (tanpa +62 / awali dengan 0)"
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    onChange={(e) => {
+                      let value = e.target.value.replace(/\D/g, '');
+                      if (value.startsWith('62') && value.length > 1) {
+                        value = '0' + value.substring(2);
+                      }
+                      setFormData({ ...formData, phone: e.target.value })
+                    }}
                   />
                 </div>
               </div>

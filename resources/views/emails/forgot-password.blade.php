@@ -67,7 +67,7 @@
         </div>
         <div class="email-body">
             <div class="header">
-                <img src="http://localhost:8000/assets/images/Logo_maung.png" alt="Logo Maung Laundry">
+                <img src="{{url('/assets/images/Logo_maung.png')}}" alt="Logo Maung Laundry">
             </div>
             <p>Halo,</p>
             <p>Anda telah meminta untuk mereset password Anda. Klik tombol di bawah ini untuk melanjutkan:</p>

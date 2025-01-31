@@ -2,18 +2,46 @@ import { Link } from '@inertiajs/react'
 import React, { useState } from 'react'
 import DistanceCalculator from '../DistanceCalculator';
 import IonIcon from '@reacticons/ionicons';
+import { Tooltip } from 'flowbite-react';
 
 function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEntry, onDeleteCustomer, className }) {
-    const [searchQuery, setSearchQuery] = useState(''); 
+    const [searchQuery, setSearchQuery] = useState('');
+    const [sortOrder, setSortOrder] = useState('asc');
+    const [emailFilter, setEmailFilter] = useState('');
+    const [createdAtFilter, setCreatedAtFilter] = useState('');
+
     const [currentPage, setCurrentPage] = useState(1);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [customerToDelete, setCustomerToDelete] = useState(null);
     const itemsPerPage = 5;
 
-    const filteredCustomers = customers.filter((customer) =>
-        customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        customer.phone.includes(searchQuery)
-    );
+    const filteredCustomers = customers
+        .filter((customer) =>
+            customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            customer.phone.includes(searchQuery)
+        )
+        .filter((customer) => {
+            if (createdAtFilter) {
+                const customerDate = new Date(customer.created_at).toDateString();
+                const filterDate = new Date(createdAtFilter).toDateString();
+                return customerDate === filterDate;
+            }
+            return true;
+        })
+        .filter((customer) => {
+            if (emailFilter) {
+                return customer.email && customer.email.toLowerCase().startsWith(emailFilter.toLowerCase());
+            }
+            return true;
+        })
+        .sort((a, b) => {
+            if (sortOrder === 'asc') {
+                return a.name.localeCompare(b.name);
+            } else {
+                return b.name.localeCompare(a.name);
+            }
+        });
+
     const indexOfLastCustomer = currentPage * itemsPerPage;
     const indexOfFirstCustomer = indexOfLastCustomer - itemsPerPage;
     const currentCustomers = filteredCustomers.slice(indexOfFirstCustomer, indexOfLastCustomer);
@@ -31,7 +59,7 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEnt
     };
     const confirmDelete = () => {
         if (customerToDelete) {
-            onDeleteCustomer(customerToDelete.id); 
+            onDeleteCustomer(customerToDelete.id);
         }
         setDeleteModalOpen(false);
         setCustomerToDelete(null);
@@ -42,44 +70,79 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEnt
         setCustomerToDelete(null);
     };
     return (
-        <div className={`${className} py-12`}>
-            <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div className={`${className} py-12 motion motion-preset-slide-up-md`}>
+            <div className="mx-auto max-w-full sm:px-6 lg:px-0">
                 <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div className="p-6 text-gray-900">
                         <div className="mb-4">
-                            <input
-                                type="text"
-                                placeholder="Search by name or phone number..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
+                            <div className='flex lg:flex-row flex-col w-full gap-4'>
+                                <div className='w-full'>
+                                    <h1>Search nama atau nomor</h1>
+                                    <input
+                                        type="text"
+                                        placeholder="Search by name or phone number..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div className='w-full'>
+                                    <h1>asc/dsc</h1>
+                                    <select
+                                        value={sortOrder}
+                                        onChange={(e) => setSortOrder(e.target.value)}
+                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="asc">Sort Ascending</option>
+                                        <option value="desc">Sort Descending</option>
+                                    </select>
+                                </div>
+                                <div className='w-full'>
+                                    <h1>Search email</h1>
+                                    <input
+                                        type="text"
+                                        placeholder="Filter by email domain (e.g., @gmail.com)"
+                                        value={emailFilter}
+                                        onChange={(e) => setEmailFilter(e.target.value)}
+                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div className='w-full'>
+                                    <h1>Tanggal Registrasi</h1>
+                                    <input
+                                        type="date"
+                                        value={createdAtFilter}
+                                        onChange={(e) => setCreatedAtFilter(e.target.value)}
+                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
                         </div>
 
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
+                            <table className="w-full max-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50">
                                     <tr>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                            Action
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                             Name
                                         </th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                             Email
                                         </th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                             Phone
                                         </th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                             Address
                                         </th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                             Jarak
                                         </th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                             Registration Date
-                                        </th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Action
                                         </th>
                                     </tr>
                                 </thead>
@@ -87,22 +150,54 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEnt
                                     {currentCustomers.length > 0 ? (
                                         currentCustomers.map((customer) => (
                                             <tr key={customer.id}>
-                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                <td className="px-6 py-4 flex space-x-4 whitespace-nowrap">
+                                                    <Tooltip content="Menambah Transaksi">
+                                                        <button
+                                                            onClick={() => onSelectCustomer(customer)}
+                                                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                                        >
+                                                            <span className="flex flex-row items-center space-x-3">
+                                                                <IonIcon name="create" />
+                                                            </span>
+                                                        </button>
+                                                    </Tooltip>
+                                                    <Tooltip content="Detail transaksi">
+                                                        <button
+                                                            onClick={() => onViewDetails(customer.id)}
+                                                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                                        >
+                                                            <span className="flex flex-row items-center space-x-3">
+                                                                <IonIcon name="cash" />
+                                                            </span>
+                                                        </button>
+                                                    </Tooltip>
+                                                    <Tooltip content="hapus pelanggan">
+                                                        <button
+                                                            onClick={() => openDeleteModal(customer)}
+                                                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                                                        >
+                                                            <span className="flex flex-row items-center space-x-3">
+                                                                <IonIcon name="trash" />
+                                                            </span>
+                                                        </button>
+                                                    </Tooltip>
+                                                </td>
+                                                <td className="px-6 py-4 truncate">
                                                     <div className="text-sm font-medium text-gray-900">
                                                         {customer.name}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                <td className="px-6 py-4 truncate">
                                                     <div className="text-sm text-gray-900">
                                                         {customer.email}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                <td className="px-6 py-4 truncate">
                                                     <div className="text-sm text-gray-900">
                                                         {customer.phone}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                <td className="px-6 py-4 truncate">
                                                     <div className="text-sm text-gray-900">
                                                         {customer.address}
                                                     </div>
@@ -114,46 +209,21 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEnt
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm text-gray-900">
-                                                        {new Date(customer.created_at).toLocaleDateString()}
+                                                        {new Intl.DateTimeFormat('id-ID', {
+                                                            day: '2-digit',
+                                                            month: 'long',
+                                                            year: 'numeric',
+                                                            hour: '2-digit',
+                                                            minute: '2-digit',
+                                                            hour12: false
+                                                        }).format(new Date(customer.created_at))}
                                                     </div>
-                                                </td>
-                                                <td className="px-6 py-4 space-x-4 whitespace-nowrap">
-                                                    <button
-                                                        onClick={() => onSelectCustomer(customer)}
-                                                        className="bg-blue-500 text-white px-4 py-2 rounded"
-                                                    >
-                                                        <span className='flex flex-row items-center space-x-3'>
-                                                            <IonIcon name='create'></IonIcon>
-                                                            <p>Add Transaction</p>
-                                                        </span>
-                                                    </button>
-                                                    <button
-                                                        onClick={() => onViewDetails(customer.id)}
-                                                        className="bg-blue-500 text-white px-4 py-2 rounded"
-                                                    >
-                                                        <span className='flex flex-row items-center space-x-3'>
-                                                            <IonIcon name='cash'></IonIcon>
-                                                            <p>See Details</p>
-                                                        </span>
-                                                    </button>
-                                                    <button
-                                                        onClick={() => openDeleteModal(customer)}
-                                                        className="bg-red-500 text-white px-4 py-2 rounded"
-                                                    >
-                                                        <span className='flex flex-row items-center space-x-3'>
-                                                            <IonIcon name='trash'></IonIcon>
-                                                            <p>Delete</p>
-                                                        </span>
-                                                    </button>
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td
-                                                colSpan="6"
-                                                className="px-6 py-4 text-center text-gray-500"
-                                            >
+                                            <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
                                                 No customers found.
                                             </td>
                                         </tr>
@@ -228,9 +298,9 @@ function Request_Table({ customers, onSelectCustomer, onViewDetails, scrollToEnt
             </div>
             {deleteModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                    <div className="bg-white p-6 rounded shadow-lg">
+                    <div className="bg-white text-black p-6 rounded shadow-lg">
                         <h2 className="text-xl font-semibold mb-4">Delete Customer</h2>
-                        <p>Are you sure you want to delete <strong>{customerToDelete?.name}</strong>?</p>
+                        <p>Anda yakin ingin menghapus <strong>{customerToDelete?.name}</strong>?</p>
                         <p>menghapus data customer akan menghapus transaksi seluruh dari customer tersebut.</p>
                         <div className="mt-4 flex justify-end space-x-4">
                             <button

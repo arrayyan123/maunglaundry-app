@@ -2,7 +2,7 @@ import { Link } from '@inertiajs/react';
 import IonIcon from '@reacticons/ionicons';
 import React from 'react'
 
-const images = import.meta.glob('/public/Assets/Images/*.png', { eager: true });
+const images = import.meta.glob('/public/Assets/images/*.png', { eager: true });
 
 const getImageByName = (name) => {
     const matchingImage = Object.keys(images).find((path) => path.includes(`${name}.png`));
@@ -21,7 +21,7 @@ function Footer({ homeRef, aboutRef, servicesRef, scrollToSection }) {
                             <img className='w-[150px]' src={logo} alt="logo maung" />
                         </div>
                         <p class=" mt-6 max-w-md leading-relaxed text-gray-500 dark:text-gray-400">
-                            Maung Laundry<br />
+                            Rayyana Laundry<br />
                             Partnership of Maung Perkasa Abadi
                         </p>
                     </div>

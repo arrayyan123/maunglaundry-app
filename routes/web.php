@@ -15,6 +15,8 @@ use App\Http\Controllers\ServicePricesController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\WhatsAppController;
 use App\Http\Controllers\ContentController;
+use App\Http\Middleware\VerifyRecaptcha;
+
 
 Route::post('/send-whatsapp', [WhatsAppController::class, 'sendMessage']);
 Route::get('/', function () {
@@ -26,25 +28,22 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/forgot-password-email', function () {
-    return view('emails.forgot-password');
-});
+// Route::get('/forgot-password-email', function () {
+//     return view('emails.forgot-password');
+// });
+// Route::get('/receipttest', function () {
+//     return view('pdf.receipt');
+// });
 
-Route::get('/dashboard', [PagesController::class, 'dashboard'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
-Route::get('/reportdata', [PagesController::class, 'report'])
-    ->middleware(['auth', 'verified'])
-    ->name('admin.report');
-Route::get('/diagramcalc', [PagesController::class, 'diagramCalc'])
-    ->middleware(['auth', 'verified'])
-    ->name('diagram.page');
-Route::get('/inbox', [PagesController::class, 'inboxdashboard'])
-    ->middleware(['auth', 'verified'])
-    ->name('inbox.admin');
-Route::get('/contentmanage', [PagesController::class, 'contentManage'])
-    ->middleware(['auth', 'verified'])
-    ->name('content.manage');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', [PagesController::class, 'dashboard'])->name('dashboard');
+    Route::get('/reportdata', [PagesController::class, 'report'])->name('admin.report');
+    Route::get('/diagramcalc', [PagesController::class, 'diagramCalc'])->name('diagram.page');
+    Route::get('/inbox', [PagesController::class, 'inboxdashboard'])->name('inbox.admin');
+    Route::get('/contentmanage', [PagesController::class, 'contentManage'])->name('content.manage');
+    Route::get('/servicepricesmanage', [ServicePricesController::class, 'index'])->name('service-prices.index');
+    Route::get('/customertransaction', [PagesController::class, 'customerTransaction'])->name('customer-transaction');
+});
 
 Route::prefix('api')->group(function () {
     Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
@@ -64,9 +63,18 @@ Route::prefix('api')->group(function () {
     Route::post('/admin/transactions', [TransactionsController::class, 'store'])->middleware('auth:sanctum');
     //Route::get('/admin/transactions/{customerId}', [TransactionsController::class, 'show'])->name('transactions.show');
     Route::put('/admin/transactions/{id}/update', [TransactionsController::class, 'updatePaymentStatus']);
+    Route::get('/admin/transactions/{id}/down-payment', [TransactionsController::class, 'showDownPaymentByTransactionId']);
     Route::get('/admin/service-types', [ServiceTypesController::class, 'index']);
+    Route::put('/admin/transactions/{id}/update', [TransactionsController::class, 'update']);
     Route::get('/admin/service-prices/{serviceTypeId}', [ServicePricesController::class, 'getPricesByServiceType']);
     Route::put('/admin/transactions/{transactionId}/payment', [TransactionsController::class, 'updatePayment']);
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/service-prices/list', [ServicePricesController::class, 'getPrices']);
+        Route::post('/service-prices', [ServicePricesController::class, 'store']);
+        Route::put('/service-prices/{id}', [ServicePricesController::class, 'update']);
+        Route::delete('/service-prices/{id}', [ServicePricesController::class, 'destroy']);
+    });
 
     Route::delete('/admin/notes/{id}', [TransactionsController::class, 'destroyNote']);
     Route::get('/admin/inbox-notes', [TransactionsController::class, 'getNotesWithCustomerInfo']);
@@ -81,6 +89,7 @@ Route::prefix('api')->group(function () {
     Route::get('/admin/reports/customer/{customerId}', [ReportController::class, 'getReportByCustomerId']);
     Route::get('/admin/transactions/{id}', [TransactionsController::class, 'show'])->name('transactions.show');
     Route::get('/admin/transactions/{id}/receipt', [TransactionsController::class, 'printReceipt']);
+    Route::get('/admin/transactions/receipt-multiple', [TransactionsController::class, 'printMultipleReceipts']);
     Route::get('/admin/new-transactions', [ReportController::class, 'getNewTransactions']);
     Route::get('/admin/total-price', [ReportController::class, 'getTotalPrice']);
     Route::get('/admin/reports', [ReportController::class, 'getReport']);
@@ -95,6 +104,8 @@ Route::prefix('api')->group(function () {
     Route::get('/contents/{id}/edit', [ContentController::class, 'edit']);
     Route::delete('/contents/{id}', [ContentController::class, 'destroy']);
 });
+
+Route::get('/admin/transactions/receipt-multiple', [TransactionsController::class, 'printMultipleReceipts']);
 
 Route::get('/customer/login', [PagesController::class, 'customerLogin'])
     ->name('customer.login')
@@ -117,6 +128,8 @@ Route::middleware(['guest:customer'])->group(function () {
         ->name('customer.forgotpass');
     Route::get('/customer/reset-password/{token}', [PagesController::class, 'ResetPassword'])
         ->name('customer.resetpass');
+    Route::get('/customer/transactionpage', [PagesController::class, 'customerTransationPage'])
+        ->name('customer.transactionpage');
 });
 
 Route::get('/', [PagesController::class, 'home'])->name('home-page');

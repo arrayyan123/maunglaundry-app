@@ -5,9 +5,9 @@ import { Head, Link } from '@inertiajs/react';
 import IonIcon from '@reacticons/ionicons';
 import { Fade, Slide } from 'react-awesome-reveal';
 
-const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
-const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
-const laundryImages = import.meta.glob("/public/assets/Images/laundry_pics/*.jpg", { eager: true });
+const pngImages = import.meta.glob("/public/assets/images/*.png", { eager: true });
+const webpImages = import.meta.glob("/public/assets/images/*.webp", { eager: true });
+const laundryImages = import.meta.glob("/public/assets/images/laundry_pics/*.jpg", { eager: true });
 const images = { ...pngImages, ...webpImages, ...laundryImages };
 
 const getImageByName = (name) => {
@@ -134,7 +134,7 @@ const CustomerRegister = () => {
     return (
         <>
             <Head title='Customer Register' />
-            <div className="bg-blue-100 flex justify-center items-center h-auto">
+            <div className="bg-blue-100 flex justify-center items-center h-full">
                 <div className="w-1/2 h-screen hidden lg:block">
                     <img src={bigPics} alt="Placeholder Image" className="object-cover w-full h-full" />
                 </div>

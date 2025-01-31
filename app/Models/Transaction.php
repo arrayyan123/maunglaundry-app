@@ -80,4 +80,14 @@ class Transaction extends Model
     {
         return $this->hasOne(Note::class, 'transaction_id');
     }
+
+    public function downPayment()
+    {
+        return $this->hasOne(DownPayment::class);
+    }
+
+    // public function downPayment()
+    // {
+    //     return $this->hasOne(DownPayment::class, 'transaction_id');
+    // }
 }

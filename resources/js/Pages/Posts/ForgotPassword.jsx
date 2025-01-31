@@ -52,6 +52,7 @@ const ForgotPassword = () => {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        autoComplete="on"
                         required
                     />
                 </div>

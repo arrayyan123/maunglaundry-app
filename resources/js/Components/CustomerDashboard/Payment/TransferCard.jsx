@@ -17,11 +17,11 @@ function TransferCard() {
   return (
     <div className='flex flex-col items-center'>
       <Fade>
-        <div className="w-full max-w-xl overflow-y-auto max-h-[75vh] p-4 border border-gray-300 rounded-lg shadow-md">
-          <h1 className='font-bold text-[30px]'>Transfer Bank</h1>
+        <div className="w-full max-w-xl overflow-y-auto text-black max-h-[75vh] p-4 border border-gray-300 rounded-lg shadow-md">
+          <h1 className='font-bold text-[16px] sm:text-[25px] md:text-[30px] lg:text-[36px] mb-3 text-center'>Transfer Bank</h1>
           <ul className='list-decimal'>
-            <h1>Berikut Langkah-langkah untuk melakukan pembayaran:</h1>
-            <div className='ml-4'>
+            <h1 className='text-[14px]'>Berikut Langkah-langkah untuk melakukan pembayaran:</h1>
+            <div className='ml-4 text-[14px]'>
               <li>
                 Silahkan Gunakan M-BANKING / ATM untuk melakukan transfer
               </li>
@@ -32,16 +32,19 @@ function TransferCard() {
                 jika sudah, tunggu konfirmasi dari pihak laundry, perhatikan selalu halaman transaksi anda untuk update mengenai Payment anda.
               </li>
               <li>
-                Perlu diperhatikan bahwa nama penerima atas nama <strong>MAUNG LAUNDRY / Djoko Darminto</strong>
+                Perlu diperhatikan bahwa nama penerima atas nama <strong>Djoko Darminto</strong>
+              </li>
+              <li>
+                Berikan Keterangan Berita Transaksi 
               </li>
             </div>
           </ul>
-          <a href={linkNo} target="_blank" rel="noopener noreferrer"><button className='text-blue-500 my-5'>Harap hubungi pihak admin untuk mengirim bukti pembayaran dengan klik teks ini.</button></a>
+          <a href={linkNo} target="_blank" rel="noopener noreferrer"><button className='text-blue-500 my-5 text-[14px]'>Harap hubungi pihak admin untuk mengirim bukti pembayaran dengan klik teks ini.</button></a>
           <div className='flex flex-col items-center'>
-            <img src={bca} className='w-40 h-auto ' alt="" />
+            <img src={bca} className='w-32 h-auto ' alt="" />
             <span>
               No. Rek:
-              <div className="grid w-full max-w-[23rem] grid-cols-8 gap-2">
+              <div className="flex mx-auto w-full max-w-[23rem] grid-cols-8 gap-2">
                 <label htmlFor="no-rek" className="sr-only">
                   Label
                 </label>

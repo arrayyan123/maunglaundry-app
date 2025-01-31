@@ -51,32 +51,22 @@ export default function CustomerDashboard() {
     const [showEntryInstructionModal, setShowEntryInstructionModal] = useState(false)
     const entryTransactionRef = useRef(null);
     const notificationRef = useRef(null);
+    const [currentYear] = useState(new Date().getFullYear());
 
-    const handleClickStart = () => {
-        setRun(true);
+    const handleStatusCardClick = (status) => {
+        const routeUrl = route('customer.report', { status_job: status });
+        window.location.href = routeUrl;
     };
-    const steps = [
-        {
-            target: '.start-instruksi',
-            content: 'Selamat Datang di website dashboard customer maung laundry',
-        },
-        {
-            target: '.instruksi-pertama',
-            content: 'Disini anda bisa melihat informasi mengenai akun anda',
-        },
-        {
-            target: '.instruksi-kedua',
-            content: 'email anda (jika belum, anda bisa menambahkannya sendiri melalui halaman profil), alamat anda serta jarak dari alamat anda menuju laundry',
-        },
-        {
-            target: '.instruksi-ketiga',
-            content: 'Informasi transaksi anda pada laundry',
-        },
-        {
-            target: '.instruksi-keempat',
-            content: 'Disini adalah area input transaksi mandiri, informasi transaksi serta menyalakan notifikasi untuk transaksi anda yang masuk. Mohon gunakan dengan bijaksana. Terimakasih telah menggunakan layanan kami.',
-        },
-    ];
+
+    const handlePaymentCardClick = (statuspayment) => {
+        const routeUrl = route('customer.report', { status_payment: statuspayment });
+        window.location.href = routeUrl;
+    };
+
+    const handleCardClickYear = (year) => {
+        const routeUrl = route('customer.report', { year });
+        window.location.href = routeUrl;
+    };
 
     const handleViewDetails = async (transactionId) => {
         try {
@@ -210,7 +200,6 @@ export default function CustomerDashboard() {
     return (
         <>
             <CustomerDashboardLayout
-                handleClickStart={handleClickStart}
                 header={
                     <div>
                         <h2 className="text-xl start-instruksi font-semibold leading-tight text-white">
@@ -219,21 +208,6 @@ export default function CustomerDashboard() {
                     </div>
                 }
             >
-                <Joyride
-                    run={run}
-                    steps={steps}
-                    styles={{
-                        options: {
-                            arrowColor: '#57c2ff',
-                            backgroundColor: '#57c2ff',
-                            overlayColor: 'rgba(79, 26, 0, 0.4)',
-                            primaryColor: '#000',
-                            textColor: '#004a14',
-                            width: 400,
-                            zIndex: 1000,
-                        },
-                    }}
-                />
                 <Head title="Customer Dashboard" />
                 <div className="instruksi-pertama relative my-6 p-10 md:py-12 py-20 animated-background bg-gradient-to-r from-blue-500 to-indigo-200 rounded-xl text-black">
                     <div className="absolute z-0 top-1/2 left-10 -translate-y-1/2">
@@ -248,39 +222,35 @@ export default function CustomerDashboard() {
                             HI! {customerData.name}
                         </h1>
                     )}
-                    <p className='text-right'>Selamat Datang di Dashboard Customer Maung Laundry</p>
+                    <p className='text-right'>Selamat Datang di Dashboard Customer Laundry</p>
                 </div>
                 {customerData && (
                     <div className="grid instruksi-kedua md:grid-cols-2 grid-flow-row md:space-x-2 space-x-0 md:space-y-0 space-y-2">
-                        <div className="bg-blue-400 px-5 py-4 rounded-lg flex items-center">
-                            <h1 className="text-white lg:text-xl md:text-lg text-sm font-semibold mx-auto">Email: {customerData.email || "(masukkan email anda dengan edit profile)"}</h1>
+                        <div className="bg-white shadow-xl px-5 py-4 rounded-lg flex flex-col gap-3 justify-center">
+                            <span className="text-black font-semibold flex flex-row items-center gap-5">
+                                <div className="bg-yellow-200 flex p-4 rounded-full">
+                                    <IonIcon className="text-yellow-500" name="mail" />
+                                </div>
+                                <h1>{customerData.email || "(masukkan email anda dengan edit profile)"}</h1>
+                            </span>
+                            <span className="text-black font-semibold flex flex-row items-center gap-5">
+                                <div className="bg-purple-200 flex p-4 rounded-full">
+                                    <IonIcon className="text-purple-500" name="call" />
+                                </div>
+                                <h1>{customerData.phone}</h1>
+                            </span>
                         </div>
-                        <div className="bg-blue-400 px-5 py-4 rounded-lg text-white">
-                            <h1 className="text-white font-semibold">Alamat: {customerData.address}</h1>
+                        <div className="bg-white shadow-xl px-5 py-4 rounded-lg text-black">
+                            <span className="text-black font-semibold flex flex-row items-center gap-5">
+                                <div className="bg-green-200 flex p-4 rounded-full">
+                                    <IonIcon className="text-green-500" name="home" />
+                                </div>
+                                <h1>{customerData.address}</h1>
+                            </span>
                             <DistanceCalculator customerAddress={customerData?.address} />
                         </div>
                     </div>
                 )}
-                <div className="flex flex-col md:flex-row justify-center md:space-x-4 space-y-4 md:space-y-0 mt-4 w-full">
-                    <button
-                        onClick={handleToggleEntryTransaction}
-                        className="px-4 py-2 text-white bg-green-500 hover:bg-green-600 rounded-lg flex-grow"
-                    >
-                        <span className="flex flex-row items-center justify-center space-x-2">
-                            <IonIcon name="add-circle"></IonIcon>
-                            <p>Masukkan Transaksi</p>
-                        </span>
-                    </button>
-                    <button
-                        onClick={handleToggleNotificationTwilio}
-                        className="px-4 py-2 text-white bg-yellow-500 hover:bg-yellow-600 rounded-lg flex-grow"
-                    >
-                        <span className="flex flex-row items-center justify-center space-x-2">
-                            <IonIcon name="notifications"></IonIcon>
-                            <p>Nyalakan Notifikasi</p>
-                        </span>
-                    </button>
-                </div>
 
                 <div className="my-3 instruksi-ketiga relative z-0 md:hidden block">
                     <Swiper
@@ -292,96 +262,164 @@ export default function CustomerDashboard() {
                         pagination={{
                             clickable: true,
                         }}
-                        navigation={true}
+                        navigation={false}
                         modules={[Keyboard, Pagination, Navigation]}
                         className="mySwiper"
                     >
                         <SwiperSlide>
-                            <div className="bg-green-400 text-white p-6 rounded-lg shadow">
-                                <IonIcon className='text-xl' name="stats-chart"></IonIcon>
-                                <h3 className="text-xl font-bold">Total Transaksi</h3>
-                                <p className="text-3xl"><SlotCounter value={transactions.length} /></p>
+                            <div
+                                onClick={() => handleCardClickYear(currentYear)}
+                                className="bg-white h-full text-black flex items-center flex-row space-x-3 p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                                <div className='bg-green-200 p-3 flex rounded-full'>
+                                    <IonIcon className='text-xl' name="stats-chart"></IonIcon>
+                                </div>
+                                <div className='flex flex-col'>
+                                    <h3 className="text-sm font-bold">Total Transaksi ({currentYear})</h3>
+                                    <p className="text-3xl"><SlotCounter value={transactions.length} /></p>
+                                </div>
                             </div>
                         </SwiperSlide>
                         <SwiperSlide>
-                            <div className="bg-yellow-400 text-white p-6 rounded-lg shadow">
-                                <IonIcon className='text-xl' name="warning"></IonIcon>
-                                <h3 className="text-xl font-bold">Pending Requests</h3>
-                                <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'pending').length} /></p>
+                            <div
+                                onClick={() => handleStatusCardClick('pending')}
+                                className="bg-white h-full text-black flex items-center flex-row space-x-3 p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                                <div className='bg-yellow-200 p-3 flex rounded-full'>
+                                    <IonIcon className='text-yellow-500 text-[30px]' name="warning" />
+                                </div>
+                                <div className='flex flex-col'>
+                                    <h3 className="text-sm font-bold">Pending Requests</h3>
+                                    <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'pending').length} /></p>
+                                </div>
                             </div>
                         </SwiperSlide>
                         <SwiperSlide>
-                            <div className="bg-green-400 text-white p-6 rounded-lg shadow">
-                                <IonIcon className='text-xl font-bold' name="checkmark"></IonIcon>
-                                <h3 className="text-xl font-bold">Done Requests</h3>
-                                <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'done').length} /></p>
+                            <div
+                                onClick={() => handleStatusCardClick('done')}
+                                className="bg-white h-full text-black flex items-center flex-row space-x-3 p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                                <div className='bg-green-200 p-3 flex rounded-full'>
+                                    <IonIcon className='text-green-500 text-[30px]' name="checkmark"></IonIcon>
+                                </div>
+                                <div className='flex flex-col'>
+                                    <h3 className="text-sm font-bold">Done Requests</h3>
+                                    <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'done').length} /></p>
+                                </div>
                             </div>
                         </SwiperSlide>
                         <SwiperSlide>
-                            <div className="bg-red-400 text-white p-6 rounded-lg shadow">
-                                <IonIcon className='text-xl' name="ban"></IonIcon>
-                                <h3 className="text-xl font-bold">Canceled Requests</h3>
-                                <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'cancel').length} /></p>
+                            <div
+                                onClick={() => handleStatusCardClick('cancel')}
+                                className="bg-white h-full text-black flex items-center flex-row space-x-3 p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                                <div className='bg-red-200 p-3 flex rounded-full'>
+                                    <IonIcon className='text-red-500 text-[30px]' name="ban"></IonIcon>
+                                </div>
+                                <div className='flex flex-col'>
+                                    <h3 className="text-sm font-bold">Canceled Requests</h3>
+                                    <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'cancel').length} /></p>
+                                </div>
                             </div>
                         </SwiperSlide>
                         <SwiperSlide>
-                            <div className="bg-blue-400 text-white p-6 rounded-lg shadow">
-                                <IonIcon className='text-xl' name="calendar"></IonIcon>
-                                <h3 className="text-xl font-bold">Ongoing Requests</h3>
-                                <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'ongoing').length} /></p>
+                            <div
+                                onClick={() => handleStatusCardClick('ongoing')}
+                                className="bg-white h-full text-black flex items-center flex-row space-x-3 p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                                <div className='bg-blue-200 p-3 flex rounded-full'>
+                                    <IonIcon className='text-blue-500 text-[30px]' name="calendar"></IonIcon>
+                                </div>
+                                <div className="flex flex-col">
+                                    <h3 className="text-sm font-bold">Ongoing Requests</h3>
+                                    <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'ongoing').length} /></p>
+                                </div>
                             </div>
                         </SwiperSlide>
                         <SwiperSlide>
-                            <div className="bg-red-400 text-white p-6 rounded-lg shadow">
-                                <IonIcon className='text-xl' name="cash"></IonIcon>
-                                <h3 className="text-xl font-bold">Unpaid Requests</h3>
-                                <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_payment === 'unpaid').length} /></p>
+                            <div
+                                onClick={() => handlePaymentCardClick('unpaid')}
+                                className="bg-white h-full text-black flex items-center flex-row space-x-3 p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                                <div className='bg-red-200 p-3 flex rounded-full'>
+                                    <IonIcon className='text-red-500 text-[30px]' name="cash"></IonIcon>
+                                </div>
+                                <div className="flex flex-col">
+                                    <h3 className="text-sm font-bold">Unpaid Requests</h3>
+                                    <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_payment === 'unpaid').length} /></p>
+                                </div>
                             </div>
                         </SwiperSlide>
                     </Swiper>
                 </div>
                 <div className="instruksi-ketiga md:grid hidden grid-cols-1 md:grid-cols-3 gap-4 my-6">
                     <Fade>
-                        <div className="bg-green-400 text-white p-6 rounded-lg shadow">
-                            <IonIcon className='text-xl' name="stats-chart"></IonIcon>
-                            <h3 className="text-xl font-bold">Total Transaksi</h3>
-                            <p className="text-3xl"><SlotCounter value={transactions.length} /></p>
+                        <div
+                            onClick={() => handleCardClickYear(currentYear)}
+                            className="bg-white h-full text-black flex items-center flex-row space-x-3 p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <div className='bg-green-200 p-3 flex rounded-full'>
+                                <IonIcon className='text-xl' name="stats-chart"></IonIcon>
+                            </div>
+                            <div className='flex flex-col'>
+                                <h3 className="text-xl font-bold">Total Transaksi ({currentYear})</h3>
+                                <p className="text-3xl"><SlotCounter value={transactions.length} /></p>
+                            </div>
                         </div>
-                        <div className="bg-yellow-400 text-white p-6 rounded-lg shadow">
-                            <IonIcon className='text-xl' name="warning"></IonIcon>
-                            <h3 className="text-xl font-bold">Pending Requests</h3>
-                            <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'pending').length} /></p>
+                        <div
+                            onClick={() => handleStatusCardClick('pending')}
+                            className="bg-white h-full text-black flex items-center flex-row space-x-3 p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <div className='bg-yellow-200 p-3 flex rounded-full'>
+                                <IonIcon className='text-yellow-500 text-[30px]' name="warning" />
+                            </div>
+                            <div className='flex flex-col'>
+                                <h3 className="text-xl font-bold">Pending Requests</h3>
+                                <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'pending').length} /></p>
+                            </div>
                         </div>
-                        <div className="bg-green-400 text-white p-6 rounded-lg shadow">
-                            <IonIcon className='text-xl font-bold' name="checkmark"></IonIcon>
-                            <h3 className="text-xl font-bold">Done Requests</h3>
-                            <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'done').length} /></p>
+                        <div
+                            onClick={() => handleStatusCardClick('done')}
+                            className="bg-white h-full text-black flex items-center flex-row space-x-3 p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <div className='bg-green-200 p-3 flex rounded-full'>
+                                <IonIcon className='text-green-500 text-[30px]' name="checkmark"></IonIcon>
+                            </div>
+                            <div className='flex flex-col'>
+                                <h3 className="text-xl font-bold">Done Requests</h3>
+                                <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'done').length} /></p>
+                            </div>
                         </div>
-                        <div className="bg-red-400 text-white p-6 rounded-lg shadow">
-                            <IonIcon className='text-xl' name="ban"></IonIcon>
-                            <h3 className="text-xl font-bold">Canceled Requests</h3>
-                            <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'cancel').length} /></p>
+                        <div
+                            onClick={() => handleStatusCardClick('cancel')}
+                            className="bg-white h-full text-black flex items-center flex-row space-x-3 p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <div className='bg-red-200 p-3 flex rounded-full'>
+                                <IonIcon className='text-red-500 text-[30px]' name="ban"></IonIcon>
+                            </div>
+                            <div className='flex flex-col'>
+                                <h3 className="text-xl font-bold">Canceled Requests</h3>
+                                <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'cancel').length} /></p>
+                            </div>
                         </div>
-                        <div className="bg-blue-400 text-white p-6 rounded-lg shadow">
-                            <IonIcon className='text-xl' name="calendar"></IonIcon>
-                            <h3 className="text-xl font-bold">Ongoing Requests</h3>
-                            <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'ongoing').length} /></p>
+                        <div
+                            onClick={() => handleStatusCardClick('ongoing')}
+                            className="bg-white h-full text-black flex items-center flex-row space-x-3 p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <div className='bg-blue-200 p-3 flex rounded-full'>
+                                <IonIcon className='text-blue-500 text-[30px]' name="calendar"></IonIcon>
+                            </div>
+                            <div className="flex flex-col">
+                                <h3 className="text-xl font-bold">Ongoing Requests</h3>
+                                <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_job === 'ongoing').length} /></p>
+                            </div>
                         </div>
-                        <div className="bg-red-400 text-white p-6 rounded-lg shadow">
-                            <IonIcon className='text-xl' name="cash"></IonIcon>
-                            <h3 className="text-xl font-bold">Unpaid Requests</h3>
-                            <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_payment === 'unpaid').length} /></p>
+                        <div
+                            onClick={() => handlePaymentCardClick('unpaid')}
+                            className="bg-white h-full text-black flex items-center flex-row space-x-3 p-6 scale-100 hover:scale-110 transition-all ease-in-out duration-300 rounded-lg shadow-xl">
+                            <div className='bg-red-200 p-3 flex rounded-full'>
+                                <IonIcon className='text-red-500 text-[30px]' name="cash"></IonIcon>
+                            </div>
+                            <div className="flex flex-col">
+                                <h3 className="text-xl font-bold">Unpaid Requests</h3>
+                                <p className="text-3xl"><SlotCounter value={transactions.filter(transaction => transaction.status_payment === 'unpaid').length} /></p>
+                            </div>
                         </div>
                     </Fade>
                 </div>
-                <main className="instruksi-keempat">
+
+                {/*pindahkan semua elemen dibawah ini ke dalam CustomerAddTransactionPage dan sesuaikan dengan layout CustomerAddTransactionPage saya. saya akan menggunakan tabs buatan saya*/}
+                {/* <main className="instruksi-keempat">
                     <div className="bg-white shadow sm:rounded-lg md:p-6 p-0">
-                        {customerData && (
-                            <div className="mb-6">
-
-                            </div>
-                        )}
-
                         {loading && <p>Loading transactions...</p>}
 
                         {showNotificationTwilio && !showEntryTransaction && !selectedTransactionId && (
@@ -471,7 +509,6 @@ export default function CustomerDashboard() {
                                                     <option value="done">Done</option>
                                                 </select>
                                             </div>
-                                            {/* Date Range Inputs */}
                                             <div className="flex flex-col">
                                                 <label htmlFor="start date">Tanggal Mulai</label>
                                                 <input
@@ -492,7 +529,6 @@ export default function CustomerDashboard() {
                                             </div>
                                         </div>
                                     </div>
-
                                     <ul>
                                         {currentTransactions.map((transaction) => (
                                             <li key={transaction.id} className="border-b py-2 px-3">
@@ -524,12 +560,12 @@ export default function CustomerDashboard() {
                                             </li>
                                         ))}
                                     </ul>
+
                                     <EntryInstructionModal
                                         isOpen={showEntryInstructionModal}
                                         onClose={handleCloseEntryModal}
                                         logo={logo}
                                     />
-                                    {/* Pagination Controls */}
                                     <div className="flex justify-between items-center mt-6">
                                         <button
                                             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -559,7 +595,7 @@ export default function CustomerDashboard() {
                             </Fade>
                         )}
                     </div>
-                </main>
+                </main> */}
             </CustomerDashboardLayout>
         </>
     );

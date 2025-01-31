@@ -7,7 +7,6 @@ import { Fade } from 'react-awesome-reveal';
 function CustomerInbox() {
     const [customerData, setCustomerData] = useState(null);
     const [transactions, setTransactions] = useState([]);
-    const [lastChecked, setLastChecked] = useState(null);
     const [messages, setMessages] = useState([]);
     const [selectedMessage, setSelectedMessage] = useState(null);
     const [selectedMessages, setSelectedMessages] = useState([]);
@@ -98,7 +97,9 @@ function CustomerInbox() {
     };
 
     const filteredNotifications = notifications.filter(
-        (notification) => notification.status_job !== 'done' || notification.status_payment !== 'paid'
+        (notification) =>
+            notification.status_job !== 'cancel' &&
+            !(notification.status_job === 'done' && notification.status_payment === 'paid')
     );
 
     const displayedNotifications = filteredNotifications.slice(0, visibleCount);
@@ -223,7 +224,7 @@ function CustomerInbox() {
                                         className={`${isSidebarExpanded ? "block" : "hidden"
                                             } text-sm`}
                                     >
-                                        Notifikasi
+                                        Pengingat
                                     </span>
                                 </li>
                             </ul>
@@ -312,7 +313,7 @@ function CustomerInbox() {
                                 {/* Header */}
                                 <header className="flex flex-col md:flex-row items-center justify-between p-4 bg-white shadow">
                                     <h1 className="text-lg font-semibold text-gray-700 mb-2 md:mb-0">
-                                        Notification
+                                        Pengingat
                                     </h1>
                                 </header>
                                 {/* Body */}

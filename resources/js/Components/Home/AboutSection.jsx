@@ -8,7 +8,7 @@ function AboutSection({ aboutRef }) {
                     <div className="max-w-xl">
                         <h2 className="text-3xl font-bold sm:text-4xl">Apa yang membuat kami spesial?</h2>
                         <p className="mt-4 text-gray-300">
-                            Maung Laundry Menawarkan pelayanan yang akan memuaskan pelanggan.
+                            Rayyana Laundry Menawarkan pelayanan yang akan memuaskan pelanggan.
                         </p>
                     </div>
                     <div className="mt-8 grid grid-cols-1 gap-8 md:mt-16 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
@@ -38,7 +38,7 @@ function AboutSection({ aboutRef }) {
                                 <h2 className="text-lg font-bold">Layanan Cepat dan Efisien</h2>
 
                                 <p className="mt-1 text-sm text-gray-300">
-                                    Kami memahami pentingnya waktu Anda. Dengan proses cuci dan pengembalian cepat, Maung Laundry memastikan pakaian Anda kembali dalam kondisi terbaik tanpa mengganggu aktivitas Anda.
+                                    Kami memahami pentingnya waktu Anda. Dengan proses cuci dan pengembalian cepat, Rayyana Laundry memastikan pakaian Anda kembali dalam kondisi terbaik tanpa mengganggu aktivitas Anda.
                                 </p>
                             </div>
                         </div>
@@ -100,7 +100,7 @@ function AboutSection({ aboutRef }) {
                                 <h2 className="text-lg font-bold">Layanan Antar-Jemput</h2>
 
                                 <p className="mt-1 text-sm text-gray-300">
-                                    Kenyamanan ekstra dari Maung Laundry adalah layanan antar-jemput. Cukup hubungi kami dan nikmati layanan praktis ini tanpa harus keluar rumah. (syarat dan ketentuan berlaku).
+                                    Kenyamanan ekstra dari Rayyana Laundry adalah layanan antar-jemput. Cukup hubungi kami dan nikmati layanan praktis ini tanpa harus keluar rumah. (syarat dan ketentuan berlaku).
                                 </p>
                             </div>
                         </div>
@@ -131,7 +131,7 @@ function AboutSection({ aboutRef }) {
                                 <h2 className="text-lg font-bold">Harga Terjangkau Deskripsi</h2>
 
                                 <p className="mt-1 text-sm text-gray-300">
-                                    Kami percaya bahwa layanan berkualitas tidak harus mahal. Maung Laundry menawarkan harga yang kompetitif untuk berbagai jenis layanan cuci dan perawatan pakaian.
+                                    Kami percaya bahwa layanan berkualitas tidak harus mahal. Rayyana Laundry menawarkan harga yang kompetitif untuk berbagai jenis layanan cuci dan perawatan pakaian.
                                 </p>
                             </div>
                         </div>

@@ -22,7 +22,7 @@ const DistanceCalculator = ({ customerAddress }) => {
             });
             setDistance(response.data.distance);
         } catch (err) {
-            setError("Tidak dapat mengkalkulasi jarak.");
+            setError("Tidak Terdeteksi.");
         }
     };
     const getDistanceClass = () => {
@@ -32,7 +32,7 @@ const DistanceCalculator = ({ customerAddress }) => {
 
     return (
         <div className="mt-4">
-            <h2 className="font-semibold">Jarak menuju Maung Laundry</h2>
+            <h2 className="font-semibold">Jarak menuju Laundry</h2>
             {distance !== null && (
                 <div className={`mt-2 ${getDistanceClass()}`}>
                     Jarak: <SlotCounter value={distance.toFixed(2)}/> km

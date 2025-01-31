@@ -4,6 +4,7 @@ import SlotCounter from 'react-slot-counter';
 import Chart from 'chart.js/auto';
 import IonIcon from '@reacticons/ionicons';
 import { Head } from '@inertiajs/react';
+import { Fade } from 'react-awesome-reveal';
 
 const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
 const jpgImages = import.meta.glob("/public/assets/Images/*.jpg", { eager: true });
@@ -31,10 +32,28 @@ function CustomerGraph() {
     const [statuspayment, setStatusPayment] = useState('');
     const itemsPerPage = 15;
 
-    const barChartRef = useRef(null);
     const lineChartRef = useRef(null);
-    const barChartInstance = useRef(null);
+    const barChartRef = useRef(null);
+
     const lineChartInstance = useRef(null);
+    const barChartInstance = useRef(null);
+
+    const [showMobileModal, setShowMobileModal] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 768) {
+                setShowMobileModal(true);
+            }
+        };
+
+        handleResize(); 
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize); 
+        };
+    }, []);
 
     useEffect(() => {
         const storedToken = localStorage.getItem("customer-token");
@@ -60,85 +79,101 @@ function CustomerGraph() {
             console.error('Error fetching reports:', error);
         }
     };
+
     const updateCharts = () => {
-       
-        const laundryTypeCounts = { 'Dry Cleaning': 0, 'Wet Laundry': 0, 'Tanpa Kategori': 0 };
-        reports.forEach((report) => {
-            if (report.laundry_type === 'Dry Cleaning') {
-                laundryTypeCounts['Dry Cleaning']++;
-            } else if (report.laundry_type === 'Wet Laundry') {
-                laundryTypeCounts['Wet Laundry']++;
-            } else {
-                laundryTypeCounts['Tanpa Kategori']++;
-            }
-        });
-
-        const paymentStatusCounts = { paid: 0, unpaid: 0 };
-        reports.forEach((report) => {
-            if (report.status_payment === 'paid') {
-                paymentStatusCounts.paid++;
-            } else if (report.status_payment === 'unpaid') {
-                paymentStatusCounts.unpaid++;
-            }
-        });
-
-        const barChartData = {
-            labels: ['Dry Cleaning', 'Wet Laundry', 'Tanpa Kategori'],
-            datasets: [
-                {
-                    label: 'Jumlah Laundry per Kategori',
-                    data: Object.values(laundryTypeCounts),
-                    backgroundColor: ['#4CAF50', '#FFC107', '#F44336'],
-                    borderRadius: 10,
-                },
-            ],
+        const laundryTypeCounts = {
+            "Dry Cleaning": 0,
+            "Wet Laundry": 0,
+            "Tanpa Kategori": 0,
         };
+        const paymentStatusCounts = { paid: 0, unpaid: 0, partial: 0 };
 
-        if (barChartInstance.current) {
-            barChartInstance.current.destroy();
-        }
+        reports.forEach((report) => {
+            const { laundry_type, status_payment } = report;
 
-        barChartInstance.current = new Chart(barChartRef.current, {
-            type: 'bar',
-            data: barChartData,
+            // Count Laundry Types
+            if (laundry_type === "Dry Cleaning") {
+                laundryTypeCounts["Dry Cleaning"]++;
+            } else if (laundry_type === "Wet Laundry") {
+                laundryTypeCounts["Wet Laundry"]++;
+            } else {
+                laundryTypeCounts["Tanpa Kategori"]++;
+            }
+
+            if (status_payment === "paid") paymentStatusCounts.paid++;
+            else if (status_payment === "unpaid") paymentStatusCounts.unpaid++;
+            else if (status_payment === "partial") paymentStatusCounts.partial++;
+        });
+
+        if (lineChartInstance.current) lineChartInstance.current.destroy();
+        if (barChartInstance.current) barChartInstance.current.destroy();
+
+        const lineCtx = lineChartRef.current.getContext("2d");
+        lineChartInstance.current = new Chart(lineCtx, {
+            type: "line",
+            data: {
+                labels: ["Dry Cleaning", "Wet Laundry", "Tanpa Kategori"],
+                datasets: [
+                    {
+                        label: "Laundry Categories",
+                        data: Object.values(laundryTypeCounts),
+                        borderColor: "#4CAF50",
+                        backgroundColor: "rgba(76, 175, 80, 0.2)",
+                        tension: 0.4,
+                        fill: true,
+                    },
+                ],
+            },
             options: {
                 responsive: true,
                 plugins: {
                     legend: { display: true },
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: "Jumlah Laundry" },
+                    },
                 },
             },
         });
 
-        // Update Line Chart
-        const lineChartData = {
-            labels: ['Paid', 'Unpaid'],
-            datasets: [
-                {
-                    label: 'Payment Status',
-                    data: [paymentStatusCounts.paid, paymentStatusCounts.unpaid],
-                    borderColor: '#42A5F5',
-                    backgroundColor: 'rgba(66, 165, 245, 0.2)',
-                    fill: true,
-                    tension: 0.4,
-                },
-            ],
-        };
-
-        if (lineChartInstance.current) {
-            lineChartInstance.current.destroy();
-        }
-
-        lineChartInstance.current = new Chart(lineChartRef.current, {
-            type: 'line',
-            data: lineChartData,
+        const barCtx = barChartRef.current.getContext("2d");
+        barChartInstance.current = new Chart(barCtx, {
+            type: "bar",
+            data: {
+                labels: ["Paid", "Unpaid", "Partial"],
+                datasets: [
+                    {
+                        label: "Payment Status",
+                        data: [
+                            paymentStatusCounts.paid,
+                            paymentStatusCounts.unpaid,
+                            paymentStatusCounts.partial,
+                        ],
+                        backgroundColor: [
+                            "#42A5F5", // Color for Paid
+                            "#F44336", // Color for Unpaid
+                            "#FFC107", // Color for Partial
+                        ],
+                    },
+                ],
+            },
             options: {
                 responsive: true,
                 plugins: {
                     legend: { display: true },
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: "Jumlah Payment Status" },
+                    },
                 },
             },
         });
     };
+
     const fetchTotalPrice = async (customerId) => {
         try {
             const response = await axios.get(`/api/admin/total-price/customer/${customerId}`, {
@@ -152,8 +187,8 @@ function CustomerGraph() {
 
     const formatNumber = (value) => {
         return new Intl.NumberFormat('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
         }).format(value);
     };
     const formatDateTime = (dateString) => {
@@ -267,6 +302,7 @@ function CustomerGraph() {
                             >
                                 <option value="">All Status</option>
                                 <option value="paid">Paid</option>
+                                <option value="partial">Partial</option>
                                 <option value="unpaid">Unpaid</option>
                             </select>
                         </div>
@@ -285,16 +321,36 @@ function CustomerGraph() {
                         </div>
                     </div>
                     {/*TEMPAT CHART DIBAWAH*/}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="flex flex-col gap-4">
                         <div className="bg-white p-4 rounded-lg shadow-md">
-                            <h3 className="text-lg font-medium mb-4">Laundry Type</h3>
-                            <canvas ref={barChartRef}></canvas>
+                            <h3 className="text-lg font-medium mb-4">
+                                Tipe Laundry yang Paling Dipilih
+                            </h3>
+                            <canvas ref={lineChartRef} width={600} height={100}></canvas>
                         </div>
                         <div className="bg-white p-4 rounded-lg shadow-md">
-                            <h3 className="text-lg font-medium mb-4">Payment Status</h3>
-                            <canvas ref={lineChartRef}></canvas>
+                            <h3 className="text-lg font-medium mb-4">Status Pembayaran</h3>
+                            <canvas ref={barChartRef} width={600} height={100}></canvas>
                         </div>
                     </div>
+                    {showMobileModal && (
+                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                            <Fade>
+                                <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
+                                    <h2 className="text-xl font-bold text-red-500 mb-4">Peringatan!</h2>
+                                    <p className="text-gray-700 mb-4">
+                                        Halaman ini lebih baik diakses menggunakan perangkat desktop untuk pengalaman yang optimal.
+                                    </p>
+                                    <button
+                                        onClick={() => setShowMobileModal(false)}
+                                        className="bg-blue-500 text-white px-4 py-2 rounded"
+                                    >
+                                        Mengerti
+                                    </button>
+                                </div>
+                            </Fade>
+                        </div>
+                    )}
                 </div>
             </CustomerDashboardLayout>
         </div>

@@ -2,10 +2,11 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import EditContent from './EditContent';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import IonIcon from '@reacticons/ionicons';
+import { Breadcrumbs } from "@material-tailwind/react";
 
 function ContentManage({ auth }) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -169,6 +170,14 @@ function ContentManage({ auth }) {
                 }
             >
                 <Head title='Content Management' />
+                <Breadcrumbs>
+                    <Link href={route('dashboard')} className="opacity-60">
+                        Dashboard
+                    </Link>
+                    <Link href={route('content.manage')} className="opacity-60">
+                        Content Management
+                    </Link>
+                </Breadcrumbs>
                 <h1 className='ml-3 md:text-[30px] text-black text-[20px] font-bold'>Berita Terkini</h1>
                 {/* form untuk submit content baru */}
                 {!editingContentId && (

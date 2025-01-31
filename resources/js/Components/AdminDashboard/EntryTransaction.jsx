@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { addDays, addHours } from "date-fns";
 import axios from "axios";
+import TransactionStepper from "./TransactionStepper";
+
 const pngImages = import.meta.glob("/public/assets/Images/*.png", { eager: true });
 const webpImages = import.meta.glob("/public/assets/Images/*.webp", { eager: true });
 const images = { ...pngImages, ...webpImages };
+
 const getImageByName = (name) => {
     const matchingImage = Object.keys(images).find((path) => path.includes(`${name}`));
     return matchingImage ? images[matchingImage].default || images[matchingImage] : null;
 };
+
 const logo = getImageByName('Logo_maung');
 
-function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
+function EntryTransaction({ customerId, onSave, onNavigateToPayment, onCancel }) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const [formData, setFormData] = useState({
         payment_method_id: "",
         name: ""
     });
+    const [activeStep, setActiveStep] = useState(0);
     const [notes, setNotes] = useState([]);
     const [newNote, setNewNote] = useState("");
     const [showReceiptModal, setShowReceiptModal] = useState(false);
@@ -34,6 +39,38 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     const [statusPayment, setStatusPayment] = useState("unpaid");
     const [statusJob, setStatusJob] = useState("ongoing");
     const [isSaving, setIsSaving] = useState(false);
+    const [dp, setDp] = useState(0);
+    const [remaining, setRemaining] = useState(0);
+
+    const steps = [
+        "Service Type",
+        "Laundry Type",
+        "Service Price",
+        "Quantity",
+        "Payment Method",
+        "Payment Status",
+        "Down Payment",
+        "Save Transaction",
+    ];
+
+    useEffect(() => {
+        if (!selectedServiceType) setActiveStep(0);
+        else if (!selectedLaundryType) setActiveStep(1);
+        else if (selectedServices.length === 0) setActiveStep(2);
+        else if (!Object.values(quantity).some((qty) => qty > 0)) setActiveStep(3);
+        else if (!formData.payment_method_id) setActiveStep(4);
+        else if (!statusPayment) setActiveStep(5);
+        else if (statusPayment === "partial" && dp <= 0) setActiveStep(6);
+        else setActiveStep(7);
+    }, [
+        selectedServiceType,
+        selectedLaundryType,
+        selectedServices,
+        quantity,
+        formData.payment_method_id,
+        statusPayment,
+        dp,
+    ]);
 
     useEffect(() => {
         axios.get(`/api/customer/${customerId}`).then((res) => setCustomerDetails(res.data));
@@ -42,10 +79,10 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
 
     const formatNumber = (value) => {
         return new Intl.NumberFormat('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
         }).format(value);
-    };   
+    };
 
     const handleServiceTypeChange = (e) => {
         const serviceTypeId = e.target.value;
@@ -65,7 +102,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             setEndDate(estimatedEndDate);
         }
     };
-        
+
     const handleLaundryTypeChange = (e) => {
         const laundryType = e.target.value;
         setSelectedLaundryType(laundryType);
@@ -87,14 +124,14 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
         }
     };
     const handleQuantityChange = (serviceId, qty) => {
-        const parsedQty = parseInt(qty, 10);
+        const parsedQty = parseFloat(qty);
         setQuantity((prev) => ({
             ...prev,
             [serviceId]: isNaN(parsedQty) || parsedQty <= 0 ? 0 : parsedQty,
         }));
     };
     const addNote = async (id) => {
-        const noteTransactionId = id || transactionId; 
+        const noteTransactionId = id || transactionId;
         if (!newNote.trim()) {
             alert("Note content cannot be empty");
             return;
@@ -121,6 +158,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             alert("Failed to add note");
         }
     };
+
     const sendWhatsAppNotification = async (transactionData) => {
         try {
             let phone = customerDetails.phone;
@@ -153,7 +191,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
 
     useEffect(() => {
         axios.get("/api/admin/payment-methods").then((res) => setPaymentMethod(res.data));
-    }, []);  
+    }, []);
 
     useEffect(() => {
         const total = selectedServices.reduce((acc, service) => {
@@ -163,8 +201,16 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
         setTotalPrice(total);
     }, [selectedServices, quantity]);
 
+    useEffect(() => {
+        if (statusPayment === 'partial') {
+            setRemaining(totalPrice - dp);
+        } else {
+            setRemaining(0);
+        }
+    }, [statusPayment, dp, totalPrice]);
+
     const handleSave = async () => {
-        if (isSaving) return; 
+        if (isSaving) return;
         setIsSaving(true);
         if (!customerId || !formData.payment_method_id || selectedServices.length === 0) {
             alert("Please fill all required fields.");
@@ -180,6 +226,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             status_job: statusJob,
             start_date: startDate,
             end_date: endDate,
+            dp: dp,
             services: selectedServices.map((service) => ({
                 service_type_id: service.service_type_id,
                 service_price_id: service.id,
@@ -189,7 +236,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             })),
         };
 
-        console.log("Data to send:", dataToSend);
+        //console.log("Data to send:", dataToSend);
         try {
             const response = await axios.post("/api/admin/transactions", dataToSend, {
                 headers: {
@@ -201,9 +248,9 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
 
             if (response.status === 201) {
                 const transaction = response.data.transaction;
-                setTransactionId(transaction.id);                 
+                setTransactionId(transaction.id);
                 if (newNote.trim()) {
-                    await addNote(transaction.id); 
+                    await addNote(transaction.id);
                 }
                 alert("Transaction saved successfully");
                 setTransactionId(response.data.transaction.id);
@@ -228,163 +275,241 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     };
 
     return (
-        <div className="max-w-3xl mx-auto p-6 my-8 bg-white shadow-md rounded-md">
-            <h2 className="text-xl font-bold mb-4">Entry Transaction</h2>
-            <div className="mb-6">
-                <h3 className="text-lg font-semibold">Real-time Notifications</h3>
+        <div className="w-full flex flex-col mx-auto text-black bg-white shadow-md rounded-md">
+            <div className="animated-background bg-gradient-to-r from-blue-gray-700 to-blue-gray-900 flex md:flex-row flex-col md:justify-between justify-normal items-center p-9 rounded-md">
+                <img src={logo} className="md:w-48 w-32 motion motion-preset-slide-left-md" alt="" />
+                <h1 className="font-bold text-white md:text-[24px] text-[18px]">Formulir Transaksi</h1>
             </div>
-            <div className="mb-6">
-                <h3 className="text-lg font-semibold">Customer Details</h3>
-                <p className="text-gray-700">Name: {customerDetails.name}</p>
-                <p className="text-gray-700">Email: {customerDetails.email}</p>
-                <p className="text-gray-700">Phone: {customerDetails.phone}</p>
-            </div>
-            <div className="mb-6">
-                <h4 className="text-lg font-semibold">Select Service Type</h4>
-                <select
-                    onChange={handleServiceTypeChange}
-                    value={selectedServiceType}
-                    className="w-full border border-gray-300 px-4 py-2 rounded-md"
-                >
-                    <option value="">Select Service Type</option>
-                    {serviceTypes.map((serviceType) => (
-                        <option key={serviceType.id} value={serviceType.id}>
-                            {serviceType.jenis_pelayanan}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            {selectedServiceType && (
-                <div className="mb-6">
-                    <h4 className="text-lg font-semibold">Select Laundry Type</h4>
-                    <div className="flex gap-4">
-                        <label className="flex items-center gap-2">
-                            <input
-                                type="radio"
-                                name="laundryType"
-                                value="Wet Laundry"
-                                checked={selectedLaundryType === "Wet Laundry"}
-                                onChange={handleLaundryTypeChange}
-                            />
-                            Wet Laundry
-                        </label>
-                        <label className="flex items-center gap-2">
-                            <input
-                                type="radio"
-                                name="laundryType"
-                                value="Dry Cleaning"
-                                checked={selectedLaundryType === "Dry Cleaning"}
-                                onChange={handleLaundryTypeChange}
-                            />
-                            Dry Cleaning
-                        </label>
-                        <label className="flex items-center gap-2">
-                            <input
-                                type="radio"
-                                name="laundryType"
-                                value="Tanpa Kategori"
-                                checked={selectedLaundryType === "Tanpa Kategori"}
-                                onChange={handleLaundryTypeChange}
-                            />
-                            Tanpa Kategori
-                        </label>
+            <div className="w-full flex lg:flex-row flex-col mx-auto p-6">
+                <div className="w-full lg:mb-0 mb-20 md:block hidden">
+                    {/* Stepper progress bar */}
+                    <h1 className="text-[20px] font-bold">Progress</h1>
+                    <div className="relative top-1/3">
+                        <TransactionStepper activeStep={activeStep} steps={steps} />
                     </div>
                 </div>
-            )}
-            <div className="mb-6">
-                <h4 className="text-lg font-semibold">Select Service</h4>
-                <select
-                    onChange={handleSelectService}
-                    className="w-full border border-gray-300 px-4 py-2 rounded-md"
-                >
-                    <option value="">Select Service</option>
-                    {servicePrices
-                        .filter((service) =>
-                            selectedLaundryType === 'Tanpa Kategori'
-                                ? service.laundry_types === 'Tanpa Kategori' || service.laundry_types === null || service.laundry_types === ''
-                                : service.laundry_types === selectedLaundryType
-                        )
-                        .map((service) => (
-                            <option key={service.id} value={service.id}>
-                                {service.nama_produk} - Rp.{formatNumber(service.harga)}
-                            </option>
-                        ))}
-                </select>
-            </div>
-            <div className="mb-6">
-                {selectedServices.map((service) => (
-                    <div key={service.id} className="flex items-center justify-between mb-2">
-                        <p>{service.nama_produk}</p>
-                        <input
-                            type="number"
-                            className="border px-2 py-1 rounded w-16"
-                            value={quantity[service.id] || 0}
-                            onChange={(e) => handleQuantityChange(service.id, e.target.value)}
-                        />
-                        <p>Rp.{formatNumber(service.harga * (quantity[service.id] || 0))}</p>
+                <div className="w-full">
+                    <h2 className="text-xl font-bold mb-4">Masukkan Transaksi</h2>
+                    <div className="mb-6">
+                        <h3 className="text-lg font-semibold">Detail Pelanggan</h3>
+                        <p className="text-gray-700">Nama: {customerDetails.name}</p>
+                        <p className="text-gray-700">Email: {customerDetails.email}</p>
+                        <p className="text-gray-700">No Telp: {customerDetails.phone}</p>
                     </div>
-                ))}
-            </div>
-            <h4 className="text-lg font-semibold mb-2">Total Price: Rp.{formatNumber(totalPrice)}</h4>
-
-            <div className="mb-6">
-                <h4 className="text-lg font-semibold">Payment Method</h4>
-                <select
-                    value={formData.payment_method_id}
-                    onChange={(e) =>
-                        setFormData({ ...formData, payment_method_id: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-4 py-2 rounded-md"
-                >
-                    <option value="">Select Payment Method</option>
-                    {paymentMethod.map((method) => (
-                        <option key={method.id} value={method.id}>
-                            {method.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <div className="mb-6">
-                <h4 className="text-lg font-semibold">Notes</h4>
-                <textarea
-                    className="w-full border border-gray-300 px-4 py-2 rounded-md"
-                    placeholder="Add a note for this transaction"
-                    value={newNote}
-                    onChange={(e) => setNewNote(e.target.value)}
-                />
-            </div>
-            <button
-                onClick={handleSave}
-                className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-400"
-                disabled={!formData.payment_method_id || selectedServices.length === 0}
-            >
-                Save Transaction
-            </button>
-            {showReceiptModal && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded-md shadow-md">
-                        <h3 className="text-lg font-semibold mb-4">Cetak Struk?</h3>
-                        <div className="flex justify-end gap-4">
-                            <button
-                                onClick={() => setShowReceiptModal(false)}
-                                className="bg-gray-500 text-white px-4 py-2 rounded"
+                    <div className="mb-6 flex md:flex-row md:items-center flex-col gap-4">
+                        <div className="flex flex-col w-72">
+                            <h4 className="text-lg font-semibold">Pilih Tipe Service</h4>
+                            <ul className="text-gray-500 list-disc ml-4">
+                                <li>Reguler: 3-4 Hari (estimasi)</li>
+                                <li>Oneday: 24 jam</li>
+                                <li>Express: 3 jam</li>
+                            </ul>
+                        </div>
+                        <div className="w-full">
+                            <select
+                                onChange={handleServiceTypeChange}
+                                value={selectedServiceType}
+                                className="w-full border border-gray-300 px-4 py-2 rounded-md"
                             >
-                                Tidak
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setShowReceiptModal(false);
-                                    handlePrintReceipt();
-                                }}
-                                className="bg-blue-500 text-white px-4 py-2 rounded"
-                            >
-                                Ya, Cetak
-                            </button>
+                                <option value="">Select Service Type</option>
+                                {serviceTypes.map((serviceType) => (
+                                    <option key={serviceType.id} value={serviceType.id}>
+                                        {serviceType.jenis_pelayanan}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </div>
+
+                    {selectedServiceType && (
+                        <>
+                            <div className="mb-6 flex md:flex-row flex-col md:items-center gap-4">
+                                <div className="flex flex-col md:w-72">
+                                    <h4 className="text-lg font-semibold">Pilih Tipe Laundry</h4>
+                                    <p className="text-gray-500">Wet Laundry dan Dry Cleaning untuk satuan. Tanpa kategori untuk Kiloan, seperti <strong>kiloan, cuci kiloan, gosok kiloan</strong></p>
+                                </div>
+                                <div className="flex flex-col mt-2 gap-4 w-full">
+                                    <label className="flex items-center gap-2">
+                                        <input
+                                            type="radio"
+                                            name="laundryType"
+                                            value="Wet Laundry"
+                                            checked={selectedLaundryType === "Wet Laundry"}
+                                            onChange={handleLaundryTypeChange}
+                                        />
+                                        Wet Laundry
+                                    </label>
+                                    <label className="flex items-center gap-2">
+                                        <input
+                                            type="radio"
+                                            name="laundryType"
+                                            value="Dry Cleaning"
+                                            checked={selectedLaundryType === "Dry Cleaning"}
+                                            onChange={handleLaundryTypeChange}
+                                        />
+                                        Dry Cleaning
+                                    </label>
+                                    <label className="flex items-center gap-2">
+                                        <input
+                                            type="radio"
+                                            name="laundryType"
+                                            value="Tanpa Kategori"
+                                            checked={selectedLaundryType === "Tanpa Kategori"}
+                                            onChange={handleLaundryTypeChange}
+                                        />
+                                        Tanpa Kategori
+                                    </label>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                    <div className="mb-6 flex md:flex-row flex-col md:items-center gap-4">
+                        <div className="flex flex-col md:w-72">
+                            <h4 className="text-lg font-semibold">Pilih Service</h4>
+                            <p className="text-gray-500">Pilih service sesuai yang diinginkan pelanggan</p>
+                        </div>
+                        <div className="w-full">
+                            <select
+                                onChange={handleSelectService}
+                                className="w-full border border-gray-300 px-4 py-2 rounded-md"
+                            >
+                                <option value="">Select Service</option>
+                                {servicePrices
+                                    .filter((service) =>
+                                        selectedLaundryType === 'Tanpa Kategori'
+                                            ? service.laundry_types === 'Tanpa Kategori' || service.laundry_types === null || service.laundry_types === ''
+                                            : service.laundry_types === selectedLaundryType
+                                    )
+                                    .map((service) => (
+                                        <option key={service.id} value={service.id}>
+                                            {service.nama_produk} - Rp.{formatNumber(service.harga)}
+                                        </option>
+                                    ))}
+                            </select>
+                        </div>
+                    </div>
+                    <div className="mb-6">
+                        {selectedServices.map((service) => (
+                            <div key={service.id} className="flex flex-col w-full bg-gray-200 rounded-xl p-3 items-center justify-between mb-2">
+                                <div className="flex md:flex-row flex-col invisible md:visible justify-between w-full font-bold items-center">
+                                    <h1>Nama Produk</h1>
+                                    <h1>Kuantitas/Kilo</h1>
+                                    <h1>Harga Total</h1>
+                                </div>
+                                <div className="flex md:flex-row flex-col gap-4 justify-between w-full items-center">
+                                    <p>{service.nama_produk}</p>
+                                    <input
+                                        type="number"
+                                        className="border px-2 py-1 rounded w-44"
+                                        min={0}
+                                        step={0.01}
+                                        value={quantity[service.id]?.toFixed(2) || "0.00"}
+                                        onChange={(e) => handleQuantityChange(service.id, e.target.value)}
+                                    />
+                                    <p>Rp.{formatNumber(service.harga * (quantity[service.id] || 0))}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <h4 className="text-lg font-semibold mb-2">Total Harga: Rp.{formatNumber(totalPrice)}</h4>
+
+                    <div className="mb-6 flex md:flex-row flex-col md:items-center gap-4">
+                        <div className="flex flex-col w-72">
+                            <h4 className="text-lg font-semibold">Metode Pembayaran</h4>
+                            <ul className="text-gray-500 list-disc ml-4">
+                                <li>E-wallet (QRIS)</li>
+                                <li>Transfer (BCA)</li>
+                                <li>Cash (mengunjungi Laundry)</li>
+                            </ul>
+                        </div>
+                        <select
+                            value={formData.payment_method_id}
+                            onChange={(e) =>
+                                setFormData({ ...formData, payment_method_id: e.target.value })
+                            }
+                            className="w-full border border-gray-300 px-4 py-2 rounded-md"
+                        >
+                            <option value="">Select Payment Method</option>
+                            {paymentMethod.map((method) => (
+                                <option key={method.id} value={method.id}>
+                                    {method.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="mb-6 flex md:flex-row flex-col md:items-center gap-4">
+                        <div className="flex flex-col w-72">
+                            <h4 className="text-lg font-semibold">Status Pembayaran</h4>
+                            <ul className="text-gray-500 list-disc ml-4">
+                                <li>Unpaid</li>
+                                <li>Partial (DP)</li>
+                                <li>Paid</li>
+                            </ul>
+                        </div>
+                        <select
+                            value={statusPayment}
+                            onChange={(e) => setStatusPayment(e.target.value)}
+                            className="w-full border border-gray-300 px-4 py-2 rounded-md"
+                        >
+                            <option value="unpaid">Unpaid</option>
+                            <option value="paid">Paid</option>
+                            <option value="partial">Partial</option>
+                        </select>
+                    </div>
+                    {statusPayment === "partial" && (
+                        <div className="mb-6">
+                            <h4 className="text-lg font-semibold">Down Payment (DP)</h4>
+                            <input
+                                type="number"
+                                className="w-full border border-gray-300 px-4 py-2 rounded-md"
+                                value={dp}
+                                onChange={(e) => setDp(Number(e.target.value))}
+                            />
+                            <p><strong>Sisa Pembayaran:</strong> Rp.{formatNumber(remaining)}</p>
+                        </div>
+                    )}
+                    <div className="mb-6">
+                        <h4 className="text-lg font-semibold">Notes</h4>
+                        <textarea
+                            className="w-full border border-gray-300 px-4 py-2 rounded-md"
+                            placeholder="Add a note for this transaction"
+                            value={newNote}
+                            onChange={(e) => setNewNote(e.target.value)}
+                        />
+                    </div>
+                    <button
+                        onClick={handleSave}
+                        className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-400"
+                        disabled={!formData.payment_method_id || selectedServices.length === 0}
+                    >
+                        Save Transaction
+                    </button>
                 </div>
-            )}
+                {showReceiptModal && (
+                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+                        <div className="bg-white p-6 rounded-md shadow-md">
+                            <h3 className="text-lg font-semibold mb-4">Cetak Struk?</h3>
+                            <div className="flex justify-end gap-4">
+                                <button
+                                    onClick={() => setShowReceiptModal(false)}
+                                    className="bg-gray-500 text-white px-4 py-2 rounded"
+                                >
+                                    Tidak
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setShowReceiptModal(false);
+                                        handlePrintReceipt();
+                                    }}
+                                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                                >
+                                    Ya, Cetak
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Fade } from 'react-awesome-reveal';
 
 const images = import.meta.glob('/public/assets/images/*.webp', { eager: true });
@@ -24,10 +24,10 @@ function EwalletCard() {
     const linkNo = 'https://wa.link/kn9lsq';
 
     return (
-        <div className="flex flex-col items-center px-3 sm:px-4 md:px-6 lg:px-8">
+        <div className="flex flex-col items-center px-0 sm:px-4 md:px-6 lg:px-8">
             <Fade>
-                <div className="w-full max-w-2xl overflow-y-auto max-h-[75vh] px-4 sm:px-6 md:px-8 p-4 border border-gray-300 rounded-lg shadow-md">
-                    <h1 className="font-bold text-[20px] sm:text-[25px] md:text-[30px] lg:text-[36px] mb-3 text-center">
+                <div className="w-full max-w-2xl overflow-y-auto max-h-[75vh] px-4 sm:px-6 md:px-8 p-4 border border-gray-300 rounded-lg shadow-md flex flex-col">
+                    <h1 className="font-bold text-[16px] sm:text-[25px] md:text-[30px] lg:text-[36px] mb-3 text-center">
                         E-wallet (QRIS)
                     </h1>
                     <ul className="list-decimal text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed space-y-3 sm:space-y-4 text-left">
@@ -51,20 +51,21 @@ function EwalletCard() {
                                 untuk menuju WhatsApp untuk pengiriman bukti pembayaran.
                             </li>
                             <li className='text-black'>
-                                Jika sudah, tunggu konfirmasi dari pihak laundry. Perhatikan selalu halaman
+                                Jika sudah membayar, hubungi admin dan tunggu konfirmasi dari pihak laundry. Perhatikan selalu halaman
                                 transaksi Anda untuk update mengenai pembayaran.
                             </li>
                             <li className='text-black'>
                                 Perlu diperhatikan bahwa nama penerima adalah{' '}
-                                <strong>MAUNG LAUNDRY</strong>.
+                                <strong>RAYYANA LAUNDRY</strong>.
                             </li>
                         </div>
                     </ul>
-                    <a href={linkNo} target="_blank" rel="noopener noreferrer" className="mt-4">
-                        <button className="px-4 py-2 sm:px-6 sm:py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:ring focus:ring-blue-300 transition my-3 sm:my-4">
-                            Hubungi Admin
-                        </button>
-                    </a>
+                    <button className="px-2 py-2 sm:px-6 sm:py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:ring focus:ring-blue-300 transition my-3 sm:my-4">
+                        <a href={linkNo} target="_blank" rel="noopener noreferrer" className="mt-4">
+                            <p className='md:text-[15px] text-[12px]'>Hubungi Admin</p>
+                        </a>
+                    </button>
+                    <p className='text-[12px]'><strong>Klik Gambar untuk memperbesarnya</strong></p>
                     <a
                         onClick={(e) => {
                             e.preventDefault();

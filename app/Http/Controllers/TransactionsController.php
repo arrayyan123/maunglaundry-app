@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailTransaction;
+use App\Models\DownPayment;
 use Illuminate\Http\Request;
 use App\Models\ServiceType;
 use App\Models\ServicePrice;
@@ -31,9 +32,10 @@ class TransactionsController extends Controller
                 'services' => 'required|array',
                 'services.*.service_type_id' => 'required|exists:service_types,id',
                 'services.*.service_price_id' => 'required|exists:service_prices,id',
-                'services.*.quantity' => 'required|integer|min:1',
+                'services.*.quantity' => 'required|numeric|min:1',
                 'services.*.price' => 'required|numeric',
                 'services.*.nama_produk' => 'required|string',
+                'dp' => 'nullable|numeric|min:0',
             ]);
             $namaProduk = $validated['services'][0]['nama_produk'];
             $startDate = Carbon::now('Asia/Jakarta');
@@ -58,6 +60,23 @@ class TransactionsController extends Controller
                     'price' => $service['price'],
                 ]);
             }
+
+            if ($validated['status_payment'] === 'partial') {
+                $totalPrice = $transaction->details()->sum('price');
+
+                $existingDownPayment = DownPayment::where('transaction_id', $transaction->id)->first();
+                $existingDp = $existingDownPayment ? $existingDownPayment->dp : 0;
+
+                $dp = $validated['dp'] ?? 0;
+                $remaining = $totalPrice - ($existingDp + $dp);
+
+                DownPayment::create([
+                    'transaction_id' => $transaction->id,
+                    'dp' => $dp,
+                    'remaining' => $remaining,
+                ]);
+            }
+
             return response()->json([
                 'message' => 'Transaction saved successfully',
                 'transaction' => $transaction,
@@ -70,13 +89,92 @@ class TransactionsController extends Controller
         }
     }
 
+    public function showDownPaymentByTransactionId($id)
+    {
+        try {
+            $transaction = Transaction::with('downPayment')
+                ->findOrFail($id);
+
+            // Ambil down payment terkait
+            $downPayment = $transaction->downPayment;
+
+            // Jika tidak ada down payment, kembalikan respons yang sesuai
+            if (!$downPayment) {
+                return response()->json([
+                    'message' => 'No down payment found for this transaction.',
+                    'transaction_id' => $transaction->id,
+                ], 404);
+            }
+
+            // Kembalikan data down payment
+            return response()->json([
+                'transaction_id' => $transaction->id,
+                'down_payment' => $downPayment,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to retrieve down payment',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'payment_method_id' => 'nullable|exists:payment_methods,id',
+            'status_payment' => 'required|string|in:paid,unpaid,partial',
+            'status_job' => 'required|string|in:ongoing,done,cancel,pending',
+            'dp' => 'nullable|numeric|min:0',
+            'services' => 'required|array',
+            'services.*.service_type_id' => 'required|exists:service_types,id',
+            'services.*.service_price_id' => 'required|exists:service_prices,id',
+            'services.*.quantity' => 'required|numeric|min:1',
+            'services.*.price' => 'required|numeric',
+        ]);
+    
+        try {
+            $transaction = Transaction::findOrFail($id);
+            $transaction->update([
+                'payment_method_id' => $validated['payment_method_id'],
+                'status_payment' => $validated['status_payment'],
+                'status_job' => $validated['status_job'],
+            ]);
+    
+            $transaction->details()->delete();
+            foreach ($validated['services'] as $service) {
+                $transaction->details()->create([
+                    'service_types_id' => $service['service_type_id'],
+                    'service_prices_id' => $service['service_price_id'],
+                    'quantity' => $service['quantity'],
+                    'price' => $service['price'],
+                ]);
+            }
+
+            if ($validated['status_payment'] === 'partial') {
+                $totalPrice = $transaction->details()->sum('price');
+                $dp = $validated['dp'] ?? 0;
+                $remaining = $totalPrice - $dp;
+    
+                $downPayment = DownPayment::updateOrCreate(
+                    ['transaction_id' => $transaction->id],
+                    ['dp' => $dp, 'remaining' => $remaining]
+                );
+            }
+    
+            return response()->json(['message' => 'Transaction updated successfully', 'transaction' => $transaction]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to update transaction', 'error' => $e->getMessage()], 500);
+        }
+    }
+
     public function show(Request $request, $id)
     {
         try {
-            $sortBy = $request->input('sort_by', 'start_date'); // Default: start_date
-            $sortOrder = $request->input('sort_order', 'desc'); // Default: desc
-            $startDate = $request->input('start_date'); // Filter by start_date
-            $endDate = $request->input('end_date'); // Filter by end_date
+            $sortBy = $request->input('sort_by', 'start_date');
+            $sortOrder = $request->input('sort_order', 'desc');
+            $startDate = $request->input('start_date');
+            $endDate = $request->input('end_date');
 
             if (!in_array(strtolower($sortOrder), ['asc', 'desc'])) {
                 $sortOrder = 'desc';
@@ -118,7 +216,7 @@ class TransactionsController extends Controller
     {
         $validated = $request->validate([
             'payment_method_id' => 'nullable|exists:payment_methods,id',
-            'status_payment' => 'required|string|in:paid,unpaid',
+            'status_payment' => 'required|string|in:paid,unpaid,partial',
         ]);
 
         $transaction = Transaction::findOrFail($transactionId);
@@ -143,15 +241,24 @@ class TransactionsController extends Controller
 
     public function destroy($id)
     {
-        $transaction = Transaction::find($id);
+        $transaction = Transaction::findOrFail($id);
+
         if ($transaction) {
-            $transaction->details()->delete();
+            Log::info("Transaction to be deleted: ", ['transaction_id' => $transaction->id]);
             $transaction->delete();
+
+            if ($transaction->details()->exists()) {
+                $transaction->details()->delete();
+            }
+            if ($transaction->downPayment()->exists()) {
+                $transaction->downPayment()->delete();
+            }
+
             return response()->json(['message' => 'Transaction deleted successfully']);
         }
-
         return response()->json(['message' => 'Transaction not found'], 404);
     }
+
     public function markAsDone($transactionId)
     {
         $transaction = Transaction::findOrFail($transactionId);
@@ -162,13 +269,46 @@ class TransactionsController extends Controller
 
         return response()->json(['message' => 'Transaction marked as done.']);
     }
+
     public function printReceipt($id)
     {
-        $transaction = Transaction::with(['customer', 'details.serviceType', 'details.servicePrice', 'note'])->findOrFail($id);
+        $transaction = Transaction::with(['customer', 'details.serviceType', 'details.servicePrice', 'note', 'downPayment'])->findOrFail($id);
+
         $noteContent = $transaction->note ? $transaction->note->content : 'Tidak ada catatan';
-        $pdf = Pdf::loadView('pdf.receipt', compact('transaction', 'noteContent'));
-        return $pdf->stream('transaction_receipt.pdf');
+        $dp = $transaction->downPayment->dp ?? 0;
+        $remaining = $transaction->downPayment->remaining ?? 0;
+
+        return view('pdf.receipt', compact('transaction', 'noteContent', 'dp', 'remaining'));
     }
+
+    public function printMultipleReceipts(Request $request)
+    {
+        $transactionIds = $request->query('ids', []);
+
+        if (!is_array($transactionIds)) {
+            $transactionIds = explode(',', $transactionIds);
+        }
+
+        Log::info('Transaction IDs processed:', ['ids' => $transactionIds]);
+
+        if (empty($transactionIds)) {
+            return response()->json(['error' => 'No transactions selected'], 400);
+        }
+
+        $transactions = Transaction::with(['customer', 'details.serviceType', 'details.servicePrice', 'note'])
+            ->whereIn('id', $transactionIds)
+            ->get();
+
+        $transactions->each(function ($transaction) {
+            $transaction->noteContent = $transaction->note ? $transaction->note->content : 'Tidak ada catatan';
+        });
+        if ($transactions->isEmpty()) {
+            return response()->json(['error' => 'No transactions found'], 404);
+        }
+
+        return view('pdf.multiple-receipts', compact('transactions'));
+    }
+
     public function addNote(Request $request, $transactionId)
     {
         $transaction = Transaction::find($transactionId);
@@ -201,11 +341,11 @@ class TransactionsController extends Controller
     {
         $sortBy = $request->input('sort_by', 'created_at');
         $sortOrder = $request->input('sort_order', 'desc');
-    
+
         if (!in_array(strtolower($sortOrder), ['asc', 'desc'])) {
             $sortOrder = 'desc';
         }
-    
+
         $notes = Note::with(['transaction.customer'])
             ->where('transaction_id', $transactionId)
             ->orderBy($sortBy, $sortOrder)
@@ -213,7 +353,7 @@ class TransactionsController extends Controller
             ->map(function ($note) {
                 $transaction = $note->transaction;
                 $customer = $transaction->customer;
-    
+
                 return [
                     'id' => $note->id,
                     'transaction_id' => $note->transaction_id,
@@ -226,7 +366,7 @@ class TransactionsController extends Controller
                     'created_at' => $note->created_at->format('Y-m-d H:i:s'),
                 ];
             });
-    
+
         return response()->json($notes, 200);
     }
     public function getNotesWithCustomerInfo(Request $request)

@@ -1,3 +1,4 @@
+import ColorCustomizer from '@/Components/AdminDashboard/ColorCustomizer';
 import Notification from '@/Components/AdminDashboard/Notification';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
@@ -22,11 +23,32 @@ const tutorial = getImageByName('questioning_person')
 
 export default function AuthenticatedLayout({ header, children, handleClickStart }) {
     const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
-    const [isSidebarSmaller, setIsSidebarSmaller] = useState(false);
+    const [isSidebarSmaller, setIsSidebarSmaller] = useState(true);
     const [activeSection, setActiveSection] = useState("notes");
     const [time, setTime] = useState(new Date());
     const [showLogOutModal, setShowLogOutModal] = useState(false);
     const [showTutorialModal, setShowTutorialModal] = useState(false);
+    const [sidebarColor, setSidebarColor] = useState('#1a202c');
+    const [topBarColor, setTopBarColor] = useState('#1a202c');
+    const [showCustomizer, setShowCustomizer] = useState(false);
+
+    useEffect(() => {
+        const storedSidebarColor = localStorage.getItem('sidebarColor');
+        const storedTopBarColor = localStorage.getItem('topBarColor');
+
+        if (storedSidebarColor) setSidebarColor(storedSidebarColor);
+        if (storedTopBarColor) setTopBarColor(storedTopBarColor);
+    }, []);
+
+    const handleSidebarColorChange = (color) => {
+        setSidebarColor(color);
+        localStorage.setItem('sidebarColor', color); 
+    };
+
+    const handleTopBarColorChange = (color) => {
+        setTopBarColor(color);
+        localStorage.setItem('topBarColor', color); 
+    };
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -55,7 +77,8 @@ export default function AuthenticatedLayout({ header, children, handleClickStart
             {/* Sidebar */}
             <aside
                 className={`${isSidebarExpanded ? "w-64" : "w-16"
-                    } ${isSidebarSmaller ? "md:translate-x-0 translate-x-[-100%]" : "translate-x-0"} bg-gray-900 text-white flex flex-col block transition-all duration-300`}
+                    } ${isSidebarSmaller ? "md:translate-x-0 translate-x-[-100%]" : "translate-x-0"} text-white flex flex-col block transition-all duration-300`}
+                style={{ backgroundColor: sidebarColor, maxHeight: '100vh', overflowY: 'auto' }}
             >
                 <div
                     className={`p-4 border-b border-blue-700 flex items-center justify-between ${isSidebarExpanded ? "space-x-8" : "space-x-1"
@@ -87,6 +110,19 @@ export default function AuthenticatedLayout({ header, children, handleClickStart
                                             } text-sm`}
                                     >
                                         Dashboard
+                                    </span>
+                                </div>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink href={route('customer-transaction')} active={route().current('customer-transaction')}>
+                                <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
+                                    <IonIcon className='text-[20px]' name="bag-add"></IonIcon>
+                                    <span
+                                        className={`${isSidebarExpanded ? "block" : "hidden"
+                                            } text-sm`}
+                                    >
+                                        Customer & Transaction
                                     </span>
                                 </div>
                             </NavLink>
@@ -143,11 +179,40 @@ export default function AuthenticatedLayout({ header, children, handleClickStart
                                 </div>
                             </NavLink>
                         </li>
+                        <li>
+                            <NavLink href={route('service-prices.index')} active={route().current('service-prices.index')}>
+                                <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
+                                    <IonIcon className='text-[20px]' name="cart"></IonIcon>
+                                    <span
+                                        className={`${isSidebarExpanded ? "block" : "hidden"
+                                            } text-sm`}
+                                    >
+                                        Service Management
+                                    </span>
+                                </div>
+                            </NavLink>
+                        </li>
+                        <div
+                            className={`${isSidebarExpanded ? "p-2" : "p-2"
+                                }`}
+                        >
+                            <button onClick={() => setShowCustomizer(true)} className="w-full bg-blue-500 hover:bg-blue-gray-800 py-2 rounded text-white flex items-center text-sm">
+                                <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
+                                    <IonIcon className='text-[20px]' name="color-fill"></IonIcon>
+                                    <span
+                                        className={`${isSidebarExpanded ? "block" : "hidden"
+                                            } text-sm`}
+                                    >
+                                        Customize Theme
+                                    </span>
+                                </div>
+                            </button>
+                        </div>
                     </ul>
                 </nav>
-                <div className={`bg-white mx-auto my-2 w-56 h-60 rounded-xl ${isSidebarExpanded ? "block" : "hidden"}`}>
+                {/* <div className={`bg-white mx-auto my-2 w-60 max-w-sm sm:w-56 sm:h-60 rounded-xl ${isSidebarExpanded ? "block" : "hidden"}`}>
                     <Fade>
-                        <div className='flex flex-col items-center justify-center space-y-2'>
+                        <div className='flex flex-col items-center p-4 justify-center space-y-2'>
                             <img src={tutorial} className='w-24 h-24' alt="" />
                             <h1 className='text-black text-center'>butuh tutorial untuk menggunakan adminnya?</h1>
                             <button
@@ -160,12 +225,12 @@ export default function AuthenticatedLayout({ header, children, handleClickStart
                             </button>
                         </div>
                     </Fade>
-                </div>
+                </div> */}
                 <div
                     className={`${isSidebarExpanded ? "p-4" : "p-2"
                         } border-t border-blue-700`}
                 >
-                    <button onClick={() => setShowLogOutModal(true)} className="w-full bg-blue-gray-600 hover:bg-blue-gray-800 py-2 rounded text-white flex items-center text-sm">
+                    <button onClick={() => setShowLogOutModal(true)} className="w-full bg-blue-gray-800 hover:bg-blue-gray-900 py-2 rounded text-white flex items-center text-sm">
                         <div className='py-2 px-4 rounded cursor-pointer text-white flex items-center gap-4'>
                             <IonIcon className='text-[20px]' name="log-out-outline"></IonIcon>
                             <span
@@ -181,7 +246,10 @@ export default function AuthenticatedLayout({ header, children, handleClickStart
             {/* Page Content */}
             <div className={`${isSidebarSmaller ? "absolute md:relative left-0 top-0 w-full h-screen" : "relative"
                 } flex-1 flex flex-col overflow-hidden`}>
-                <header className="flex items-center justify-around bg-gray-900 shadow px-4 py-10 sm:px-6">
+                <header 
+                    className="flex items-center justify-around shadow px-4 py-10 sm:px-6"
+                    style={{ backgroundColor: topBarColor }}
+                >
                     <div className='flex sm:flex-row items-center sm:space-x-9 flex-col sm:space-y-0 space-y-4 w-full'>
                         <div className='flex items-center space-x-4 sm:space-x-6 w-full'>
                             <div className='mt-1 md:hidden block'>
@@ -234,7 +302,7 @@ export default function AuthenticatedLayout({ header, children, handleClickStart
                     </div>
                 </header>
                 {/* Main Content */}
-                <main className="flex-1 overflow-y-auto p-2 sm:p-4">
+                <main className="flex-1 overflow-y-auto p-2 sm:p-2">
                     {children}
                 </main>
             </div>
@@ -285,6 +353,23 @@ export default function AuthenticatedLayout({ header, children, handleClickStart
                             </div>
                         </div>
                     </Fade>
+                </div>
+            )}
+
+            {showCustomizer && (
+                <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded shadow-lg motion motion-preset-shrink">
+                        <ColorCustomizer
+                            setSidebarColor={handleSidebarColorChange}
+                            setTopBarColor={handleTopBarColorChange}
+                        />
+                        <button
+                            onClick={() => setShowCustomizer(false)}
+                            className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+                        >
+                            Tutup
+                        </button>
+                    </div>
                 </div>
             )}
         </div>
