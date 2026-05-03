@@ -26,8 +26,7 @@ export default function Register() {
             alert('Please complete the reCAPTCHA.');
             return;
         }
-        console.log('recaptcha_response', recaptchaValue);
-        console.log(data);
+
         setData('g_recaptcha_response', recaptchaValue);
         setTimeout(() => {
             post(route('register'), {

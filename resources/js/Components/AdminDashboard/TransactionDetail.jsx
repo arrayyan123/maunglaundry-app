@@ -77,15 +77,12 @@ function TransactionDetail({ customerId, transactionId, onClose }) {
 
         if (transactionsData.length > 0) {
           const uniqueCustomerIds = [...new Set(transactionsData.map((t) => t.customer_id))];
-          console.log("Unique Customer IDs:", uniqueCustomerIds);
-
           const customerData = await Promise.all(
             uniqueCustomerIds.map(async (idCustomer) => {
               const customerResponse = await axios.get(`/api/customer/${idCustomer}`);
               return { id: idCustomer, name: customerResponse.data.name };
             })
           );
-          console.log("Fetched customer data:", customerData);
 
           const customerNamesObject = customerData.reduce((acc, { id, name }) => {
             acc[id] = name;

@@ -17,17 +17,22 @@ const InboxMessage = () => {
     const [visibleCount, setVisibleCount] = useState(6);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+    const tabs = [
+        { label: "Catatan", value: "notes" },
+        { label: "Pengingat", value: "notifications" },
+    ];
+
     const fetchReports = async () => {
         if (isFetching) return;
         setIsFetching(true);
-    
+
         try {
             const response = await axios.get('/api/admin/new-transactions');
             const newReports = response.data.newTransactions;
             const filteredReports = newReports.filter(
                 (report) => !fetchedIds.has(report.transaction_id) && !removedIds.has(report.transaction_id)
             );
-    
+
             if (filteredReports.length > 0) {
                 setNotifications((prev) => {
                     const newNotifications = filteredReports.filter(
@@ -47,7 +52,7 @@ const InboxMessage = () => {
             setIsFetching(false);
         }
     };
-    
+
 
     const removeNotification = (id) => {
         setNotifications((prev) => prev.filter((notification) => notification.transaction_id !== id));
@@ -159,61 +164,24 @@ const InboxMessage = () => {
     };
 
     return (
-        <div className="flex flex-row lg:h-full h-auto bg-gray-100">
+        <div className="flex flex-col lg:h-full h-auto bg-gray-100">
             {/* Sidebar */}
-            <aside
-                className={`${isSidebarExpanded ? "w-64" : "w-16"
-                    } bg-gray-900 text-white flex flex-col transition-all duration-300`}
-            >
-                <div
-                    className={`p-4 border-b border-blue-700 flex items-center justify-between ${isSidebarExpanded ? "space-x-8" : "space-x-1"
-                        }`}
-                >
-                    <span
-                        className={`${isSidebarExpanded ? "block" : "hidden"
-                            } font-semibold text-lg`}
-                    >
-                        Inbox
-                    </span>
+            <div className="flex border-b border-gray-200">
+                {tabs.map(({ label, value }) => (
                     <button
-                        onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
-                        className="text-white flex items-center mx-auto"
+                        key={value}
+                        onClick={() => {
+                            setActiveSection(value);
+                        }}
+                        className={`py-2 px-4 text-sm font-medium ${activeSection === value
+                            ? "border-b-2 border-blue-500 text-blue-500"
+                            : "text-gray-500 hover:text-blue-500"
+                            }`}
                     >
-                        <IonIcon name={isSidebarExpanded ? "arrow-down-circle-outline" : "menu-outline"} className={`text-2xl transform transition-transform duration-500 ${isSidebarExpanded ? "rotate-90" : "rotate-0"
-                            }`} />
+                        {label}
                     </button>
-                </div>
-                <nav className="flex-1 p-2">
-                    <ul className="space-y-2">
-                        <li
-                            onClick={() => setActiveSection("notes")}
-                            className={`py-2 px-4 rounded cursor-pointer flex items-center gap-4 ${activeSection === "notes" ? "bg-blue-gray-600" : "hover:bg-blue-gray-600"
-                                }`}
-                        >
-                            <IonIcon name="mail-outline" className="text-[20px] text-white" />
-                            <span
-                                className={`${isSidebarExpanded ? "block" : "hidden"
-                                    } text-sm`}
-                            >
-                                Message (Catatan Pelanggan)
-                            </span>
-                        </li>
-                        <li
-                            onClick={() => setActiveSection("notifications")}
-                            className={`py-2 px-4 rounded cursor-pointer flex items-center gap-4 ${activeSection === "notifications" ? "bg-blue-gray-600" : "hover:bg-blue-gray-600"
-                                }`}
-                        >
-                            <IonIcon name="notifications-outline" className="text-[20px] text-white" />
-                            <span
-                                className={`${isSidebarExpanded ? "block" : "hidden"
-                                    } text-sm`}
-                            >
-                                Pengingat
-                            </span>
-                        </li>
-                    </ul>
-                </nav>
-            </aside>
+                ))}
+            </div>
             {/* Main Content */}
             <main className="flex-1 flex flex-col">
                 {activeSection === "notes" && (
@@ -280,6 +248,11 @@ const InboxMessage = () => {
                                             </div>
                                         </div>
                                     ))}
+                                    {messages.length === 0 && (
+                                        <div className="w-full">
+                                            <h1 className="text-xl mx-4 text-gray-500">tidak terdapat catatan</h1>
+                                        </div>
+                                    )}
                                 </div>
                             </section>
 

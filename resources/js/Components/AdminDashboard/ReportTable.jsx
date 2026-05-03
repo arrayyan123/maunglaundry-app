@@ -30,7 +30,6 @@ function ReportTable({ initialStatus, initialYear }) {
       const response = await axios.get('/api/admin/reports', {
         params: { month, year, start_date: startDate, end_date: endDate, status_job: status, status_payment: statuspayment, customer_name: customerName, },
       });
-      console.log('API Response:', response.data);
       setReports(response.data.data);
     } catch (error) {
       console.error('Error fetching reports:', error);

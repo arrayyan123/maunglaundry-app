@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use App\Events\TransactionStored;
+use DateTime;
+use DateTimeZone;
 
 
 class TransactionsController extends Controller
@@ -36,11 +38,22 @@ class TransactionsController extends Controller
                 'services.*.price' => 'required|numeric',
                 'services.*.nama_produk' => 'required|string',
                 'dp' => 'nullable|numeric|min:0',
+                'start_date' => 'nullable|date',
             ]);
+            $timezone = new DateTimeZone('Asia/Jakarta');
+
             $namaProduk = $validated['services'][0]['nama_produk'];
-            $startDate = Carbon::now('Asia/Jakarta');
+            $startDate = $validated['start_date']
+                ? (new DateTime($validated['start_date'], $timezone))
+                : (new DateTime('now', $timezone));
             $serviceType = ServiceType::findOrFail($validated['services'][0]['service_type_id']);
-            $endDate = $startDate->copy()->addDays($serviceType->durasi_hari);
+            
+            $durationInHours = $serviceType->durasi_hari * 24; 
+            $endDate = (clone $startDate)->modify("+{$durationInHours} hours");
+
+            $startDateFormatted = $startDate->setTimezone($timezone)->format('Y-m-d H:i:s');
+            $endDateFormatted = $endDate->setTimezone($timezone)->format('Y-m-d H:i:s');
+
             $transaction = Transaction::create([
                 'customer_id' => $validated['customer_id'],
                 'nama_produk' => $namaProduk,
@@ -48,8 +61,8 @@ class TransactionsController extends Controller
                 'payment_method_id' => $validated['payment_method_id'],
                 'status_payment' => $validated['status_payment'],
                 'status_job' => $validated['status_job'],
-                'start_date' => $startDate,
-                'end_date' => $endDate,
+                'start_date' => $startDateFormatted,
+                'end_date' => $endDateFormatted,
             ]);
 
             foreach ($validated['services'] as $service) {
@@ -132,7 +145,7 @@ class TransactionsController extends Controller
             'services.*.quantity' => 'required|numeric|min:1',
             'services.*.price' => 'required|numeric',
         ]);
-    
+
         try {
             $transaction = Transaction::findOrFail($id);
             $transaction->update([
@@ -140,7 +153,7 @@ class TransactionsController extends Controller
                 'status_payment' => $validated['status_payment'],
                 'status_job' => $validated['status_job'],
             ]);
-    
+
             $transaction->details()->delete();
             foreach ($validated['services'] as $service) {
                 $transaction->details()->create([
@@ -155,13 +168,13 @@ class TransactionsController extends Controller
                 $totalPrice = $transaction->details()->sum('price');
                 $dp = $validated['dp'] ?? 0;
                 $remaining = $totalPrice - $dp;
-    
+
                 $downPayment = DownPayment::updateOrCreate(
                     ['transaction_id' => $transaction->id],
                     ['dp' => $dp, 'remaining' => $remaining]
                 );
             }
-    
+
             return response()->json(['message' => 'Transaction updated successfully', 'transaction' => $transaction]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to update transaction', 'error' => $e->getMessage()], 500);

@@ -76,7 +76,6 @@ function EditTransactionModal({ transactionId, onClose, onUpdate }) {
             try {
                 const response = await axios.get("/api/admin/service-types");
                 setServiceTypes(response.data);
-                console.log('fetch service type', setServiceTypes)
             } catch (error) {
                 console.error("Failed to fetch service types:", error);
             }
@@ -101,7 +100,8 @@ function EditTransactionModal({ transactionId, onClose, onUpdate }) {
         if (!transactionId) return;
         try {
             const downPaymentResponse = await axios.get(`/api/admin/transactions/${transactionId}/down-payment`);
-            const downPaymentData = downPaymentResponse.data.down_payment;
+            
+            const downPaymentData = downPaymentResponse.data.down_payment || { dp: 0, remaining: 0 };
 
             setDownPayment(downPaymentData);
             setEditedData((prev) => ({
@@ -111,6 +111,11 @@ function EditTransactionModal({ transactionId, onClose, onUpdate }) {
             }));
         } catch (error) {
             console.error("Failed to fetch down payment:", error);
+
+            setDownPayment((prev) => ({
+                ...prev,
+                [transactionId]: { dp: 0, remaining: 0 },
+            }));
         }
     };
 
@@ -320,8 +325,8 @@ function EditTransactionModal({ transactionId, onClose, onUpdate }) {
                             <input
                                 type="number"
                                 min={0}
-                                step={0.01}
-                                value={service.quantity?.toFixed(2) || "0.00"}
+                                step={0.001}
+                                value={service.quantity?.toFixed(3) || "0.000"}
                                 onChange={(e) => handleServiceChange(index, "quantity", parseFloat(e.target.value))}
                                 className="border border-gray-300 rounded px-2 py-1 w-1/3"
                             />

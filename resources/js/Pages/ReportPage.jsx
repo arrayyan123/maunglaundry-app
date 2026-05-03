@@ -31,7 +31,6 @@ export default function ReportPage({ auth, customers }) {
     };
 
     const handleViewDetails = (transactionId) => {
-        console.log("Setting transaction ID:", transactionId);
         setSelectedTransactionId(transactionId);
     };
 

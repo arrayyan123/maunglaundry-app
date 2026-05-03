@@ -19,6 +19,7 @@ use App\Http\Middleware\VerifyRecaptcha;
 
 
 Route::post('/send-whatsapp', [WhatsAppController::class, 'sendMessage']);
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -35,14 +36,16 @@ Route::get('/', function () {
 //     return view('pdf.receipt');
 // });
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', [PagesController::class, 'dashboard'])->name('dashboard');
-    Route::get('/reportdata', [PagesController::class, 'report'])->name('admin.report');
-    Route::get('/diagramcalc', [PagesController::class, 'diagramCalc'])->name('diagram.page');
-    Route::get('/inbox', [PagesController::class, 'inboxdashboard'])->name('inbox.admin');
-    Route::get('/contentmanage', [PagesController::class, 'contentManage'])->name('content.manage');
-    Route::get('/servicepricesmanage', [ServicePricesController::class, 'index'])->name('service-prices.index');
-    Route::get('/customertransaction', [PagesController::class, 'customerTransaction'])->name('customer-transaction');
+Route::prefix('admin')->group(function () {
+    Route::middleware(['auth', 'verified'])->group(function () {
+        Route::get('/dashboard', [PagesController::class, 'dashboard'])->name('dashboard');
+        Route::get('/reportdata', [PagesController::class, 'report'])->name('admin.report');
+        Route::get('/diagramcalc', [PagesController::class, 'diagramCalc'])->name('diagram.page');
+        Route::get('/inbox', [PagesController::class, 'inboxdashboard'])->name('inbox.admin');
+        Route::get('/contentmanage', [PagesController::class, 'contentManage'])->name('content.manage');
+        Route::get('/servicepricesmanage', [ServicePricesController::class, 'index'])->name('service-prices.index');
+        Route::get('/customertransaction', [PagesController::class, 'customerTransaction'])->name('customer-transaction');
+    });
 });
 
 Route::prefix('api')->group(function () {

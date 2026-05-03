@@ -57,11 +57,6 @@ function CustomerTransactionPage({ auth, customers: initialCustomers }) {
         }
     };
 
-    useEffect(() => {
-        console.log("Tab changed to:", currentTab);
-    }, [currentTab]);
-
-
     const tabs = [
         { label: "Customer", value: "customer" },
         { label: "Transaction", value: "transaction" },

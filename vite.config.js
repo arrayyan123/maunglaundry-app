@@ -12,7 +12,13 @@ export default defineConfig({
         react(),
     ],
     envPrefix: ['VITE_'],
+    optimizeDeps: {
+        include: ['quill'],
+    },
     build: {
+        commonjsOptions: {
+            transformMixedEsModules: true,
+        },
         chunkSizeWarningLimit: 2000, 
         rollupOptions: {
             output: {

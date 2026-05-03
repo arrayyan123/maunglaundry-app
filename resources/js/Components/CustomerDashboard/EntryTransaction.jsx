@@ -26,7 +26,8 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     const [transactionId, setTransactionId] = useState(null);
     const [notes, setNotes] = useState([]);
     const [newNote, setNewNote] = useState("");
-    const [startDate, setStartDate] = useState(new Date());
+    const [startDate, setStartDate] = useState(null);
+    const [newStartDate, setNewStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(null);
     const [customerDetails, setCustomerDetails] = useState({});
     const [serviceTypes, setServiceTypes] = useState([]);
@@ -87,19 +88,45 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
         axios.get("/api/admin/service-types").then((res) => setServiceTypes(res.data));
     }, [customerId]);
 
+    const handleStartDateChange = (e) => {
+        const inputDate = e.target.value ? new Date(e.target.value) : null;
+        setStartDate(inputDate);
+
+        if (inputDate && selectedServiceType) {
+            const selectedType = serviceTypes.find((type) => type.id === parseInt(selectedServiceType));
+            if (selectedType) {
+                const durasiHari = selectedType.durasi_hari;
+                let newEndDate;
+
+                if (durasiHari < 1) {
+                    newEndDate = addHours(inputDate, durasiHari * 24);
+                } else {
+                    newEndDate = addDays(inputDate, durasiHari);
+                }
+
+                setEndDate(newEndDate);
+            }
+        } else {
+            setEndDate(null);
+        }
+    };
+
     const handleServiceTypeChange = (e) => {
         const serviceTypeId = e.target.value;
         setSelectedServiceType(serviceTypeId);
         axios.get(`/api/admin/service-prices/${serviceTypeId}`).then((res) => setServicePrices(res.data));
         const selectedServiceType = serviceTypes.find((type) => type.id === parseInt(serviceTypeId));
+
         if (selectedServiceType) {
             const durasiHari = selectedServiceType.durasi_hari;
 
+            const effectiveStartDate = startDate || newStartDate;
+
             let estimatedEndDate = null;
             if (durasiHari < 1) {
-                estimatedEndDate = addHours(startDate, durasiHari * 24);
+                estimatedEndDate = addHours(effectiveStartDate, durasiHari * 24);
             } else {
-                estimatedEndDate = addDays(startDate, durasiHari);
+                estimatedEndDate = addDays(effectiveStartDate, durasiHari);
             }
 
             setEndDate(estimatedEndDate);
@@ -168,18 +195,43 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     };
 
     const sendWhatsAppNotification = async (transactionData) => {
+        const effectiveStartDate = startDate || newStartDate;  
+
         try {
             let phone = customerDetails.phone;
             if (phone && phone.startsWith('0')) {
                 phone = '+62' + phone.substring(1);
             }
+
+            const start = effectiveStartDate ? effectiveStartDate : 'Tanggal tidak tersedia';
+
             const message = `
             Halo ${customerDetails.name}, berikut adalah detail transaksi laundry Anda:
             - Produk: ${transactionData.nama_produk}
+            - Tipe Laundry: ${transactionData.laundry_type}
             - Total Harga: Rp.${formatNumber(transactionData.services.reduce((acc, service) => acc + service.price, 0))}
-            - Tanggal Mulai: ${startDate.toLocaleDateString()}
-            - Tanggal Selesai: ${endDate.toLocaleDateString()}
-
+            - Tanggal Mulai: ${start
+                ? new Intl.DateTimeFormat('id-ID', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }).format(new Date(start))
+                : "N/A"
+            }
+            - Tanggal Selesai: ${endDate
+                ? new Intl.DateTimeFormat('id-ID', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }).format(new Date(endDate))
+                : "N/A"
+            }
             Terima kasih telah menggunakan layanan kami!`;
             await axios.post("/send-whatsapp", {
                 phone: customerDetails.phone,
@@ -215,6 +267,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
     }, [statusPayment, dp, totalPrice]);
 
     const handleSave = async () => {
+        const effectiveStartDate = startDate || newStartDate; 
         if (isSaving) return;
         setIsSaving(true);
         if (!customerId || !formData.payment_method_id || selectedServices.length === 0 || !endDate) {
@@ -239,7 +292,7 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             payment_method_id: formData.payment_method_id,
             status_payment: statusPayment,
             status_job: statusJob,
-            start_date: startDate,
+            start_date: effectiveStartDate,
             end_date: endDate,
             dp: dp,
             services: selectedServices.map((service) => ({
@@ -251,7 +304,6 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
             })),
         };
 
-        console.log("Data to send:", dataToSend);
         try {
             const response = await axios.post("/api/customer/transactions", dataToSend, {
                 headers: {
@@ -303,6 +355,18 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                         <p className="text-gray-700">Nama: {customerDetails.name}</p>
                         <p className="text-gray-700">Email: {customerDetails.email}</p>
                         <p className="text-gray-700">Nomor Telepon: {customerDetails.phone}</p>
+                    </div>
+                    <div className="mb-4">
+                        <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
+                            Tanggal Mulai (Opsional)
+                        </label>
+                        <input
+                            type="datetime-local"
+                            id="startDate"
+                            value={startDate ? new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ""}
+                            onChange={handleStartDateChange}
+                            className="w-full border border-gray-300 px-3 py-2 rounded-md"
+                        />
                     </div>
                     <div className="mb-6 flex md:flex-row md:items-center flex-col gap-4">
                         <div className="flex flex-col w-72">
@@ -409,8 +473,8 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                                         type="number"
                                         className="border px-2 py-1 rounded w-44"
                                         min={0}
-                                        step={0.01}
-                                        value={quantity[service.id]?.toFixed(2) || "0.00"}
+                                        step={0.001}
+                                        value={quantity[service.id]?.toFixed(3) || "0.000"}
                                         onChange={(e) => handleQuantityChange(service.id, e.target.value)}
                                     />
                                     <p>Rp.{formatNumber(service.harga * (quantity[service.id] || 0))}</p>
@@ -472,6 +536,23 @@ function EntryTransaction({ customerId, onSave, onNavigateToPayment }) {
                                 onChange={(e) => setDp(Number(e.target.value))}
                             />
                             <p><strong>Remaining Payment:</strong> Rp.{formatNumber(remaining)}</p>
+                        </div>
+                    )}
+                    {endDate && (
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Selesai (Estimasi)</label>
+                            <p className="text-gray-800">
+                                {endDate
+                                    ? new Intl.DateTimeFormat('id-ID', {
+                                        day: '2-digit',
+                                        month: 'long',
+                                        year: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: false
+                                    }).format(new Date(endDate))
+                                    : "N/A"}
+                            </p>
                         </div>
                     )}
                     <div className="mb-6">
